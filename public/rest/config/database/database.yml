@@ -1,0 +1,10 @@
+all:
+  default:
+    class:   sfPropelDatabase
+    param:
+      dsn:   mysql://root@localhost/ecp
+
+  eve:
+    class:   sfPropelDatabase
+    param:
+      dsn:   mysql://root@localhost/eveonline

@@ -1,0 +1,132 @@
+/*
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+*/
+
+.background-layer {
+	position: fixed;
+	z-index: -1;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	min-width: 100%;
+	min-height: 100%;
+}
+
+.main-content {
+	padding-top: 70px;
+	padding-bottom: 70px;
+	height: 100%;
+	min-height: 600px;
+	background: rgba(255, 255, 255, .7);
+}
+
+.sub-container	{
+	margin-top: 6px;
+	margin-bottom: 6px;
+}
+
+.selectShip {
+	font-size: 15px;
+}
+
+td.composition-ship-name, td.composition-ship-points {
+	font-size: 24px;
+}
+
+.composition-ship-icon {
+ 	width: 36px;
+}
+.composition-ship-points {
+ 	width: 50px;
+}
+.composition-ship-action {
+ 	width: 100px;
+}
+
+.composition-ship-footer {
+	font-size: 18px;
+}
+
+.table-no-border td, .table-no-border th	{
+	border-top: none !important;
+}
+
+.copyright{
+	padding-top: 20px;
+	font-size: 10px;
+	color: #888;
+}
+
+input[type="radio"].btn 	{
+	position: absolute;
+	clip: rect(0,0,0,0);
+	pointer-events: none;
+}
+
+.ship-point-title	{
+	font-size: 22px;
+}
+
+.ship-points-detail	{
+	font-size: 18px;
+}
+
+.main-toolbar	{
+	margin-bottom: 12px;
+}
+
+.nobr	{
+    white-space: nowrap;
+}
+
+.single-form .validation-container	{
+	display: block;
+}
+
+ul.none {
+	list-style: none;
+	padding-left: 0;
+}
+
+.ecp-progress-bar .progress	{
+	margin-bottom: 0;
+}
+
+.content-hidden	{
+	opacity: .5;
+}
+
+
+.root-error .details	{
+	color: #d9534f;
+}
+
+.root-error .glyphicon-warning-sign.hidden	{
+	display: inline-block !important;
+	color: #d9534f;
+}
+
+.root-error .glyphicon-pencil {
+	display: none;
+}
+
+.glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}

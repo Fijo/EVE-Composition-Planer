@@ -1,0 +1,76 @@
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+
+<div ng-include="'app/main/view/partial/header/top.html'"></div>
+
+<div class="row single-form">
+	<div class="col-md-6 col-md-offset-3">
+		<div class="panel panel-default">
+			<ul class="nav nav-tabs nav-justified">
+				<li role="presentation" ng-class="isSectionActive('login') ? 'active' : ''"><a href="#/login" ng-class="isSectionActive('login') ? 'active' : ''">Login</a></li>
+				<li role="presentation" ng-class="isSectionActive('register') ? 'active' : ''"><a href="#/register" ng-class="isSectionActive('register') ? 'active' : ''">Register</a></li>
+			</ul>
+			<div class="panel-body">
+				<div class="alert alert-danger" role="alert" ng-show="res.status == 'incorrect credentials'">
+					Either the Login name or the password are incrorrect.
+				</div>
+				<div class="alert alert-danger" role="alert" ng-show="res.status == 'error'">
+					{{res.message}}
+				</div>
+				<div class="alert alert-success" role="alert" ng-show="res.status == 'success' && isSectionActive('login')">
+					You successfully have been logged in!
+				</div>
+				<div class="alert alert-success" role="alert" ng-show="res.status == 'success' && isSectionActive('register')">
+					Thank you for registering!<br>
+					<br>
+					A Email verification mail has been send.<br>
+					Please check your mails and click on the link in the mail to finish registering to this site.
+				</div>
+
+				<form name="form">
+					<div ng-if="isSectionActive('login')">
+						<span ecp-validation-container>
+							<input class="form-control" ng-model="model.entity.username" name="username" type="text" placeholder="Username" ecp-validation-tooltip="form" minlength="3" maxlength="32" ecp-entity-name-format required/>
+						</span>
+						<span ecp-validation-container>
+							<input class="form-control" ng-model="model.entity.password" name="password" type="password" placeholder="Password" ecp-validation-tooltip="form" minlength="4" required/>
+						</span>
+						<div class="row">
+							<div class="col-sm-6">
+								<a href="#/recover-password">Forgot Password?</a>
+							</div>
+							<div class="col-sm-6 text-right">
+								<button class="btn btn-primary" ecp-submit="login">Sign in</button>
+							</div>
+						</div>
+					</div>
+					<div ng-if="isSectionActive('register')">
+						<span ecp-validation-container>
+							<input class="form-control" ng-model="model.entity.username" name="username" type="text" placeholder="Username" ecp-validation-tooltip="form" minlength="3" maxlength="32" ecp-entity-name="User" ecp-entity-name-format required/>
+						</span>
+						<span ecp-validation-container>
+							<input class="form-control" ng-model="model.entity.email" name="email" type="email" placeholder="E-Mail" ecp-validation-tooltip="form" maxlength="1024" required/>
+						</span>
+						<span ecp-validation-container>
+							<input class="form-control" ng-model="model.entity.password" name="password" type="password" placeholder="Password" ecp-validation-tooltip="form" minlength="4" required/>
+						</span>
+						<span ecp-validation-container>
+							<input class="form-control" ng-model="model.entity.repeatpassword" name="repeatpassword" type="password" placeholder="Repeat password" c-ecp-validation-tooltip="form" minlength="4" required c-ecp-password="model.entity.password" ecp-password-validation-tooltip/>
+						</span>
+						<div class="row">
+							<div class="col-xs-12 text-right">
+								<button class="btn btn-primary" ecp-submit="register">Register</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

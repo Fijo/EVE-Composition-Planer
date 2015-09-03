@@ -1,0 +1,159 @@
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+
+<form name="form">
+	<div ng-include="'app/main/view/partial/header/default-entity.html'"></div>
+	<div class="row">
+		<div class="col-xs-12">
+			<ul class="nav nav-tabs nav-justified">
+				<li role="presentation" id="validation-general-info" ng-class="model.activeTab == 'GeneralInfo' ? 'active' : ''"><a href="" ng-click="model.activeTab='GeneralInfo'">General Information <span class="glyphicon glyphicon-warning-sign hidden"></span></a></li>
+				<li role="presentation" id="validation-ship-points" ng-class="model.activeTab == 'Points' ? 'active' : ''"><a href="" ng-click="model.activeTab='Points'">Ship points <span class="glyphicon glyphicon-warning-sign hidden"></span></a></li>
+				<li role="presentation" id="validation-rules" ng-class="model.activeTab == 'Rules' ? 'active' : ''"><a href="" ng-click="model.activeTab='Rules'">Rules <span class="glyphicon glyphicon-warning-sign hidden"></span></a></li>
+			</ul>
+
+			<div class="sub-container">
+				<div ng-show="model.activeTab == 'GeneralInfo'" class="validation-container-root" ecp-redirect-validation="#validation-general-info">
+					<div class="row">
+						<div class="col-xs-12 col-md-6">Minimum number of pilots</div>
+						<div class="col-xs-12 col-md-6">
+							<span ecp-validation-container>
+								<input class="form-control input-sm" name="minPilots" ng-model="model.entity.minPilots" type="number" placeholder="Minimum number of pilots" ng-disabled="isReadonly()" ecp-validation-tooltip="form" integer min="1" ng-max="model.maxPilots" required />
+							</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12 col-md-6">Maximum number of pilots</div>
+						<div class="col-xs-12 col-md-6">
+							<span ecp-validation-container>
+								<input class="form-control input-sm" name="maxPilots" ng-model="model.entity.maxPilots" type="number" placeholder="Maximum number of pilots" ng-disabled="isReadonly()" ecp-validation-tooltip="form" integer ng-min="model.minPilots" required />
+							</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12 col-md-6">Maximum amount of points</div>
+						<div class="col-xs-12 col-md-6">
+							<span ecp-validation-container>
+								<input class="form-control input-sm" name="maxPoints" ng-model="model.entity.maxPoints" type="number" placeholder="Maximum amount of points" ng-disabled="isReadonly()" ecp-validation-tooltip="form" integer min="0" required />
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<div ng-show="model.activeTab == 'Points'" class="validation-container-root" ecp-redirect-validation="#validation-ship-points">
+					<div class="panel-group" ng-model="model.shipGroups.active" role="tablist" aria-multiselectable="true" bs-collapse>
+						<div class="panel panel-default validation-container-root" ng-repeat="shipGroup in model.shipGroups.content" ng-class="showGroup(shipGroup) ? '' : 'content-hidden'">
+							<div class="panel-heading" role="tab">
+								<h4 class="panel-title ship-point-title">
+									<div class="row">
+										<div class="col-md-10 col-xs-8 nobr">
+											<a bs-collapse-toggle>{{::shipGroup.name}}</a> <span class="glyphicon glyphicon-warning-sign hidden"></span>
+										</div>
+										<div class="col-md-2 col-xs-4"><input class="form-control input-sm text-right" ng-model="shipGroup.points" type="text" placeholder="Points" ng-change="updateGroupPoints(shipGroup)" ng-disabled="isReadonly()" /></div>
+									</div>
+								</h4>
+							</div>
+							<div class="panel-collapse" role="tabpanel" bs-collapse-target>
+								<div class="panel-body ship-points-detail">
+									<div class="row" ng-repeat="ship in shipGroup.content" ng-class="showShip(ship) ? '' : 'content-hidden'">
+										<div class="col-md-10 col-xs-8 nobr">
+											<img class="img-rounded" src="http://image.eveonline.com/Type/{{::ship.id}}_32.png" width="24" height="24" alt="{{::ship.name}}">
+											{{::ship.name}}
+										</div>
+										<div class="col-md-2 col-xs-4">
+											<span ecp-validation-container>
+												<input class="form-control input-sm text-right" name="f{{::ship.id}}points" ng-model="model.entity.ships[ship.id]" type="number" placeholder="Points" ng-change="updateGroupOverviewPoints(shipGroup)" ng-disabled="isReadonly()" ecp-validation-tooltip="form" integer min="0" required/>
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div ng-show="model.activeTab == 'Rules'" class="validation-container-root" ecp-redirect-validation="#validation-rules">
+					<div ng-repeat="rule in model.entity.rules" class="row" ng-init="ruleKey = getRepeaterHash(rule)">
+						<div class="col-sm-11">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									Rule requirements
+								</div>
+								<ul class="list-group">
+									<li ng-repeat="fittingRule in rule.fittingRules" class="list-group-item" ng-init="filterKey = getRepeaterHash(fittingRule)">
+										<div class="row">
+											<div class="col-xs-2">
+												<span ng-if="$index != 0" ecp-validation-container>
+													<select class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}concatenation" ng-model="fittingRule.concatenation"
+														ng-options="reduceKey(concatenation) as concatenation.name for concatenation in filterDefs.concatenations track by concatenation.id" ng-disabled="isReadonly()" ecp-validation-tooltip="form" required></select>
+												</span>
+											</div>
+											<div class="col-xs-9">
+												<div class="form-inline">
+													count of fits tagged with 
+													<span ecp-validation-container>
+														<input class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}tag" ng-model="fittingRule.tag" type="text" placeholder="Fitting Rule" data-auto-select="true" data-animation="am-flip-x"
+    														bs-options="fittingRuleEntity as fittingRuleEntity.name for fittingRuleEntity in getFittingRulesAutocomplete($viewValue) track by fittingRuleEntity.id" bs-typeahead ng-model-options="{ allowInvalid: true }"
+    														ecp-validation-tooltip="form" required id-required>
+													</span>
+													must
+													<span ecp-validation-container>
+														<select class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}comparison" ng-model="fittingRule.comparison"
+															ng-options="reduceKey(filterComparison) as filterComparison.name for filterComparison in getIntComparison() track by filterComparison.id" ng-disabled="isReadonly()" ecp-validation-tooltip="form" required></select>
+													</span>
+													<span ecp-validation-container>
+														<input class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}value" ng-model="fittingRule.value" type="number" placeholder="value" ng-disabled="isReadonly()" ecp-validation-tooltip="form" integer required/>
+													</span>
+												</div>
+											</div>
+											<div class="col-xs-1 pull-right">
+												<a type="button" class="btn btn-link btn-sm" aria-label="Remove" ng-click="fittingRuleService.remove(rule, $index)" ng-disabled="isReadonly() || !fittingRuleService.canRemove(rule)">
+													<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+												</a>
+											</div>
+										</div>
+									</li>
+									<li class="list-group-item">
+										<div class="row">
+											<div class="col-xs-11"></div>
+											<div class="col-xs-1 pull-right">
+												<a type="button" class="btn btn-link btn-sm" aria-label="Add" ng-click="fittingRuleService.add(rule)" ng-disabled="isReadonly()">
+													<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+												</a>
+											</div>
+										</div>
+									</li>
+								</ul>
+								<div class="panel-footer">
+									<span ecp-validation-container>
+										<textarea class="form-control" name="f{{::ruleKey}}message" rows="2" ng-model="rule.message" placeholder="Message in case of rule violation" ng-disabled="isReadonly()" ecp-validation-tooltip="form" maxlength="4096" required>
+										</textarea>
+									</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-sm-1 pull-right">
+							<a type="button" class="btn btn-link btn-lg" aria-label="Remove" ng-click="ruleService.remove($index)" ng-disabled="isReadonly() || !ruleService.canRemove()">
+							  <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+							</a>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-11"></div>
+						<div class="col-sm-1 pull-right">
+							<a type="button" class="btn btn-link btn-lg" aria-label="Add" ng-click="ruleService.add()" ng-disabled="isReadonly()">
+								<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+							</a>
+						</div>
+					</div>
+				</div>
+		  	</div>
+		</div>
+	</div>
+</form>

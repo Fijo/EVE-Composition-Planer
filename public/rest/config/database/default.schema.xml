@@ -1,0 +1,292 @@
+<!--
+    Awesome, your propel set up is nearly done! You just have to describe how you want your database to look like.
+
+    You can let propel set up your mysql database by running `vendor/bin/propel database:create && vendor/bin/propel database:insert-sql`.
+    This will create your database including all the tables.
+-->
+
+<!--
+    The root tag of the XML schema is the <database> tag.
+
+    The `name` attribute defines the name of the connection that Propel uses for the tables in this schema. It is not
+    necessarily the name of the actual database. In fact, Propel uses some configuration properties to link a connection
+    name with real connection settings (like database name, user and password).
+
+    The `defaultIdMethod` attribute indicates that the tables in this schema use the database's "native"
+    auto-increment/sequence features to handle id columns that are set to auto-increment.
+
+   [TIP]: You can define several schemas for a single project. Just make sure that each of the schema
+          filenames end with schema.xml.
+-->
+<database name="default" defaultIdMethod="native"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="http://xsd.propelorm.org/1.6/database.xsd"
+          namespace="ECP"
+        >
+    <!-- Within the <database> tag, Propel expects one <table> tag for each table -->
+
+
+    <!--
+        Each table element should have a `name` attribute. It will be used for naming the sql table.
+
+        The `phpName` is the name that Propel will use for the generated PHP class. By default, Propel uses a
+        CamelCase version of the table name as its phpName - that means that you could omit the `phpName` attribute
+        on our `book` table.
+    -->
+        <!--
+            Each column has a `name` (the one used by the database), and an optional `phpName` attribute. Once again,
+            the Propel default behavior is to use a CamelCase version of the name as `phpName` when not specified.
+
+            Each column also requires a `type`. The XML schema is database agnostic, so the column types and attributes
+            are probably not exactly the same as the one you use in your own database. But Propel knows how to map the
+            schema types with SQL types for many database vendors. Existing Propel column types are:
+            `boolean`, `tinyint`, `smallint`, `integer`, `bigint`, `double`, `float`, `real`, `decimal`, `char`,
+            `varchar`, `longvarchar`, `date`, `time`, `timestamp`, `blob`, `clob`, `object`, and `array`.
+
+            Some column types use a size (like `varchar` and `int`), some have unlimited size (`longvarchar`, `clob`,
+            `blob`).
+
+            Check the (schema reference)[http://propelorm.org/reference/schema.html] for more details
+            on each column type.
+
+            As for the other column attributes, `required`, `primaryKey`, and `autoIncrement`, they mean exactly
+            what their names imply.
+        -->
+
+        <!--
+            A foreign key represents a relationship. Just like a table or a column, a relationship has a `phpName`.
+            By default, Propel uses the `phpName` of the foreign table as the `phpName` of the relation.
+
+            The `refPhpName` defines the name of the relation as seen from the foreign table.
+        -->
+        <!--<foreign-key foreignTable="publisher" phpName="Publisher" refPhpName="Book">
+            <reference local="publisher_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="author">
+            <reference local="author_id" foreign="id"/>
+        </foreign-key>-->
+
+    <table name="user" phpName="User">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="username" type="varchar" size="32" required="true" />
+        <column name="password" type="varchar" size="40" required="true"/>
+        <column name="email" type="varchar" size="1024" required="true"/>
+        <column name="created" type="timestamp" required="true"/>
+        <column name="confirmation_code" type="varchar" size="32" phpName="ConfirmationCode"/>
+        <column name="recover_password_code" type="varchar" size="32" phpName="RecoverPasswordCode"/>
+    </table>
+    <table name="comparison" phpName="Comparison">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="32" required="true" />
+    </table>
+    <table name="type" phpName="Type">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="32" required="true" />
+    </table>
+    <table name="typecomparison" phpName="TypeComparison" isCrossRef="true">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="typeId" type="integer" required="true" primaryKey="true"/><!-- primaryKey="true" is required for the crossRef to work -->
+        <foreign-key foreignTable="type">
+          <reference local="typeId" foreign="id"/>
+        </foreign-key>
+        <column name="comparisonId" type="integer" required="true" primaryKey="true"/>
+        <foreign-key foreignTable="comparison">
+          <reference local="comparisonId" foreign="id"/>
+        </foreign-key>
+    </table>
+    <table name="itemfilterdef" phpName="ItemFilterDef">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="32" required="true" />
+        <column name="typeId" type="integer" required="true"/>
+        <foreign-key foreignTable="type">
+          <reference local="typeId" foreign="id"/>
+        </foreign-key>
+        <column name="min" type="integer" required="true"/>
+        <column name="max" type="integer" required="true"/>
+        <column name="minlength" type="integer" required="true"/>
+        <column name="maxlength" type="integer" required="true"/>
+        <column name="depth" type="integer" required="true"/>
+    </table>
+    <table name="fittingruleentity" phpName="FittingRuleEntity">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="32" required="true" />
+        <column name="userId" type="integer" required="true"/>
+        <foreign-key foreignTable="user">
+          <reference local="userId" foreign="id"/>
+        </foreign-key>
+        <column name="isListed" type="integer" required="true"/>
+        <column name="forkedId" type="integer"/>
+        <foreign-key foreignTable="fittingruleentity">
+          <reference local="forkedId" foreign="id"/>
+        </foreign-key>
+        <column name="lastModified" type="timestamp"/>
+    </table>
+    <table name="fittingrulerow" phpName="FittingRuleRow">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="fittingRuleEntityId" type="integer" required="true"/>
+        <foreign-key foreignTable="fittingruleentity" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="fittingRuleEntityId" foreign="id"/>
+        </foreign-key>
+        <column name="ind3x" type="integer" required="true"/>
+        <column name="concatenation" type="integer"/>
+        <foreign-key foreignTable="comparison" phpName="concatenationObj">
+          <reference local="concatenation" foreign="id"/>
+        </foreign-key>
+        <column name="comparison" type="integer" required="true"/>
+        <foreign-key foreignTable="comparison" phpName="comparisonObj">
+          <reference local="comparison" foreign="id"/>
+        </foreign-key>
+        <column name="value" type="integer" required="true"/>
+    </table>
+    <table name="itemfilterrule" phpName="ItemFilterRule">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="fittingRuleRowId" type="integer" required="true"/>
+        <foreign-key foreignTable="fittingrulerow" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="fittingRuleRowId" foreign="id"/>
+        </foreign-key>
+        <column name="ind3x" type="integer" required="true"/>
+        <column name="concatenation" type="integer"/>
+        <foreign-key foreignTable="comparison" phpName="concatenationObj">
+          <reference local="concatenation" foreign="id"/>
+        </foreign-key>
+        <column name="itemFilterDefId" type="integer" required="true"/>
+        <foreign-key foreignTable="itemfilterdef">
+          <reference local="itemFilterDefId" foreign="id"/>
+        </foreign-key>
+        <column name="comparison" type="integer" required="true"/>
+        <foreign-key foreignTable="comparison" phpName="comparisonObj">
+          <reference local="comparison" foreign="id"/>
+        </foreign-key>
+        <column name="value" type="varchar" size="1024"/>
+        <column name="content1" type="integer"/>
+        <column name="content2" type="integer"/>
+    </table>
+
+    <table name="rulesetentity" phpName="RulesetEntity">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="32" required="true" />
+        <column name="userId" type="integer" required="true"/>
+        <foreign-key foreignTable="user">
+          <reference local="userId" foreign="id"/>
+        </foreign-key>
+        <column name="isListed" type="integer" required="true"/>
+        <column name="forkedId" type="integer"/>
+        <foreign-key foreignTable="rulesetentity">
+          <reference local="forkedId" foreign="id"/>
+        </foreign-key>
+        <column name="minPilots" type="integer" required="true"/>
+        <column name="maxPilots" type="integer" required="true"/>
+        <column name="maxPoints" type="integer" required="true"/>
+        <column name="lastModified" type="timestamp"/>
+    </table>
+    <table name="rulesetship" phpName="RulesetShip">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="rulesetEntityId" type="integer" required="true"/>
+        <foreign-key foreignTable="rulesetentity" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="rulesetEntityId" foreign="id"/>
+        </foreign-key>
+        <column name="shipId" type="integer" required="true"/>
+        <column name="points" type="integer" required="true"/>
+    </table>
+    <table name="rulesetrulerow" phpName="RulesetRuleRow">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="rulesetEntityId" type="integer" required="true"/>
+        <foreign-key foreignTable="rulesetentity" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="rulesetEntityId" foreign="id"/>
+        </foreign-key>
+        <column name="ind3x" type="integer" required="true"/>
+        <column name="message" type="varchar" size="4096" required="true"/>
+    </table>
+    <table name="rulesetfilterrule" phpName="RulesetFilterRule">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="rulesetRuleRowId" type="integer" required="true"/>
+        <foreign-key foreignTable="rulesetrulerow" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="rulesetRuleRowId" foreign="id"/>
+        </foreign-key>
+        <column name="ind3x" type="integer" required="true"/>
+        <column name="concatenation" type="integer"/>
+        <foreign-key foreignTable="comparison" phpName="concatenationObj">
+          <reference local="concatenation" foreign="id"/>
+        </foreign-key>
+        <column name="fittingRuleEntityId" type="integer" required="true"/>
+        <foreign-key foreignTable="fittingruleentity">
+          <reference local="fittingRuleEntityId" foreign="id"/>
+        </foreign-key>
+        <column name="comparison" type="integer" required="true"/>
+        <foreign-key foreignTable="comparison" phpName="comparisonObj">
+          <reference local="comparison" foreign="id"/>
+        </foreign-key>
+        <column name="value" type="integer" required="true"/>
+    </table>
+
+    <table name="compositionentity" phpName="CompositionEntity">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="32" required="true" />
+        <column name="userId" type="integer" required="true"/>
+        <foreign-key foreignTable="user">
+          <reference local="userId" foreign="id"/>
+        </foreign-key>
+        <column name="isListed" type="integer" required="true"/>
+        <column name="forkedId" type="integer"/>
+        <foreign-key foreignTable="compositionentity">
+          <reference local="forkedId" foreign="id"/>
+        </foreign-key>
+        <column name="rulesetEntityId" type="integer" required="true"/>
+        <foreign-key foreignTable="rulesetentity">
+          <reference local="rulesetEntityId" foreign="id"/>
+        </foreign-key>
+        <column name="lastModified" type="timestamp"/>
+    </table>
+    <table name="compositionrow" phpName="CompositionRow">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="compositionEntityId" type="integer" required="true" />
+        <foreign-key foreignTable="compositionentity" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="compositionEntityId" foreign="id"/>
+        </foreign-key>
+        <column name="shipId" type="integer" required="true"/>
+        <column name="fitName" type="varchar" size="128" required="true" />
+        <column name="notes" type="varchar" size="4096" />
+    </table>
+    <table name="fitentry" phpName="FitEntry">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="compositionRowId" type="integer" required="true"/>
+        <foreign-key foreignTable="compositionrow" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="compositionRowId" foreign="id"/>
+        </foreign-key>
+        <column name="ind3x" type="integer" required="true"/>
+        <column name="fitEntryTypeId" type="integer" required="true"/>
+        <foreign-key foreignTable="fitentrytype">
+          <reference local="fitEntryTypeId" foreign="id"/>
+        </foreign-key>
+        <column name="itemId" type="integer"/>
+        <column name="ammoId" type="integer"/>
+        <column name="amount" type="integer"/>
+    </table>
+    <table name="fitentrytype" phpName="FitEntryType">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="32" required="true" />
+    </table>
+
+    <!--
+    <table name="author" phpName="Author">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="first_name" type="varchar" size="128" required="true"/>
+        <column name="last_name" type="varchar" size="128" required="true"/>
+    </table>
+
+    <table name="publisher" phpName="Publisher">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="128" required="true"/>
+    </table>
+    -->
+
+    <!--
+        When you're done with editing, open a terminal and run
+            `$ cd ../../config/database/`
+            `$ vendor/bin/propel build`
+        to generate the model classes.
+
+        You should now be able to perform basic crud operations with your models. To learn how to use these models
+        please look into our documentation: http://propelorm.org/documentation/03-basic-crud.html
+    -->
+</database>

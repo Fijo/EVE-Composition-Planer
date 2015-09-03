@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+<project name="ECP" default="setup-dev">
+    <target name="setup-dev">
+	    <exec program="${npmPath}" workingdir="..">
+	    	<arg line="install karma karma-jasmine karma-chrome-launcher bower --save-dev" />
+		</exec>
+		<exec program="${nodejsPath}" workingdir="../public">
+		    <arg line="../node_modules/bower/bin/bower install" />
+		</exec>
+		<copy todir="../public/bower_components/bootstrap/dist/css/fonts">
+		  <fileset basedir="../public/bower_components/bootstrap/dist/fonts"/>
+		</copy>
+		<exec program="${composerPath}" workingdir="../public/rest">
+		    <arg line="install" />
+		</exec>
+		<copy file="../public/rest/config/.htaccess" tofile="../public/rest/vendor/.htaccess" />
+    </target>
+</project>

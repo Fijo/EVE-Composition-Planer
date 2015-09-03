@@ -1,0 +1,144 @@
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+
+<form name="form">
+	<div ng-include="'app/main/view/partial/header/top.html'"></div>
+	<div class="row">
+		<div class="col-xs-12 col-md-9 pull-right">
+	  		<div class="main-toolbar">
+		  		<div ng-include="'app/main/view/partial/alert/fork.html'"></div>
+				<div class="row">
+					<div class="col-xs-4 col-md-3 col-lg-2">
+						<div ng-include="'app/main/view/partial/toolbar/actions.html'"></div>
+		  			</div>
+					<div class="col-xs-8 col-md-5 col-lg-6">
+						<div ng-include="'app/main/view/partial/toolbar/name.html'"></div>
+		  			</div>
+					<div class="col-xs-12 col-md-4">
+						<span ecp-validation-container>
+							<input class="form-control input-sm" name="ruleset" ng-model="model.entity.ruleset" type="text" placeholder="Ruleset" data-auto-select="true" data-animation="am-flip-x" ecp-tooltip="'Start typing the name of the ruleset you wana use and pick one of the sugestions.'"
+								bs-options="ruleset as ruleset.name for ruleset in getRulesetsAutocomplete($viewValue) track by ruleset.id" bs-typeahead ng-model-options="{ allowInvalid: true }" ng-change="updateRuleset()"
+								ecp-validation-tooltip="form" required id-required>
+						</span>
+		  			</div>
+		  		</div>
+		  	</div>
+
+			<div class="row">
+				<div class="col-xs-12 col-md-8">
+					<div ng-show="!requestManagement.hasError('init') && !requestManagement.isPending('init')">
+						<div class="alert alert-danger" role="alert" ng-repeat="violation in model.entity.violations">
+							<strong>Composition is violating a rule:</strong> {{violation}}
+						</div>
+
+						<table class="table">
+							<tr>
+								<th class="composition-ship-icon"></th>
+								<th class="composition-ship-name">Name</th>
+								<th class="composition-ship-points">Points</th>
+								<th class="composition-ship-action"></th>
+							</tr>
+							<tr ng-repeat="ship in model.entity.content" class="{{ ship.viewDetails ? 'active' : '' }}">
+								<td class="composition-ship-icon"><img class="img-rounded" src="http://image.eveonline.com/Type/{{::ship.shipId}}_32.png" width="32" height="32" alt="{{ ship.name }}"></td>
+								<td class="composition-ship-name">{{ ship.name }}</td>
+								<td class="composition-ship-points">{{ ship.points }}</td>
+								<td class="composition-ship-action" id="ship-validation-{{::getRepeaterHash(ship)}}">
+									<div class="btn-group" role="group">
+										<a type="button" class="btn btn-link details" ecp-tooltip="Details" ng-click="viewDetails(ship)">
+											<span class="glyphicon glyphicon-warning-sign hidden"></span>
+											<span class="glyphicon glyphicon-pencil"></span>
+										</a>
+										<a type="button" class="btn btn-link" ecp-tooltip="Remove" ng-click="removeShip($index)">
+											<span class="glyphicon glyphicon-remove-circle"></span>
+										</a>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+		  		</div>
+		  		<div class="col-xs-6 col-md-4">
+		  			<b>Points</b>
+		  			<div ecp-progress-bar ecp-min="0" ecp-max="model.ruleset.maxPoints" ecp-value="model.entity.points"></div>
+		  			<b>Ship count</b>
+		  			<div ecp-progress-bar ecp-min="model.ruleset.minPilots" ecp-max="model.ruleset.maxPilots" ecp-value="model.entity.content.length"></div>
+	  			</div>
+		  	</div>
+
+		  	<div ng-repeat="ship in model.entity.content" ng-show="ship.viewDetails" class="validation-container-root" ecp-redirect-validation="#ship-validation-{{getRepeaterHash(ship)}}">
+				<div class="row">
+					<div class="col-xs-12 col-md-4 pull-right">
+						<b>Fitting rules (matching)</b>
+						<ul class="none">
+							<li ng-repeat="tag in ship.fit.tags">
+								<span class="label label-primary">{{tag}}</span>
+							</li>
+						</ul>
+		  			</div>
+					<div class="col-xs-12 col-md-8">
+						<h4>Details for the selected configuration</h4>
+						<span ecp-validation-container>
+							<textarea class="form-control" name="{{::getRepeaterHash(ship)}}fit_eft" rows="24" ng-model="ship.fit.eft" placeholder="EFT Fit" ecp-validation-tooltip="form" required ng-model-options="{ allowInvalid: true }" ecp-ship-model="ship" ecp-fit-ship-type ecp-fit-invalid-item="0">
+							</textarea>
+						</span>
+					</div>
+			  	</div>
+
+				<div class="row">
+					<div class="col-xs-12">
+						<ul class="nav nav-tabs nav-justified">
+							<li role="presentation" ng-class="model.activeDetailTab == 'Additionals' ? 'active' : ''"><a href="" ng-click="model.activeDetailTab='Additionals'">Booster/ Implants</a></li>
+							<li role="presentation" ng-class="model.activeDetailTab == 'Notes' ? 'active' : ''"><a href="" ng-click="model.activeDetailTab='Notes'">Notes</a></li>
+						</ul>
+						<div ng-show="model.activeDetailTab == 'Additionals'">
+							<span ecp-validation-container>
+								<textarea class="form-control" rows="6" name="{{::getRepeaterHash(ship)}}fit_additionals" ng-model="ship.fit.additionals" placeholder="Booster/ Implants" ecp-validation-tooltip="form" ng-model-options="{ allowInvalid: true }" ecp-ship-model="ship" ecp-fit-invalid-item="1">
+								</textarea>
+							</span>
+						</div>
+						<div ng-show="model.activeDetailTab == 'Notes'">
+							<span ecp-validation-container>
+								<textarea class="form-control" rows="6" ng-model="ship.notes" placeholder="Notes">
+								</textarea>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xs-12 col-md-3">
+			<div class="panel-group" ng-model="model.shipGroups.active" role="tablist" aria-multiselectable="true" bs-collapse>
+				<div class="panel panel-default" ng-repeat="shipGroup in model.shipGroups.content" ng-show="showGroup(shipGroup)">
+					<div class="panel-heading" role="tab">
+						<h4 class="panel-title">
+							<div class="row">
+								<div class="col-md-8 col-xs-7 nobr">
+									<a bs-collapse-toggle>{{::shipGroup.name}}</a>
+								</div>
+								<div class="col-md-4 col-xs-5 text-right">{{ getGroupPoints(shipGroup) }}</div>
+							</div>
+						</h4>
+					</div>
+					<div class="panel-collapse" role="tabpanel" bs-collapse-target>
+						<div class="panel-body selectShip">
+							<div class="row" ng-repeat="ship in shipGroup.content" ng-show="showShip(ship)">
+								<div class="col-md-8 col-xs-7 nobr">
+									<img class="img-rounded" src="http://image.eveonline.com/Type/{{::ship.id}}_32.png" width="16" height="16" alt="{{::ship.name}}">
+									<a ng-click="addShip(ship)">{{::ship.name}}</a>
+								</div>
+								<div class="col-md-4 col-xs-5 text-right">{{ getShipPoints(ship.id) }}</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</form>

@@ -1,0 +1,23 @@
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+
+<div class="alert alert-info" role="alert" ng-if="!requestManagement.hasError('init') && !requestManagement.isPending('init') && isReadonly() && isLoggedIn">
+	You are looking at a {{::message.entity}} of someone else so have read only access. If you wana modify it consider forking it first to create a copy in your persornal {{::message.entityPlural}}.
+
+	<div class="input-group col-xs-6">
+		<span ecp-validation-container>
+			<input class="form-control input-sm" name="forkName" ng-model="model.entity.name" type="text" placeholder="{{::message.entityCap}} name" ecp-validation-tooltip="form" ecp-entity-name="{{::message.entityService}}" ecp-entity-name-format minlength="3" maxlength="32" required />
+		</span>
+		<span class="input-group-btn">
+			<button type="button" class="btn input-sm btn-primary" aria-label="Fork" ecp-submit="fork">
+				Fork
+			</button>
+		</span>
+	</div>
+</div>

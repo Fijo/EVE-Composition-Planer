@@ -1,0 +1,83 @@
+
+<database name="eve" defaultIdMethod="native"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="http://xsd.propelorm.org/1.6/database.xsd"
+          namespace="EVE">
+    <table name="invcategories" phpName="InvCategories">
+        <column name="categoryID" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="categoryName" type="varchar" size="100" required="true" />
+        <column name="published" type="integer" required="true"/>
+    </table>
+    <table name="invgroups" phpName="InvGroups">
+        <column name="groupID" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="categoryID" type="integer" required="true"/>
+        <foreign-key foreignTable="invcategories">
+          <reference local="categoryID" foreign="categoryID"/>
+        </foreign-key>
+        <column name="groupName" type="varchar" size="100" required="true" />
+        <column name="published" type="integer" required="true"/>
+    </table>
+    <table name="invtypes" phpName="InvTypes">
+        <column name="typeID" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="groupID" type="integer" required="true"/>
+        <foreign-key foreignTable="invgroups">
+          <reference local="groupID" foreign="groupID"/>
+        </foreign-key>
+        <column name="typeName" type="varchar" size="100" required="true" />
+        <column name="volume" type="double" required="true"/>
+        <column name="capacity" type="double" required="true"/>
+        <column name="published" type="integer" required="true"/>
+    </table>
+    <table name="invmetagroups" phpName="InvMetaGroups">
+        <column name="metaGroupID" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="metaGroupName" type="varchar" size="100" required="true" />
+    </table>
+    <table name="invmetatypes" phpName="InvMetaTypes">
+        <column name="typeID" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <foreign-key foreignTable="invtypes">
+          <reference local="typeID" foreign="typeID"/>
+        </foreign-key>
+        <column name="parentTypeID" type="integer" required="true"/>
+        <column name="metaGroupID" type="integer" required="true"/>
+        <foreign-key foreignTable="invmetagroups">
+          <reference local="metaGroupID" foreign="metaGroupID"/>
+        </foreign-key>
+    </table>
+    <table name="dgmtypeeffects" phpName="DgmTypeEffects" isCrossRef="true">
+        <column name="typeID" type="integer" required="true" primaryKey="true"/>
+        <foreign-key foreignTable="invtypes">
+          <reference local="typeID" foreign="typeID"/>
+        </foreign-key>
+        <column name="effectID" type="integer" required="true" primaryKey="true"/>
+        <foreign-key foreignTable="dgmeffects">
+          <reference local="effectID" foreign="effectID"/>
+        </foreign-key>
+        <!--more colums-->
+    </table>
+    <table name="dgmeffects" phpName="DgmEffects">
+        <column name="effectID" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="effectName" type="varchar" size="400" required="true" />
+        <column name="displayName" type="varchar" size="100" required="true" />
+        <column name="published" type="integer" required="true"/>
+        <!--more colums-->
+    </table>
+    <table name="dgmtypeattributes" phpName="DgmTypeAttributes" isCrossRef="true">
+        <column name="typeID" type="integer" required="true" primaryKey="true"/>
+        <foreign-key foreignTable="invtypes">
+          <reference local="typeID" foreign="typeID"/>
+        </foreign-key>
+        <column name="attributeID" type="integer" required="true" primaryKey="true"/>
+        <foreign-key foreignTable="dgmattributetypes">
+          <reference local="attributeID" foreign="attributeID"/>
+        </foreign-key>
+        <column name="valueInt" type="integer" required="true" />
+        <column name="valueFloat" type="double" required="true"/>
+        <!--more colums-->
+    </table>
+    <table name="dgmattributetypes" phpName="DgmAttributeTypes">
+        <column name="attributeID" type="integer" required="true" primaryKey="true"/>
+        <column name="attributeName" type="varchar" size="100" required="true" />
+        <column name="published" type="integer" required="true"/>
+        <!--more colums-->
+    </table>
+</database>

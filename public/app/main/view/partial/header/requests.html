@@ -1,0 +1,32 @@
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+
+<div ng-repeat="error in requestManagement.getErrors()">
+	<div class="alert alert-danger" role="alert">
+		<div ng-if="error.advanced">
+			<button type="button" class="btn btn-default btn-sm pull-right" aria-label="show details" ng-model="error.showDetails" bs-checkbox>
+				<span class="glyphicon glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+			</button>
+			An internal error occured. We are sorry that this just happend.
+			<div ng-if="error.showDetails == true">
+				<p ng-bind-html="error.showDetails ? error.message : ''"></p>
+				{{error.config |json}}
+			</div>
+		</div>
+		<div ng-if="!error.advanced">
+			{{::error.message}}
+		</div>
+	</div>
+</div>
+<div ng-if="requestManagement.hasError('init')" class="alert alert-danger" role="alert">
+	There have been issues loading all data required to properly display this page.
+</div>
+<div ng-init="pendingRequests = requestManagement.getPendingRequests()" ng-show="pendingRequests.length != 0" class="alert alert-info" role="alert">
+	<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Waiting for {{ pendingRequests.length }} pending request{{ pendingRequests.length == 1 ? '' : 's' }}.
+</div>

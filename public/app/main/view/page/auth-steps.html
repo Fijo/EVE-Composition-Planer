@@ -1,0 +1,78 @@
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+
+<div ng-include="'app/main/view/partial/header/top.html'"></div>
+
+<div class="row single-form">
+	<div class="col-md-6 col-md-offset-3">
+		<div class="panel panel-default">
+			<ul class="nav nav-tabs nav-justified">
+				<li role="presentation" class="active"><a href="" class="active">{{sectionName}}</a></li>
+			</ul>
+			<div class="panel-body">
+				<div class="alert alert-danger" role="alert" ng-show="res.status == 'error'">
+					Error {{res.message}}
+				</div>
+				<form name="form">
+					<div ng-if="isSectionActive('recover-password')">
+						<div ng-show="res.status == 'success'" class="alert alert-success" role="alert">
+							A reset password mail has been send.
+						</div>
+						<span ecp-validation-container>
+							<input class="form-control" ng-model="model.entity.email" name="email" type="email" placeholder="E-Mail" ecp-validation-tooltip="form" maxlength="1024" required/>
+						</span>
+						<div class="row">
+							<div class="col-xs-12 text-right">
+								<button class="btn btn-primary" ecp-submit="recoverPassword">Recover Password</button>
+							</div>
+						</div>
+					</div>
+					<div ng-if="isSectionActive('reset-password')">
+						<div ng-if="callres.status == 'failure'" class="alert alert-danger" role="alert">
+							Your reset password code could not be used to reset the password for any user.<br/>
+							It may either have exired or be wrong.
+						</div>
+						<div ng-if="callres.status == 'success'">
+							<div ng-show="res.status == 'success'" class="alert alert-success" role="alert">
+								Your password has been changed successfully.
+							</div>
+							<div ng-show="res.status != 'success'">
+								<div class="alert alert-info" role="alert">
+									You may now set your new password.
+								</div>
+								<span ecp-validation-container>
+									<input class="form-control" ng-model="model.entity.password" name="password" type="password" placeholder="Password" ecp-validation-tooltip="form" minlength="4" required/>
+								</span>
+								<span ecp-validation-container>
+									<input class="form-control" ng-model="model.entity.repeatpassword" name="repeatpassword" type="password" placeholder="Repeat password"
+										c-ecp-validation-tooltip="form" minlength="4" required c-ecp-password="model.entity.password" ecp-password-validation-tooltip/>
+								</span>
+								<div class="row">
+									<div class="col-xs-12 text-right">
+										<button class="btn btn-primary" ecp-submit="resetPassword">Reset Password</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div ng-if="isSectionActive('confirm-register')">
+						<div ng-show="callres.status == 'failure'" class="alert alert-danger" role="alert">
+							Your registration confirmation code could not be used to confirm any registration.<br/>
+							It may either have exired or be wrong.
+						</div>
+						<div ng-show="callres.status == 'success'" class="alert alert-success" role="alert">
+							Thanks for registering to EVE Composition Planer.<br/>
+							I hope you enjoy using this tool.
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

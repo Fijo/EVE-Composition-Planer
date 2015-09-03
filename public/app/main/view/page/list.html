@@ -1,0 +1,57 @@
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+
+<div>
+	<div ng-include="'app/main/view/partial/header/top.html'"></div>
+	<div class="row">
+		<div class="col-md-4 col-xs-12">
+			<ul class="nav nav-pills nav-stacked">
+				<li role="presentation" ng-class="listVisibility == 'my' ? 'active' : ''"><a href="" ng-click="changeListVisibility('my')"><span class="glyphicon glyphicon-user"></span> My {{::message.entityPlural}}</a></li>
+				<li role="presentation" ng-class="listVisibility == 'public' ? 'active' : ''"><a href="" ng-click="changeListVisibility('public')"><span class="glyphicon glyphicon-globe"></span> Public {{::message.entityPlural}}</a></li>
+			</ul>
+		</div>
+		<div class="col-md-8 col-xs-12">
+			<div class="main-toolbar" ng-if="isLoggedIn">
+				<div class="btn-toolbar" role="toolbar" aria-hidden="true">
+					<div class="btn-group" role="group" aria-hidden="true">
+						<button type="button" class="btn btn-default btn-sm" aria-label="New" ng-click="new()" ng-disabled="isReadonly()">
+						  <span class="glyphicon glyphicon glyphicon-plus" aria-hidden="true"></span> New
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div ng-if="listVisibility == 'public' || isLoggedIn">
+				<div ng-repeat="entry in list" class="row">
+					<div class="col-sm-12">
+						<a href="" ng-click="detail(entry.id)">
+							<h3>{{::entry.name}}</h3>
+						</a>
+						<div class="row">
+							<div class="col-sm-6">
+								by {{::entry.user.name}}
+							</div>
+							<div class="col-sm-6 text-right">
+								{{::entry.lastModified}}
+							</div>
+						</div>						
+					</div>
+				</div>
+
+				<nav>
+					<ul class="pagination">
+						<li ng-class="pager.getClass(pager.page -1)"><a href="" ng-click="changePage(pager.page -1)" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+						<li ng-repeat="page in pager.getPages()" ng-class="pager.getClass(page)"><a href="" ng-click="changePage(page)">{{page}}</a></li>
+						<li ng-class="pager.getClass(pager.page +1)"><a href="" ng-click="changePage(pager.page +1)" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</div>
+</div>

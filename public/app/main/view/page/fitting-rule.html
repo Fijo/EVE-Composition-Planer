@@ -1,0 +1,121 @@
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+
+<form name="form">
+	<div ng-include="'app/main/view/partial/header/default-entity.html'"></div>
+
+	<div ng-repeat="rule in model.entity.rules" class="row" ng-init="ruleKey = getRepeaterHash(rule)">
+		<div class="col-sm-2">
+			<span ng-if="$index != 0" ecp-validation-container>
+				<select class="form-control input-sm" name="f{{::ruleKey}}concatenation" ng-model="rule.concatenation" ng-options="reduceKey(concatenation) as concatenation.name for concatenation in filterDefs.concatenations track by concatenation.id"
+					ng-disabled="isReadonly()" ecp-validation-tooltip="form" required></select>
+			</span>
+		</div>
+		<div class="col-sm-9">
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					Count of items from fitting that match
+				</div>
+				<ul class="list-group">
+					<li ng-repeat="itemFilterRule in rule.itemFilterRules" class="list-group-item" ng-init="filterKey = getRepeaterHash(itemFilterRule)">
+						<div class="row">
+							<div class="col-xs-2">
+
+								<span ecp-validation-container>
+									<select ng-if="$index != 0" name="f{{::ruleKey}}_{{::filterKey}}concatenation" class="form-control input-sm" ng-model="itemFilterRule.concatenation"
+										ng-options="reduceKey(concatenation) as concatenation.name for concatenation in filterDefs.concatenations track by concatenation.id" ng-disabled="isReadonly()" ecp-validation-tooltip="form" required></select>
+								</span>
+
+							</div>
+							<div class="col-xs-9">
+								<div class="form-inline">
+									<span ecp-validation-container>
+										<select class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}group" ng-model="itemFilterRule.group"
+											ng-options="reduceKey(filterGroup) as filterGroup.name for filterGroup in filterDefs.groups track by filterGroup.id" ng-disabled="isReadonly()" ecp-validation-tooltip="form" required></select>
+									</span>
+
+									<span ng-if="getGroupType(itemFilterRule) != null">
+										<span ecp-validation-container>
+											<select class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}comparison" ng-model="itemFilterRule.comparison"
+												ng-options="reduceKey(filterComparison) as filterComparison.name for filterComparison in getGroupComparison(itemFilterRule) track by filterComparison.id" ng-disabled="isReadonly()" ecp-validation-tooltip="form" required></select>
+										</span>
+
+										<span ng-if="getGroupType(itemFilterRule) == 'string'" ecp-validation-container>
+											<input class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}value" ng-model="itemFilterRule.value" type="text" placeholder="value" ng-disabled="isReadonly()" ecp-validation-tooltip="form"
+												ng-minlength="getGroup(itemFilterRule).minlength" ng-maxlength="getGroup(itemFilterRule).maxlength" required/>
+										</span>
+
+										<span ng-if="getGroupType(itemFilterRule) == 'int'" ecp-validation-container>
+											<input class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}value" ng-model="itemFilterRule.value" type="number" placeholder="value" ng-disabled="isReadonly()" ecp-validation-tooltip="form"
+												ng-min="getGroup(itemFilterRule).min" ng-max="getGroup(itemFilterRule).max" integer required/>
+										</span>
+
+										<span ng-if="getGroupType(itemFilterRule) == 'float'" ecp-validation-container>
+											<input class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}value" ng-model="itemFilterRule.value" type="number" placeholder="value" ng-disabled="isReadonly()" ecp-validation-tooltip="form"
+												ng-min="getGroup(itemFilterRule).min" ng-max="getGroup(itemFilterRule).max" required/>
+										</span>
+
+										<span ng-if="getGroupType(itemFilterRule) == 'select'" ng-repeat="index in getGroupContentDepthList(itemFilterRule)" ecp-validation-container>
+											<select class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}content{{index}}" ng-model="itemFilterRule.content[index]"
+												ng-options="reduceKey(entry) as entry.name for entry in getGroupContents(itemFilterRule, index) track by entry.id" ng-disabled="isReadonly()" ecp-validation-tooltip="form" required></select>
+										</span>
+									</span>
+								</div>
+							</div>
+							<div class="col-xs-1 pull-right">
+								<a type="button" class="btn btn-link btn-sm" aria-label="Remove" ng-click="itemFilterRuleService.remove(rule, $index)" ng-disabled="isReadonly() || !itemFilterRuleService.canRemove(rule)">
+									<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+								</a>
+							</div>
+						</div>
+					</li>
+					<li class="list-group-item">
+						<div class="row">
+							<div class="col-xs-11"></div>
+							<div class="col-xs-1 pull-right">
+								<a type="button" class="btn btn-link btn-sm" aria-label="Add" ng-click="itemFilterRuleService.add(rule)" ng-disabled="isReadonly()">
+									<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+								</a>
+							</div>
+						</div>
+					</li>
+				</ul>
+				<div class="panel-footer">
+					<div class="form-inline">
+						must 
+						<span ecp-validation-container>
+							<select class="form-control input-sm" name="f{{::ruleKey}}comparison" ng-model="rule.comparison" ng-options="reduceKey(filterComparison) as filterComparison.name for filterComparison in getIntComparison() track by filterComparison.id" ng-disabled="isReadonly()" 
+								ecp-validation-tooltip="form" required></select>
+						</span>
+
+						<span ecp-validation-container>
+							<input class="form-control input-sm" name="f{{::ruleKey}}value" ng-model="rule.value" type="number" placeholder="value" ng-disabled="isReadonly()" ecp-validation-tooltip="form" integer required />
+						</span>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="col-sm-1 pull-right">
+			<a type="button" class="btn btn-link btn-lg" aria-label="Remove" ng-click="ruleService.remove($index)" ng-disabled="isReadonly() || !ruleService.canRemove()">
+			  <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+			</a>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-11"></div>
+		<div class="col-sm-1 pull-right">
+			<a type="button" class="btn btn-link btn-lg" aria-label="Add" ng-click="ruleService.add()" ng-disabled="isReadonly()">
+				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+			</a>
+		</div>
+	</div>
+</form>

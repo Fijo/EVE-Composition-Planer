@@ -1,0 +1,27 @@
+for devs:
+	required tools:
+	- Dot Net Framework 2.0+ or Mono 2.0+
+	- Node.js (and npm) *
+	- PHP *
+	- Composer *
+	* = you have to configure the right pathes for your environment in ./build/properties/local.build
+
+for deploying it to a server:
+	required tools:
+	- webserver (apache etc.) with php
+	- mysql
+
+	setup guide:
+	1. execute setup.bat/ execute the content of it with mono
+	2. create an empty mysql database named 'ecp'
+	3. import the script ./dbscripts/ECP/ecp.sql
+	4. download https://www.fuzzwork.co.uk/dump/mysql-latest.tar.bz2 and import that into as a new database called eveonline.
+	5. copy the content the public directory into the public root of your webserver.
+
+
+this is a early version/ guide/ tool might not work entirely yet.
+
+
+updating/ notes/ resources:
+
+current eve database: https://www.fuzzwork.co.uk/dump/mysql-latest.tar.bz2

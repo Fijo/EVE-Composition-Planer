@@ -1,0 +1,10 @@
+{
+    "require": {
+        "propel/propel": "~2.0@dev",
+        "slim/slim": "^2.6"
+    },
+	"autoload": {
+		"classmap": ["models/", "core/"],
+		"files": ["core/util.php"]
+	}
+}
