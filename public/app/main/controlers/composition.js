@@ -125,8 +125,13 @@
 
 		$scope.addShip = function(ship)	{
 			$scope.ensureAccess();
-			$scope.model.entity.content.push(_.extend({shipId: ship.id}, _.dclone(shared.emptyShip)));
-			updateShips();
+			var ship = _.extend({shipId: ship.id}, _.dclone(shared.emptyShip))
+			$scope.model.entity.content.push(ship);
+			var unwatch = $scope.$watch(function() { return ship.$$hashKey != null; }, function(value)	{
+				if(value == false) return;
+				unwatch();
+				updateShips();
+			});
 		};
 
 		$scope.removeShip = function(shipIndex)	{

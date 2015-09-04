@@ -39,7 +39,8 @@ You should have received a copy of the GNU General Public License along with thi
 						<div class="col-xs-12 col-md-6">Maximum amount of points</div>
 						<div class="col-xs-12 col-md-6">
 							<span ecp-validation-container>
-								<input class="form-control input-sm" name="maxPoints" ng-model="model.entity.maxPoints" type="number" placeholder="Maximum amount of points" ng-disabled="isReadonly()" ecp-validation-tooltip="form" integer min="0" required />
+								<input class="form-control input-sm" name="maxPoints" ng-model="model.entity.maxPoints" type="number" placeholder="Maximum amount of points" ng-change="updateGroupsOverviewsPoints()"
+									ng-disabled="isReadonly()" ecp-validation-tooltip="form" integer min="0" required />
 							</span>
 						</div>
 					</div>

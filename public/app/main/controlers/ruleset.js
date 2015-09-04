@@ -72,6 +72,13 @@
 			shipGroup.points = $scope.getGroupPoints(shipGroup);
 		};
 
+		$scope.updateGroupsOverviewsPoints = function()	{
+			var shipGroupsContent = $scope.model.shipGroups.content;
+			shipGroupsContent.$promise.then(function()	{
+				_.each(shipGroupsContent, $scope.updateGroupOverviewPoints);
+			});
+		};
+
 		$scope.updateGroupPoints = function(shipGroup)	{
 			$scope.ensureAccess();
 			var points = parseInt(shipGroup.points);
@@ -99,10 +106,7 @@
 
 
 		$scope.completeLoading = function()	{
-			var shipGroupsContent = $scope.model.shipGroups.content;
-			shipGroupsContent.$promise.then(function()	{
-				_.each(shipGroupsContent, $scope.updateGroupOverviewPoints);
-			});
+			$scope.updateGroupsOverviewsPoints();
 		};
 
 
