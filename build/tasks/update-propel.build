@@ -14,14 +14,14 @@ You should have received a copy of the GNU General Public License along with thi
 		<copy file="../public/rest/config/propel/propel.json" tofile="../public/rest/vendor/propel/propel/propel.json" />
 		<copy file="../public/rest/config/propel/propel.json.dist" tofile="../public/rest/vendor/propel/propel/propel.json.dist" />
 	    <exec program="${phpPath}" workingdir="../public/rest/vendor/propel/propel">
-	    	<arg line="-r include('${propelPath}'); config:convert" />
+	    	<arg line="-r &quot;include('${propelPath}');&quot; config:convert" />
 		</exec>
 		<copy file="../public/rest/vendor/propel/propel/generated-conf/config.php" tofile="../public/rest/config/database/config.php" />
 		<exec program="${phpPath}" workingdir="../public/rest/vendor/propel/propel">
-	    	<arg line="-r include('${propelPath}'); model:build" />
+	    	<arg line="-r &quot;include('${propelPath}');&quot; model:build" />
 		</exec>
 		<exec program="${phpPath}" workingdir="../public/rest/vendor/propel/propel">
-	    	<arg line="-r include('${propelPath}'); sql:build" />
+	    	<arg line="-r &quot;include('${propelPath}');&quot; sql:build" />
 		</exec>
     </target>
 </project>
