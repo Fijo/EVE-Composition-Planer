@@ -19,6 +19,31 @@ for deploying it to a server:
 	5. copy the content the public directory into the public root of your webserver.
 
 
+setting up a server:
+// apache config change
+-> make sure you have 'AllowOverride All' set for your www root
+-> make sure the files in the www root are owned by the apache user (usualy www-data in ubuntu)
+
+// mysql config change
+-> make sure lower_case_table_names is set to 1 (before(!) you start importing any sql scripts)
+
+
+// you need to create 2 databases (ecp and eveonline)
+
+// - that should be at least somewhat like to how you can import the eveonline database
+
+wget https://www.fuzzwork.co.uk/dump/mysql-latest.tar.bz2
+tar jxvf mysql-latest.tar.bz2
+cd galatea-1.114618/
+mysql -u root -p eveonline < mysql56-galatea-1.114618.sql
+
+// import data into the ecp database 
+mysql -u root -p ecp < dbscripts/ECP/ecp.sql
+
+
+
+
+
 this is a early version/ guide/ tool might not work entirely yet.
 
 
