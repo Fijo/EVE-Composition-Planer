@@ -1,8 +1,8 @@
 {
     "propel": {
         "paths": {
-            "schemaDir": "..\\..\\..\\config\\database\\",
-            "phpDir": "..\\..\\..\\models\\"
+            "schemaDir": "../../../config/database/",
+            "phpDir": "../../../models/"
         }
     }
 }

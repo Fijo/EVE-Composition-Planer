@@ -8,7 +8,7 @@ for devs:
 
 for deploying it to a server:
 	required tools:
-	- webserver (apache etc.) with php
+	- webserver (apache with mod rewite etc.) with php
 	- mysql
 
 	setup guide:

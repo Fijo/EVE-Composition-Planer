@@ -3,6 +3,7 @@ sudo apt-get install php5
 sudo apt-get install mysql-server
 sudo apt-get install php5-mysql
 sudo apt-get install phpmyadmin
+sudo a2enmod rewrite
 sudo service apache2 reload
 
 sudo apt-get install nodejs
