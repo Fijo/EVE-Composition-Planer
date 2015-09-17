@@ -1,0 +1,4 @@
+/node_modules/
+/public/bower_components/
+/public/rest/cache/*.json
+/public/rest/vendor/
