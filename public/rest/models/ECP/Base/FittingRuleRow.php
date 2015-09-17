@@ -12,6 +12,8 @@ use ECP\FittingRuleRow as ChildFittingRuleRow;
 use ECP\FittingRuleRowQuery as ChildFittingRuleRowQuery;
 use ECP\ItemFilterRule as ChildItemFilterRule;
 use ECP\ItemFilterRuleQuery as ChildItemFilterRuleQuery;
+use ECP\ItemFilterType as ChildItemFilterType;
+use ECP\ItemFilterTypeQuery as ChildItemFilterTypeQuery;
 use ECP\Map\FittingRuleRowTableMap;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
@@ -125,6 +127,12 @@ abstract class FittingRuleRow implements ActiveRecordInterface
     protected $collItemFilterRulesPartial;
 
     /**
+     * @var        ObjectCollection|ChildItemFilterType[] Collection to store aggregation of ChildItemFilterType objects.
+     */
+    protected $collItemFilterTypes;
+    protected $collItemFilterTypesPartial;
+
+    /**
      * Flag to prevent endless save loop, if this object is referenced
      * by another object which falls in this transaction.
      *
@@ -137,6 +145,12 @@ abstract class FittingRuleRow implements ActiveRecordInterface
      * @var ObjectCollection|ChildItemFilterRule[]
      */
     protected $itemFilterRulesScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildItemFilterType[]
+     */
+    protected $itemFilterTypesScheduledForDeletion = null;
 
     /**
      * Initializes internal state of ECP\Base\FittingRuleRow object.
@@ -683,6 +697,8 @@ abstract class FittingRuleRow implements ActiveRecordInterface
             $this->acomparisonObj = null;
             $this->collItemFilterRules = null;
 
+            $this->collItemFilterTypes = null;
+
         } // if (deep)
     }
 
@@ -830,6 +846,23 @@ abstract class FittingRuleRow implements ActiveRecordInterface
 
             if ($this->collItemFilterRules !== null) {
                 foreach ($this->collItemFilterRules as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->itemFilterTypesScheduledForDeletion !== null) {
+                if (!$this->itemFilterTypesScheduledForDeletion->isEmpty()) {
+                    \ECP\ItemFilterTypeQuery::create()
+                        ->filterByPrimaryKeys($this->itemFilterTypesScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->itemFilterTypesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collItemFilterTypes !== null) {
+                foreach ($this->collItemFilterTypes as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -1092,6 +1125,21 @@ abstract class FittingRuleRow implements ActiveRecordInterface
         
                 $result[$key] = $this->collItemFilterRules->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
+            if (null !== $this->collItemFilterTypes) {
+                
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'itemFilterTypes';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'itemfiltertypes';
+                        break;
+                    default:
+                        $key = 'ItemFilterTypes';
+                }
+        
+                $result[$key] = $this->collItemFilterTypes->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
         }
 
         return $result;
@@ -1350,6 +1398,12 @@ abstract class FittingRuleRow implements ActiveRecordInterface
                 }
             }
 
+            foreach ($this->getItemFilterTypes() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addItemFilterType($relObj->copy($deepCopy));
+                }
+            }
+
         } // if ($deepCopy)
 
         if ($makeNew) {
@@ -1546,6 +1600,9 @@ abstract class FittingRuleRow implements ActiveRecordInterface
     {
         if ('ItemFilterRule' == $relationName) {
             return $this->initItemFilterRules();
+        }
+        if ('ItemFilterType' == $relationName) {
+            return $this->initItemFilterTypes();
         }
     }
 
@@ -1843,6 +1900,224 @@ abstract class FittingRuleRow implements ActiveRecordInterface
     }
 
     /**
+     * Clears out the collItemFilterTypes collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addItemFilterTypes()
+     */
+    public function clearItemFilterTypes()
+    {
+        $this->collItemFilterTypes = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collItemFilterTypes collection loaded partially.
+     */
+    public function resetPartialItemFilterTypes($v = true)
+    {
+        $this->collItemFilterTypesPartial = $v;
+    }
+
+    /**
+     * Initializes the collItemFilterTypes collection.
+     *
+     * By default this just sets the collItemFilterTypes collection to an empty array (like clearcollItemFilterTypes());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initItemFilterTypes($overrideExisting = true)
+    {
+        if (null !== $this->collItemFilterTypes && !$overrideExisting) {
+            return;
+        }
+        $this->collItemFilterTypes = new ObjectCollection();
+        $this->collItemFilterTypes->setModel('\ECP\ItemFilterType');
+    }
+
+    /**
+     * Gets an array of ChildItemFilterType objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildFittingRuleRow is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildItemFilterType[] List of ChildItemFilterType objects
+     * @throws PropelException
+     */
+    public function getItemFilterTypes(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collItemFilterTypesPartial && !$this->isNew();
+        if (null === $this->collItemFilterTypes || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collItemFilterTypes) {
+                // return empty collection
+                $this->initItemFilterTypes();
+            } else {
+                $collItemFilterTypes = ChildItemFilterTypeQuery::create(null, $criteria)
+                    ->filterByFittingRuleRow($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collItemFilterTypesPartial && count($collItemFilterTypes)) {
+                        $this->initItemFilterTypes(false);
+
+                        foreach ($collItemFilterTypes as $obj) {
+                            if (false == $this->collItemFilterTypes->contains($obj)) {
+                                $this->collItemFilterTypes->append($obj);
+                            }
+                        }
+
+                        $this->collItemFilterTypesPartial = true;
+                    }
+
+                    return $collItemFilterTypes;
+                }
+
+                if ($partial && $this->collItemFilterTypes) {
+                    foreach ($this->collItemFilterTypes as $obj) {
+                        if ($obj->isNew()) {
+                            $collItemFilterTypes[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collItemFilterTypes = $collItemFilterTypes;
+                $this->collItemFilterTypesPartial = false;
+            }
+        }
+
+        return $this->collItemFilterTypes;
+    }
+
+    /**
+     * Sets a collection of ChildItemFilterType objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $itemFilterTypes A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildFittingRuleRow The current object (for fluent API support)
+     */
+    public function setItemFilterTypes(Collection $itemFilterTypes, ConnectionInterface $con = null)
+    {
+        /** @var ChildItemFilterType[] $itemFilterTypesToDelete */
+        $itemFilterTypesToDelete = $this->getItemFilterTypes(new Criteria(), $con)->diff($itemFilterTypes);
+
+        
+        $this->itemFilterTypesScheduledForDeletion = $itemFilterTypesToDelete;
+
+        foreach ($itemFilterTypesToDelete as $itemFilterTypeRemoved) {
+            $itemFilterTypeRemoved->setFittingRuleRow(null);
+        }
+
+        $this->collItemFilterTypes = null;
+        foreach ($itemFilterTypes as $itemFilterType) {
+            $this->addItemFilterType($itemFilterType);
+        }
+
+        $this->collItemFilterTypes = $itemFilterTypes;
+        $this->collItemFilterTypesPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related ItemFilterType objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related ItemFilterType objects.
+     * @throws PropelException
+     */
+    public function countItemFilterTypes(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collItemFilterTypesPartial && !$this->isNew();
+        if (null === $this->collItemFilterTypes || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collItemFilterTypes) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getItemFilterTypes());
+            }
+
+            $query = ChildItemFilterTypeQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByFittingRuleRow($this)
+                ->count($con);
+        }
+
+        return count($this->collItemFilterTypes);
+    }
+
+    /**
+     * Method called to associate a ChildItemFilterType object to this object
+     * through the ChildItemFilterType foreign key attribute.
+     *
+     * @param  ChildItemFilterType $l ChildItemFilterType
+     * @return $this|\ECP\FittingRuleRow The current object (for fluent API support)
+     */
+    public function addItemFilterType(ChildItemFilterType $l)
+    {
+        if ($this->collItemFilterTypes === null) {
+            $this->initItemFilterTypes();
+            $this->collItemFilterTypesPartial = true;
+        }
+
+        if (!$this->collItemFilterTypes->contains($l)) {
+            $this->doAddItemFilterType($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildItemFilterType $itemFilterType The ChildItemFilterType object to add.
+     */
+    protected function doAddItemFilterType(ChildItemFilterType $itemFilterType)
+    {
+        $this->collItemFilterTypes[]= $itemFilterType;
+        $itemFilterType->setFittingRuleRow($this);
+    }
+
+    /**
+     * @param  ChildItemFilterType $itemFilterType The ChildItemFilterType object to remove.
+     * @return $this|ChildFittingRuleRow The current object (for fluent API support)
+     */
+    public function removeItemFilterType(ChildItemFilterType $itemFilterType)
+    {
+        if ($this->getItemFilterTypes()->contains($itemFilterType)) {
+            $pos = $this->collItemFilterTypes->search($itemFilterType);
+            $this->collItemFilterTypes->remove($pos);
+            if (null === $this->itemFilterTypesScheduledForDeletion) {
+                $this->itemFilterTypesScheduledForDeletion = clone $this->collItemFilterTypes;
+                $this->itemFilterTypesScheduledForDeletion->clear();
+            }
+            $this->itemFilterTypesScheduledForDeletion[]= clone $itemFilterType;
+            $itemFilterType->setFittingRuleRow(null);
+        }
+
+        return $this;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -1887,9 +2162,15 @@ abstract class FittingRuleRow implements ActiveRecordInterface
                     $o->clearAllReferences($deep);
                 }
             }
+            if ($this->collItemFilterTypes) {
+                foreach ($this->collItemFilterTypes as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
         } // if ($deep)
 
         $this->collItemFilterRules = null;
+        $this->collItemFilterTypes = null;
         $this->aFittingRuleEntity = null;
         $this->aconcatenationObj = null;
         $this->acomparisonObj = null;

@@ -2,8 +2,8 @@
 
 namespace ECP\Map;
 
-use ECP\FittingRuleRow;
-use ECP\FittingRuleRowQuery;
+use ECP\ItemFilterType;
+use ECP\ItemFilterTypeQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'fittingrulerow' table.
+ * This class defines the structure of the 'itemfiltertype' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class FittingRuleRowTableMap extends TableMap
+class ItemFilterTypeTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class FittingRuleRowTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'ECP.Map.FittingRuleRowTableMap';
+    const CLASS_NAME = 'ECP.Map.ItemFilterTypeTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class FittingRuleRowTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'fittingrulerow';
+    const TABLE_NAME = 'itemfiltertype';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\ECP\\FittingRuleRow';
+    const OM_CLASS = '\\ECP\\ItemFilterType';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'ECP.FittingRuleRow';
+    const CLASS_DEFAULT = 'ECP.ItemFilterType';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 3;
 
     /**
      * The number of lazy-loaded columns
@@ -69,37 +69,22 @@ class FittingRuleRowTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 3;
 
     /**
      * the column name for the id field
      */
-    const COL_ID = 'fittingrulerow.id';
+    const COL_ID = 'itemfiltertype.id';
 
     /**
-     * the column name for the fittingRuleEntityId field
+     * the column name for the fittingRuleRowId field
      */
-    const COL_FITTINGRULEENTITYID = 'fittingrulerow.fittingRuleEntityId';
+    const COL_FITTINGRULEROWID = 'itemfiltertype.fittingRuleRowId';
 
     /**
-     * the column name for the ind3x field
+     * the column name for the itemId field
      */
-    const COL_IND3X = 'fittingrulerow.ind3x';
-
-    /**
-     * the column name for the concatenation field
-     */
-    const COL_CONCATENATION = 'fittingrulerow.concatenation';
-
-    /**
-     * the column name for the comparison field
-     */
-    const COL_COMPARISON = 'fittingrulerow.comparison';
-
-    /**
-     * the column name for the value field
-     */
-    const COL_VALUE = 'fittingrulerow.value';
+    const COL_ITEMID = 'itemfiltertype.itemId';
 
     /**
      * The default string format for model objects of the related table
@@ -113,11 +98,11 @@ class FittingRuleRowTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Fittingruleentityid', 'Ind3x', 'Concatenation', 'Comparison', 'Value', ),
-        self::TYPE_CAMELNAME     => array('id', 'fittingruleentityid', 'ind3x', 'concatenation', 'comparison', 'value', ),
-        self::TYPE_COLNAME       => array(FittingRuleRowTableMap::COL_ID, FittingRuleRowTableMap::COL_FITTINGRULEENTITYID, FittingRuleRowTableMap::COL_IND3X, FittingRuleRowTableMap::COL_CONCATENATION, FittingRuleRowTableMap::COL_COMPARISON, FittingRuleRowTableMap::COL_VALUE, ),
-        self::TYPE_FIELDNAME     => array('id', 'fittingRuleEntityId', 'ind3x', 'concatenation', 'comparison', 'value', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'Fittingrulerowid', 'Itemid', ),
+        self::TYPE_CAMELNAME     => array('id', 'fittingrulerowid', 'itemid', ),
+        self::TYPE_COLNAME       => array(ItemFilterTypeTableMap::COL_ID, ItemFilterTypeTableMap::COL_FITTINGRULEROWID, ItemFilterTypeTableMap::COL_ITEMID, ),
+        self::TYPE_FIELDNAME     => array('id', 'fittingRuleRowId', 'itemId', ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -127,11 +112,11 @@ class FittingRuleRowTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Fittingruleentityid' => 1, 'Ind3x' => 2, 'Concatenation' => 3, 'Comparison' => 4, 'Value' => 5, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'fittingruleentityid' => 1, 'ind3x' => 2, 'concatenation' => 3, 'comparison' => 4, 'value' => 5, ),
-        self::TYPE_COLNAME       => array(FittingRuleRowTableMap::COL_ID => 0, FittingRuleRowTableMap::COL_FITTINGRULEENTITYID => 1, FittingRuleRowTableMap::COL_IND3X => 2, FittingRuleRowTableMap::COL_CONCATENATION => 3, FittingRuleRowTableMap::COL_COMPARISON => 4, FittingRuleRowTableMap::COL_VALUE => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'fittingRuleEntityId' => 1, 'ind3x' => 2, 'concatenation' => 3, 'comparison' => 4, 'value' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Fittingrulerowid' => 1, 'Itemid' => 2, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'fittingrulerowid' => 1, 'itemid' => 2, ),
+        self::TYPE_COLNAME       => array(ItemFilterTypeTableMap::COL_ID => 0, ItemFilterTypeTableMap::COL_FITTINGRULEROWID => 1, ItemFilterTypeTableMap::COL_ITEMID => 2, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'fittingRuleRowId' => 1, 'itemId' => 2, ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -144,19 +129,16 @@ class FittingRuleRowTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('fittingrulerow');
-        $this->setPhpName('FittingRuleRow');
+        $this->setName('itemfiltertype');
+        $this->setPhpName('ItemFilterType');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\ECP\\FittingRuleRow');
+        $this->setClassName('\\ECP\\ItemFilterType');
         $this->setPackage('ECP');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('fittingRuleEntityId', 'Fittingruleentityid', 'INTEGER', 'fittingruleentity', 'id', true, null, null);
-        $this->addColumn('ind3x', 'Ind3x', 'INTEGER', true, null, null);
-        $this->addForeignKey('concatenation', 'Concatenation', 'INTEGER', 'comparison', 'id', false, null, null);
-        $this->addForeignKey('comparison', 'Comparison', 'INTEGER', 'comparison', 'id', true, null, null);
-        $this->addColumn('value', 'Value', 'INTEGER', true, null, null);
+        $this->addForeignKey('fittingRuleRowId', 'Fittingrulerowid', 'INTEGER', 'fittingrulerow', 'id', true, null, null);
+        $this->addColumn('itemId', 'Itemid', 'INTEGER', true, null, null);
     } // initialize()
 
     /**
@@ -164,52 +146,14 @@ class FittingRuleRowTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('FittingRuleEntity', '\\ECP\\FittingRuleEntity', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('FittingRuleRow', '\\ECP\\FittingRuleRow', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
-    0 => ':fittingRuleEntityId',
+    0 => ':fittingRuleRowId',
     1 => ':id',
   ),
 ), 'CASCADE', 'CASCADE', null, false);
-        $this->addRelation('concatenationObj', '\\ECP\\Comparison', RelationMap::MANY_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':concatenation',
-    1 => ':id',
-  ),
-), null, null, null, false);
-        $this->addRelation('comparisonObj', '\\ECP\\Comparison', RelationMap::MANY_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':comparison',
-    1 => ':id',
-  ),
-), null, null, null, false);
-        $this->addRelation('ItemFilterRule', '\\ECP\\ItemFilterRule', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':fittingRuleRowId',
-    1 => ':id',
-  ),
-), 'CASCADE', 'CASCADE', 'ItemFilterRules', false);
-        $this->addRelation('ItemFilterType', '\\ECP\\ItemFilterType', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':fittingRuleRowId',
-    1 => ':id',
-  ),
-), 'CASCADE', 'CASCADE', 'ItemFilterTypes', false);
     } // buildRelations()
-    /**
-     * Method to invalidate the instance pool of all tables related to fittingrulerow     * by a foreign key with ON DELETE CASCADE
-     */
-    public static function clearRelatedInstancePool()
-    {
-        // Invalidate objects in related instance pools,
-        // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
-        ItemFilterRuleTableMap::clearInstancePool();
-        ItemFilterTypeTableMap::clearInstancePool();
-    }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -268,7 +212,7 @@ class FittingRuleRowTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? FittingRuleRowTableMap::CLASS_DEFAULT : FittingRuleRowTableMap::OM_CLASS;
+        return $withPrefix ? ItemFilterTypeTableMap::CLASS_DEFAULT : ItemFilterTypeTableMap::OM_CLASS;
     }
 
     /**
@@ -282,22 +226,22 @@ class FittingRuleRowTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (FittingRuleRow object, last column rank)
+     * @return array           (ItemFilterType object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = FittingRuleRowTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = FittingRuleRowTableMap::getInstanceFromPool($key))) {
+        $key = ItemFilterTypeTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = ItemFilterTypeTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + FittingRuleRowTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + ItemFilterTypeTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = FittingRuleRowTableMap::OM_CLASS;
-            /** @var FittingRuleRow $obj */
+            $cls = ItemFilterTypeTableMap::OM_CLASS;
+            /** @var ItemFilterType $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            FittingRuleRowTableMap::addInstanceToPool($obj, $key);
+            ItemFilterTypeTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -320,18 +264,18 @@ class FittingRuleRowTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = FittingRuleRowTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = FittingRuleRowTableMap::getInstanceFromPool($key))) {
+            $key = ItemFilterTypeTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = ItemFilterTypeTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var FittingRuleRow $obj */
+                /** @var ItemFilterType $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                FittingRuleRowTableMap::addInstanceToPool($obj, $key);
+                ItemFilterTypeTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -352,19 +296,13 @@ class FittingRuleRowTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(FittingRuleRowTableMap::COL_ID);
-            $criteria->addSelectColumn(FittingRuleRowTableMap::COL_FITTINGRULEENTITYID);
-            $criteria->addSelectColumn(FittingRuleRowTableMap::COL_IND3X);
-            $criteria->addSelectColumn(FittingRuleRowTableMap::COL_CONCATENATION);
-            $criteria->addSelectColumn(FittingRuleRowTableMap::COL_COMPARISON);
-            $criteria->addSelectColumn(FittingRuleRowTableMap::COL_VALUE);
+            $criteria->addSelectColumn(ItemFilterTypeTableMap::COL_ID);
+            $criteria->addSelectColumn(ItemFilterTypeTableMap::COL_FITTINGRULEROWID);
+            $criteria->addSelectColumn(ItemFilterTypeTableMap::COL_ITEMID);
         } else {
             $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.fittingRuleEntityId');
-            $criteria->addSelectColumn($alias . '.ind3x');
-            $criteria->addSelectColumn($alias . '.concatenation');
-            $criteria->addSelectColumn($alias . '.comparison');
-            $criteria->addSelectColumn($alias . '.value');
+            $criteria->addSelectColumn($alias . '.fittingRuleRowId');
+            $criteria->addSelectColumn($alias . '.itemId');
         }
     }
 
@@ -377,7 +315,7 @@ class FittingRuleRowTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(FittingRuleRowTableMap::DATABASE_NAME)->getTable(FittingRuleRowTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(ItemFilterTypeTableMap::DATABASE_NAME)->getTable(ItemFilterTypeTableMap::TABLE_NAME);
     }
 
     /**
@@ -385,16 +323,16 @@ class FittingRuleRowTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(FittingRuleRowTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(FittingRuleRowTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new FittingRuleRowTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(ItemFilterTypeTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(ItemFilterTypeTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new ItemFilterTypeTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a FittingRuleRow or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a ItemFilterType or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or FittingRuleRow object or primary key or array of primary keys
+     * @param mixed               $values Criteria or ItemFilterType object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -405,27 +343,27 @@ class FittingRuleRowTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(FittingRuleRowTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(ItemFilterTypeTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \ECP\FittingRuleRow) { // it's a model object
+        } elseif ($values instanceof \ECP\ItemFilterType) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(FittingRuleRowTableMap::DATABASE_NAME);
-            $criteria->add(FittingRuleRowTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(ItemFilterTypeTableMap::DATABASE_NAME);
+            $criteria->add(ItemFilterTypeTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = FittingRuleRowQuery::create()->mergeWith($criteria);
+        $query = ItemFilterTypeQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            FittingRuleRowTableMap::clearInstancePool();
+            ItemFilterTypeTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                FittingRuleRowTableMap::removeInstanceFromPool($singleval);
+                ItemFilterTypeTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -433,20 +371,20 @@ class FittingRuleRowTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the fittingrulerow table.
+     * Deletes all rows from the itemfiltertype table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return FittingRuleRowQuery::create()->doDeleteAll($con);
+        return ItemFilterTypeQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a FittingRuleRow or Criteria object.
+     * Performs an INSERT on the database, given a ItemFilterType or Criteria object.
      *
-     * @param mixed               $criteria Criteria or FittingRuleRow object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or ItemFilterType object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -455,22 +393,22 @@ class FittingRuleRowTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(FittingRuleRowTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(ItemFilterTypeTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from FittingRuleRow object
+            $criteria = $criteria->buildCriteria(); // build Criteria from ItemFilterType object
         }
 
-        if ($criteria->containsKey(FittingRuleRowTableMap::COL_ID) && $criteria->keyContainsValue(FittingRuleRowTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.FittingRuleRowTableMap::COL_ID.')');
+        if ($criteria->containsKey(ItemFilterTypeTableMap::COL_ID) && $criteria->keyContainsValue(ItemFilterTypeTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.ItemFilterTypeTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = FittingRuleRowQuery::create()->mergeWith($criteria);
+        $query = ItemFilterTypeQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -479,7 +417,7 @@ class FittingRuleRowTableMap extends TableMap
         });
     }
 
-} // FittingRuleRowTableMap
+} // ItemFilterTypeTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-FittingRuleRowTableMap::buildTableMap();
+ItemFilterTypeTableMap::buildTableMap();

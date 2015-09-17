@@ -54,7 +54,11 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildFittingRuleRowQuery rightJoinItemFilterRule($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ItemFilterRule relation
  * @method     ChildFittingRuleRowQuery innerJoinItemFilterRule($relationAlias = null) Adds a INNER JOIN clause to the query using the ItemFilterRule relation
  *
- * @method     \ECP\FittingRuleEntityQuery|\ECP\ComparisonQuery|\ECP\ItemFilterRuleQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildFittingRuleRowQuery leftJoinItemFilterType($relationAlias = null) Adds a LEFT JOIN clause to the query using the ItemFilterType relation
+ * @method     ChildFittingRuleRowQuery rightJoinItemFilterType($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ItemFilterType relation
+ * @method     ChildFittingRuleRowQuery innerJoinItemFilterType($relationAlias = null) Adds a INNER JOIN clause to the query using the ItemFilterType relation
+ *
+ * @method     \ECP\FittingRuleEntityQuery|\ECP\ComparisonQuery|\ECP\ItemFilterRuleQuery|\ECP\ItemFilterTypeQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildFittingRuleRow findOne(ConnectionInterface $con = null) Return the first ChildFittingRuleRow matching the query
  * @method     ChildFittingRuleRow findOneOrCreate(ConnectionInterface $con = null) Return the first ChildFittingRuleRow matching the query, or a new ChildFittingRuleRow object populated from the query conditions when no match is found
@@ -819,6 +823,79 @@ abstract class FittingRuleRowQuery extends ModelCriteria
         return $this
             ->joinItemFilterRule($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'ItemFilterRule', '\ECP\ItemFilterRuleQuery');
+    }
+
+    /**
+     * Filter the query by a related \ECP\ItemFilterType object
+     *
+     * @param \ECP\ItemFilterType|ObjectCollection $itemFilterType the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildFittingRuleRowQuery The current query, for fluid interface
+     */
+    public function filterByItemFilterType($itemFilterType, $comparison = null)
+    {
+        if ($itemFilterType instanceof \ECP\ItemFilterType) {
+            return $this
+                ->addUsingAlias(FittingRuleRowTableMap::COL_ID, $itemFilterType->getFittingrulerowid(), $comparison);
+        } elseif ($itemFilterType instanceof ObjectCollection) {
+            return $this
+                ->useItemFilterTypeQuery()
+                ->filterByPrimaryKeys($itemFilterType->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByItemFilterType() only accepts arguments of type \ECP\ItemFilterType or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the ItemFilterType relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildFittingRuleRowQuery The current query, for fluid interface
+     */
+    public function joinItemFilterType($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('ItemFilterType');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'ItemFilterType');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the ItemFilterType relation ItemFilterType object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \ECP\ItemFilterTypeQuery A secondary query class using the current class as primary query
+     */
+    public function useItemFilterTypeQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinItemFilterType($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'ItemFilterType', '\ECP\ItemFilterTypeQuery');
     }
 
     /**

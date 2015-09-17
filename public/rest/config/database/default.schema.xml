@@ -161,6 +161,15 @@
         <column name="content1" type="integer"/>
         <column name="content2" type="integer"/>
     </table>
+    <table name="itemfiltertype" phpName="ItemFilterType">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="fittingRuleRowId" type="integer" required="true"/>
+        <foreign-key foreignTable="fittingrulerow" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="fittingRuleRowId" foreign="id"/>
+        </foreign-key>
+        <column name="itemId" type="integer" required="true"/>
+    </table>
+
 
     <table name="rulesetentity" phpName="RulesetEntity">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
