@@ -119,6 +119,7 @@
         <foreign-key foreignTable="fittingruleentity">
           <reference local="forkedId" foreign="id"/>
         </foreign-key>
+        <column name="isFilterTypeUptodate" type="integer" required="true"/>
         <column name="lastModified" type="timestamp"/>
     </table>
     <table name="fittingrulerow" phpName="FittingRuleRow">

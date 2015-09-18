@@ -25,6 +25,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildFittingRuleEntityQuery orderByUserid($order = Criteria::ASC) Order by the userId column
  * @method     ChildFittingRuleEntityQuery orderByIslisted($order = Criteria::ASC) Order by the isListed column
  * @method     ChildFittingRuleEntityQuery orderByForkedid($order = Criteria::ASC) Order by the forkedId column
+ * @method     ChildFittingRuleEntityQuery orderByIsfiltertypeuptodate($order = Criteria::ASC) Order by the isFilterTypeUptodate column
  * @method     ChildFittingRuleEntityQuery orderByLastmodified($order = Criteria::ASC) Order by the lastModified column
  *
  * @method     ChildFittingRuleEntityQuery groupById() Group by the id column
@@ -32,6 +33,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildFittingRuleEntityQuery groupByUserid() Group by the userId column
  * @method     ChildFittingRuleEntityQuery groupByIslisted() Group by the isListed column
  * @method     ChildFittingRuleEntityQuery groupByForkedid() Group by the forkedId column
+ * @method     ChildFittingRuleEntityQuery groupByIsfiltertypeuptodate() Group by the isFilterTypeUptodate column
  * @method     ChildFittingRuleEntityQuery groupByLastmodified() Group by the lastModified column
  *
  * @method     ChildFittingRuleEntityQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -68,6 +70,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildFittingRuleEntity findOneByUserid(int $userId) Return the first ChildFittingRuleEntity filtered by the userId column
  * @method     ChildFittingRuleEntity findOneByIslisted(int $isListed) Return the first ChildFittingRuleEntity filtered by the isListed column
  * @method     ChildFittingRuleEntity findOneByForkedid(int $forkedId) Return the first ChildFittingRuleEntity filtered by the forkedId column
+ * @method     ChildFittingRuleEntity findOneByIsfiltertypeuptodate(int $isFilterTypeUptodate) Return the first ChildFittingRuleEntity filtered by the isFilterTypeUptodate column
  * @method     ChildFittingRuleEntity findOneByLastmodified(string $lastModified) Return the first ChildFittingRuleEntity filtered by the lastModified column *
 
  * @method     ChildFittingRuleEntity requirePk($key, ConnectionInterface $con = null) Return the ChildFittingRuleEntity by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -78,6 +81,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildFittingRuleEntity requireOneByUserid(int $userId) Return the first ChildFittingRuleEntity filtered by the userId column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildFittingRuleEntity requireOneByIslisted(int $isListed) Return the first ChildFittingRuleEntity filtered by the isListed column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildFittingRuleEntity requireOneByForkedid(int $forkedId) Return the first ChildFittingRuleEntity filtered by the forkedId column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildFittingRuleEntity requireOneByIsfiltertypeuptodate(int $isFilterTypeUptodate) Return the first ChildFittingRuleEntity filtered by the isFilterTypeUptodate column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildFittingRuleEntity requireOneByLastmodified(string $lastModified) Return the first ChildFittingRuleEntity filtered by the lastModified column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildFittingRuleEntity[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildFittingRuleEntity objects based on current ModelCriteria
@@ -86,6 +90,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildFittingRuleEntity[]|ObjectCollection findByUserid(int $userId) Return ChildFittingRuleEntity objects filtered by the userId column
  * @method     ChildFittingRuleEntity[]|ObjectCollection findByIslisted(int $isListed) Return ChildFittingRuleEntity objects filtered by the isListed column
  * @method     ChildFittingRuleEntity[]|ObjectCollection findByForkedid(int $forkedId) Return ChildFittingRuleEntity objects filtered by the forkedId column
+ * @method     ChildFittingRuleEntity[]|ObjectCollection findByIsfiltertypeuptodate(int $isFilterTypeUptodate) Return ChildFittingRuleEntity objects filtered by the isFilterTypeUptodate column
  * @method     ChildFittingRuleEntity[]|ObjectCollection findByLastmodified(string $lastModified) Return ChildFittingRuleEntity objects filtered by the lastModified column
  * @method     ChildFittingRuleEntity[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
@@ -179,7 +184,7 @@ abstract class FittingRuleEntityQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, name, userId, isListed, forkedId, lastModified FROM fittingruleentity WHERE id = :p0';
+        $sql = 'SELECT id, name, userId, isListed, forkedId, isFilterTypeUptodate, lastModified FROM fittingruleentity WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);            
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -464,6 +469,47 @@ abstract class FittingRuleEntityQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(FittingRuleEntityTableMap::COL_FORKEDID, $forkedid, $comparison);
+    }
+
+    /**
+     * Filter the query on the isFilterTypeUptodate column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByIsfiltertypeuptodate(1234); // WHERE isFilterTypeUptodate = 1234
+     * $query->filterByIsfiltertypeuptodate(array(12, 34)); // WHERE isFilterTypeUptodate IN (12, 34)
+     * $query->filterByIsfiltertypeuptodate(array('min' => 12)); // WHERE isFilterTypeUptodate > 12
+     * </code>
+     *
+     * @param     mixed $isfiltertypeuptodate The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildFittingRuleEntityQuery The current query, for fluid interface
+     */
+    public function filterByIsfiltertypeuptodate($isfiltertypeuptodate = null, $comparison = null)
+    {
+        if (is_array($isfiltertypeuptodate)) {
+            $useMinMax = false;
+            if (isset($isfiltertypeuptodate['min'])) {
+                $this->addUsingAlias(FittingRuleEntityTableMap::COL_ISFILTERTYPEUPTODATE, $isfiltertypeuptodate['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($isfiltertypeuptodate['max'])) {
+                $this->addUsingAlias(FittingRuleEntityTableMap::COL_ISFILTERTYPEUPTODATE, $isfiltertypeuptodate['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(FittingRuleEntityTableMap::COL_ISFILTERTYPEUPTODATE, $isfiltertypeuptodate, $comparison);
     }
 
     /**

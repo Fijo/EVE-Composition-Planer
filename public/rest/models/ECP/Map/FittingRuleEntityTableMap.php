@@ -59,7 +59,7 @@ class FittingRuleEntityTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 7;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class FittingRuleEntityTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 7;
 
     /**
      * the column name for the id field
@@ -97,6 +97,11 @@ class FittingRuleEntityTableMap extends TableMap
     const COL_FORKEDID = 'fittingruleentity.forkedId';
 
     /**
+     * the column name for the isFilterTypeUptodate field
+     */
+    const COL_ISFILTERTYPEUPTODATE = 'fittingruleentity.isFilterTypeUptodate';
+
+    /**
      * the column name for the lastModified field
      */
     const COL_LASTMODIFIED = 'fittingruleentity.lastModified';
@@ -113,11 +118,11 @@ class FittingRuleEntityTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Name', 'Userid', 'Islisted', 'Forkedid', 'Lastmodified', ),
-        self::TYPE_CAMELNAME     => array('id', 'name', 'userid', 'islisted', 'forkedid', 'lastmodified', ),
-        self::TYPE_COLNAME       => array(FittingRuleEntityTableMap::COL_ID, FittingRuleEntityTableMap::COL_NAME, FittingRuleEntityTableMap::COL_USERID, FittingRuleEntityTableMap::COL_ISLISTED, FittingRuleEntityTableMap::COL_FORKEDID, FittingRuleEntityTableMap::COL_LASTMODIFIED, ),
-        self::TYPE_FIELDNAME     => array('id', 'name', 'userId', 'isListed', 'forkedId', 'lastModified', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'Name', 'Userid', 'Islisted', 'Forkedid', 'Isfiltertypeuptodate', 'Lastmodified', ),
+        self::TYPE_CAMELNAME     => array('id', 'name', 'userid', 'islisted', 'forkedid', 'isfiltertypeuptodate', 'lastmodified', ),
+        self::TYPE_COLNAME       => array(FittingRuleEntityTableMap::COL_ID, FittingRuleEntityTableMap::COL_NAME, FittingRuleEntityTableMap::COL_USERID, FittingRuleEntityTableMap::COL_ISLISTED, FittingRuleEntityTableMap::COL_FORKEDID, FittingRuleEntityTableMap::COL_ISFILTERTYPEUPTODATE, FittingRuleEntityTableMap::COL_LASTMODIFIED, ),
+        self::TYPE_FIELDNAME     => array('id', 'name', 'userId', 'isListed', 'forkedId', 'isFilterTypeUptodate', 'lastModified', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -127,11 +132,11 @@ class FittingRuleEntityTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Userid' => 2, 'Islisted' => 3, 'Forkedid' => 4, 'Lastmodified' => 5, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'userid' => 2, 'islisted' => 3, 'forkedid' => 4, 'lastmodified' => 5, ),
-        self::TYPE_COLNAME       => array(FittingRuleEntityTableMap::COL_ID => 0, FittingRuleEntityTableMap::COL_NAME => 1, FittingRuleEntityTableMap::COL_USERID => 2, FittingRuleEntityTableMap::COL_ISLISTED => 3, FittingRuleEntityTableMap::COL_FORKEDID => 4, FittingRuleEntityTableMap::COL_LASTMODIFIED => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'userId' => 2, 'isListed' => 3, 'forkedId' => 4, 'lastModified' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Userid' => 2, 'Islisted' => 3, 'Forkedid' => 4, 'Isfiltertypeuptodate' => 5, 'Lastmodified' => 6, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'userid' => 2, 'islisted' => 3, 'forkedid' => 4, 'isfiltertypeuptodate' => 5, 'lastmodified' => 6, ),
+        self::TYPE_COLNAME       => array(FittingRuleEntityTableMap::COL_ID => 0, FittingRuleEntityTableMap::COL_NAME => 1, FittingRuleEntityTableMap::COL_USERID => 2, FittingRuleEntityTableMap::COL_ISLISTED => 3, FittingRuleEntityTableMap::COL_FORKEDID => 4, FittingRuleEntityTableMap::COL_ISFILTERTYPEUPTODATE => 5, FittingRuleEntityTableMap::COL_LASTMODIFIED => 6, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'userId' => 2, 'isListed' => 3, 'forkedId' => 4, 'isFilterTypeUptodate' => 5, 'lastModified' => 6, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
     /**
@@ -156,6 +161,7 @@ class FittingRuleEntityTableMap extends TableMap
         $this->addForeignKey('userId', 'Userid', 'INTEGER', 'user', 'id', true, null, null);
         $this->addColumn('isListed', 'Islisted', 'INTEGER', true, null, null);
         $this->addForeignKey('forkedId', 'Forkedid', 'INTEGER', 'fittingruleentity', 'id', false, null, null);
+        $this->addColumn('isFilterTypeUptodate', 'Isfiltertypeuptodate', 'INTEGER', true, null, null);
         $this->addColumn('lastModified', 'Lastmodified', 'TIMESTAMP', false, null, null);
     } // initialize()
 
@@ -356,6 +362,7 @@ class FittingRuleEntityTableMap extends TableMap
             $criteria->addSelectColumn(FittingRuleEntityTableMap::COL_USERID);
             $criteria->addSelectColumn(FittingRuleEntityTableMap::COL_ISLISTED);
             $criteria->addSelectColumn(FittingRuleEntityTableMap::COL_FORKEDID);
+            $criteria->addSelectColumn(FittingRuleEntityTableMap::COL_ISFILTERTYPEUPTODATE);
             $criteria->addSelectColumn(FittingRuleEntityTableMap::COL_LASTMODIFIED);
         } else {
             $criteria->addSelectColumn($alias . '.id');
@@ -363,6 +370,7 @@ class FittingRuleEntityTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.userId');
             $criteria->addSelectColumn($alias . '.isListed');
             $criteria->addSelectColumn($alias . '.forkedId');
+            $criteria->addSelectColumn($alias . '.isFilterTypeUptodate');
             $criteria->addSelectColumn($alias . '.lastModified');
         }
     }

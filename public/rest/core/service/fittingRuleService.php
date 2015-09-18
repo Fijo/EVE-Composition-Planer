@@ -15,12 +15,14 @@ class FittingRuleService extends EntityService
 {
   protected $comparsionService;
   protected $itemFilterDefService;
+  protected $invTypeService;
 
   public function __construct()
   {
     parent::__construct();
     $this->comparsionService = new \Core\Service\ComparsionService();
     $this->itemFilterDefService = new \Core\Service\ItemFilterDefService();
+    $this->invTypeService = new \Core\Service\InvTypeService();
   }
 
 
@@ -38,13 +40,12 @@ class FittingRuleService extends EntityService
       ->find());
   }
 
-  public function populateContextForValidation(&$context) {
-    $context['comparisons'] = $this->getDictById(ECP\ComparisonQuery::create()->find());
+  private function prefechSubentities($query) {
+    return $this->prefechFittingRuleRowSubentities($query->joinWith('FittingRuleEntity.FittingRuleRow'));
   }
 
-  private function prefechSubentities($query) {
-    return $query->joinWith('FittingRuleEntity.FittingRuleRow')
-                ->joinWith('FittingRuleRow.ItemFilterRule')
+  private function prefechFittingRuleRowSubentities($query) {
+    return $query->joinWith('FittingRuleRow.ItemFilterRule')
                 ->joinWith('ItemFilterRule.ItemFilterDef')
                 ->joinWith('ItemFilterDef.Type');
   }
@@ -55,36 +56,106 @@ class FittingRuleService extends EntityService
   }
 
   public function getFittingRuleEntitiesForValidation($fittingRuleEntityIds) {
-    $entities = $this->addOrder($this->prefechSubentities(ECP\FittingRuleEntityQuery::create())
-                ->filterById($fittingRuleEntityIds))
+    $entities = ECP\FittingRuleEntityQuery::create()
+                ->joinWith('FittingRuleEntity.FittingRuleRow')
+                ->leftJoinWith('FittingRuleRow.ItemFilterType')
+                ->filterById($fittingRuleEntityIds)
+                ->orderBy('FittingRuleRow.ind3x')
                 ->find();
     $entities->populateRelation('User');
     return $entities;
   }
 
-  public function getForValidation($context, $typeContext, $entity)  {
+  public function getForValidation($entity)  {
     $data = $this->getLocalyMappendModel($entity);
 
     $data['name'] = $this->getUniqueName($entity);
     $this->cleanupDataForValidation($data);
-    $data['rules'] = $this->mapFittingRuleRowsToModelForValidation($context, $typeContext, $entity);
+    $data['rules'] = $this->mapFittingRuleRowsToModelForValidation($entity);
     return $data;
   }
 
-  private function mapFittingRuleRowsToModelForValidation($context, $typeContext, $entity)  {
+  private function mapFittingRuleRowsToModelForValidation($entity)  {
     $dataRuleRows = array();
     foreach ($entity->getFittingRuleRows() as $fittingRuleRow)  {
       $dataRuleRow = $this->mapFittingRuleRowToModel($fittingRuleRow);
-      $dataRuleRow['itemFilterRules'] = $this->mapItemFilterRulesToModelForValidation($context, $typeContext, $fittingRuleRow);
+      $dataRuleRow['itemFilterRules'] = $this->mapItemFilterRulesToModelForValidation($fittingRuleRow);
       $dataRuleRows[] = $dataRuleRow;
     }
     return $dataRuleRows;
   }
 
-  private function mapItemFilterRulesToModelForValidation($context, $typeContext, $fittingRuleRow)  {
+  private function mapItemFilterRulesToModelForValidation($fittingRuleRow)  {
+    $typeArray = array();
+    foreach ($fittingRuleRow->getItemFilterTypes() as $itemFilterType)
+      $typeArray[] = $itemFilterType->getItemId();
+
+    return $typeArray;
+  }
+
+  private function getFittingRuleEntitiesForItemFilterTypeCalculations() {
+    $entities = $this->prefechFittingRuleRowSubentities(ECP\FittingRuleEntityQuery::create()
+                ->joinWith('FittingRuleEntity.FittingRuleRow')                
+                ->leftJoinWith('FittingRuleRow.ItemFilterType'))
+                ->filterByIsFilterTypeUptodate(0)
+                ->orderBy('ItemFilterRule.ind3x')
+                ->find();
+    return $entities;
+  }
+
+  public function calculateNewItemFilterTypes()  {
+    $comparisonDict = $this->getDictById(ECP\ComparisonQuery::create()->find());
+    $typeContext = $this->invTypeService->getTypeContext();
+
+    while(true) {
+      $entities = $this->getFittingRuleEntitiesForItemFilterTypeCalculations();
+
+      foreach($entities as $entity) {
+        foreach ($entity->getFittingRuleRows() as $fittingRuleRow) {
+          $typeArray = $this->calculateItemFilterTypesFrom($comparisonDict, $typeContext, $fittingRuleRow);
+          $this->updateItemFilterTypes($typeArray, $fittingRuleRow);
+        }
+        $this->setFittingRuleEntityUpToDate($entity);
+      }
+      sleep(30);
+    }
+  }
+
+  private function setFittingRuleEntityUpToDate($entity) {
+    $currentEntity = ECP\FittingRuleEntityQuery::create()->filterById($entity->getId())->findOne();
+    if($currentEntity->getLastModified() == $entity->getLastModified()) {
+      $currentEntity->setIsFilterTypeUptodate(1);
+      $currentEntity->save();
+    }
+  }
+
+  private function updateItemFilterTypes($typeArray, $fittingRuleRow) {
+    $itemFilterTypeDict = array();
+    foreach ($fittingRuleRow->getItemFilterTypes() as $itemFilterType)
+      $itemFilterTypeDict[$itemFilterType->getItemId()] = $itemFilterType;
+
+    $itemFilterTypeDict = (object) $itemFilterTypeDict;
+    foreach ($typeArray as $dataTypeId) {
+      $itemFilterTypeExists = property_exists($itemFilterTypeDict, $dataTypeId);
+      $itemFilterType = null;
+      if($itemFilterTypeExists) $itemFilterType = $itemFilterTypeDict[$dataTypeId];
+      else {
+        $itemFilterType = new ECP\ItemFilterType();
+        $itemFilterType->setItemId($dataTypeId);
+      }
+
+      $this->prepareSubentitySave2($fittingRuleRow, 'ItemFilterType', $itemFilterType, !$itemFilterTypeExists);
+    }
+
+    foreach ($itemFilterTypeDict as $itemId => $itemFilterType)
+      if(!in_array($itemId, $typeArray)) $fittingRuleRow->removeItemFilterType($itemFilterType);
+
+    $fittingRuleRow->save();
+  }
+
+  private function calculateItemFilterTypesFrom($comparisonDict, $typeContext, $fittingRuleRow)  {
     $types = $typeContext->types;
     $typeStateDict = array();
-    $comparisonDict = $context['comparisons'];
     foreach ($types as $type) $typeStateDict[$type->getTypeID()] = true;
 
     foreach ($fittingRuleRow->getItemFilterRules() as $filterRule)  {
@@ -178,6 +249,7 @@ class FittingRuleService extends EntityService
 
   protected function performSave($data, $fork)  {
     $entity = $this->getLocalyMappedEntityToSave($data, $fork);
+    $entity->setIsFilterTypeUptodate(0);
 
     $ruleRowIndex = 0;
     foreach ($data->rules as $dataRuleRow) {

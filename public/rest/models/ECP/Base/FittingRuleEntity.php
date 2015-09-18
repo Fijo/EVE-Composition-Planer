@@ -100,6 +100,12 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
     protected $forkedid;
 
     /**
+     * The value for the isfiltertypeuptodate field.
+     * @var        int
+     */
+    protected $isfiltertypeuptodate;
+
+    /**
      * The value for the lastmodified field.
      * @var        \DateTime
      */
@@ -427,6 +433,16 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
     }
 
     /**
+     * Get the [isfiltertypeuptodate] column value.
+     * 
+     * @return int
+     */
+    public function getIsfiltertypeuptodate()
+    {
+        return $this->isfiltertypeuptodate;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [lastmodified] column value.
      * 
      *
@@ -555,6 +571,26 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
     } // setForkedid()
 
     /**
+     * Set the value of [isfiltertypeuptodate] column.
+     * 
+     * @param int $v new value
+     * @return $this|\ECP\FittingRuleEntity The current object (for fluent API support)
+     */
+    public function setIsfiltertypeuptodate($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->isfiltertypeuptodate !== $v) {
+            $this->isfiltertypeuptodate = $v;
+            $this->modifiedColumns[FittingRuleEntityTableMap::COL_ISFILTERTYPEUPTODATE] = true;
+        }
+
+        return $this;
+    } // setIsfiltertypeuptodate()
+
+    /**
      * Sets the value of [lastmodified] column to a normalized version of the date/time value specified.
      * 
      * @param  mixed $v string, integer (timestamp), or \DateTime value.
@@ -625,7 +661,10 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : FittingRuleEntityTableMap::translateFieldName('Forkedid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->forkedid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : FittingRuleEntityTableMap::translateFieldName('Lastmodified', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : FittingRuleEntityTableMap::translateFieldName('Isfiltertypeuptodate', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->isfiltertypeuptodate = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : FittingRuleEntityTableMap::translateFieldName('Lastmodified', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -638,7 +677,7 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = FittingRuleEntityTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 7; // 7 = FittingRuleEntityTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\ECP\\FittingRuleEntity'), 0, $e);
@@ -935,6 +974,9 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
         if ($this->isColumnModified(FittingRuleEntityTableMap::COL_FORKEDID)) {
             $modifiedColumns[':p' . $index++]  = 'forkedId';
         }
+        if ($this->isColumnModified(FittingRuleEntityTableMap::COL_ISFILTERTYPEUPTODATE)) {
+            $modifiedColumns[':p' . $index++]  = 'isFilterTypeUptodate';
+        }
         if ($this->isColumnModified(FittingRuleEntityTableMap::COL_LASTMODIFIED)) {
             $modifiedColumns[':p' . $index++]  = 'lastModified';
         }
@@ -963,6 +1005,9 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
                         break;
                     case 'forkedId':                        
                         $stmt->bindValue($identifier, $this->forkedid, PDO::PARAM_INT);
+                        break;
+                    case 'isFilterTypeUptodate':                        
+                        $stmt->bindValue($identifier, $this->isfiltertypeuptodate, PDO::PARAM_INT);
                         break;
                     case 'lastModified':                        
                         $stmt->bindValue($identifier, $this->lastmodified ? $this->lastmodified->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1045,6 +1090,9 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
                 return $this->getForkedid();
                 break;
             case 5:
+                return $this->getIsfiltertypeuptodate();
+                break;
+            case 6:
                 return $this->getLastmodified();
                 break;
             default:
@@ -1082,14 +1130,15 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
             $keys[2] => $this->getUserid(),
             $keys[3] => $this->getIslisted(),
             $keys[4] => $this->getForkedid(),
-            $keys[5] => $this->getLastmodified(),
+            $keys[5] => $this->getIsfiltertypeuptodate(),
+            $keys[6] => $this->getLastmodified(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[5]] instanceof \DateTime) {
+        if ($result[$keys[6]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[5]];
-            $result[$keys[5]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+            $dateTime = clone $result[$keys[6]];
+            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
         
         $virtualColumns = $this->virtualColumns;
@@ -1223,6 +1272,9 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
                 $this->setForkedid($value);
                 break;
             case 5:
+                $this->setIsfiltertypeuptodate($value);
+                break;
+            case 6:
                 $this->setLastmodified($value);
                 break;
         } // switch()
@@ -1267,7 +1319,10 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
             $this->setForkedid($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setLastmodified($arr[$keys[5]]);
+            $this->setIsfiltertypeuptodate($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setLastmodified($arr[$keys[6]]);
         }
     }
 
@@ -1324,6 +1379,9 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
         }
         if ($this->isColumnModified(FittingRuleEntityTableMap::COL_FORKEDID)) {
             $criteria->add(FittingRuleEntityTableMap::COL_FORKEDID, $this->forkedid);
+        }
+        if ($this->isColumnModified(FittingRuleEntityTableMap::COL_ISFILTERTYPEUPTODATE)) {
+            $criteria->add(FittingRuleEntityTableMap::COL_ISFILTERTYPEUPTODATE, $this->isfiltertypeuptodate);
         }
         if ($this->isColumnModified(FittingRuleEntityTableMap::COL_LASTMODIFIED)) {
             $criteria->add(FittingRuleEntityTableMap::COL_LASTMODIFIED, $this->lastmodified);
@@ -1418,6 +1476,7 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
         $copyObj->setUserid($this->getUserid());
         $copyObj->setIslisted($this->getIslisted());
         $copyObj->setForkedid($this->getForkedid());
+        $copyObj->setIsfiltertypeuptodate($this->getIsfiltertypeuptodate());
         $copyObj->setLastmodified($this->getLastmodified());
 
         if ($deepCopy) {
@@ -2419,6 +2478,7 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
         $this->userid = null;
         $this->islisted = null;
         $this->forkedid = null;
+        $this->isfiltertypeuptodate = null;
         $this->lastmodified = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();

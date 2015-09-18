@@ -8,8 +8,6 @@
 
 namespace Core\Rest;
 use Core\Service;
-use EVE;
-use ECP;
 
 class FittingRule
 {
@@ -20,6 +18,11 @@ class FittingRule
         $this->app = $app;
 
         $app->group('/fitting-rule', function() use ($app)   {
+
+            $app->get('/calculate', function () {
+                $fittingRuleService = new \Core\Service\FittingRuleService();
+                echo json_encode($fittingRuleService->calculateNewItemFilterTypes());
+            });
 
             $app->get('/check', function () {
                 $fittingRuleService = new \Core\Service\FittingRuleService();

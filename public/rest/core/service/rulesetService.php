@@ -14,13 +14,11 @@ use Propel\Runtime\ActiveQuery;
 class RulesetService extends EntityService
 {
   protected $fittingRuleService;
-  protected $invTypeService;
 
   public function __construct()
   {
     parent::__construct();
     $this->fittingRuleService = new \Core\Service\FittingRuleService();
-    $this->invTypeService = new \Core\Service\InvTypeService();
   }
 
   protected function getEnityName() {
@@ -65,8 +63,6 @@ class RulesetService extends EntityService
     $context = array();
     $context['fittingRuleEntityIds'] = $this->getFittingRuleEntityIds($entity);
     $context['fittingRuleEntities'] = $this->fittingRuleService->getFittingRuleEntitiesForValidation($context['fittingRuleEntityIds']);
-
-    $this->fittingRuleService->populateContextForValidation($context);
     return $context;
   }
 
@@ -89,16 +85,22 @@ class RulesetService extends EntityService
     $data = $this->getMappedModel($entity);
     $this->cleanupDataForValidation($data);
 
+    $data['fittingFiltersUptodate'] = $this->areFittingFilterTypesUptodate($context);
     $data['fittings'] = $this->mapFittingsToModel($context, $entity);
     return $data;
   }
 
-  private function mapFittingsToModel($context, $entity) {
-    $typeContext = $this->invTypeService->getTypeContext();
+  private function areFittingFilterTypesUptodate($context) {
+    foreach ($context['fittingRuleEntities'] as $fittingRuleEntity)
+      if(!$fittingRuleEntity->getIsFilterTypeUptodate()) return false;
 
+    return true;
+  }
+
+  private function mapFittingsToModel($context, $entity) {
     $dataFittings = array();
     foreach ($context['fittingRuleEntities'] as $fittingRuleEntity)
-      $dataFittings[] = $this->fittingRuleService->getForValidation($context, $typeContext, $fittingRuleEntity);
+      $dataFittings[] = $this->fittingRuleService->getForValidation($fittingRuleEntity);
 
     return $dataFittings;
   }

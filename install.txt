@@ -38,7 +38,10 @@ cd galatea-1.114618/
 mysql -u root -p eveonline < mysql56-galatea-1.114618.sql
 
 // import data into the ecp database 
-mysql -u root -p ecp < dbscripts/ECP/ecp.sql
+mysql -u root -p ecp < dbscripts/ECP/*.sql (sorted by name in alphabetical order)
+
+
+// please setup a cronjob that runs php -f jobs.php calculateItemFilterType from the directory ./public/rest every hour.
 
 
 
