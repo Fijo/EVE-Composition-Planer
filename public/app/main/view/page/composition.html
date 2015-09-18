@@ -9,6 +9,23 @@ You should have received a copy of the GNU General Public License along with thi
 
 <form name="form">
 	<div ng-include="'app/main/view/partial/header/top.html'"></div>
+	
+	<div class="alert alert-info" role="alert" ng-if="!requestManagement.hasError('init') && !requestManagement.isPending('init') && model.ruleset.fittingFiltersUptodate === false">
+		<div class="row">
+			<div class="col-xs-12 col-sm-10 col-md-11">
+			The used Ruleset hasn´t been fully processed yet. The validation messages might incorrect or out of date. Processing should be finished within the next minute though.
+			</div>
+
+			<div class="col-xs-2 col-lg-1 pull-right">
+				<span class="input-group-btn">
+					<button type="button" class="btn input-sm btn-default" ng-click="reloadRuleset()">
+						Reload
+					</button>
+				</span>
+			</div>
+		</div>
+	</div>
+
 	<div class="row">
 		<div class="col-xs-12 col-md-9 pull-right">
 	  		<div class="main-toolbar">

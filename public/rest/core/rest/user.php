@@ -57,6 +57,7 @@ class User
             });
 
             $app->post('/register', function () {
+                $userService = new \Core\Service\UserService();
                 $p = getPost();
                 if(strpos($p->username, '/') !== false) die_err('Slashes are not allowed in names!');
 
@@ -69,9 +70,8 @@ class User
                 $user->setCreated(time());
                 $user->setConfirmationCode($code);
                 $user->save();
-
-                // le mail
-
+                
+                $userService->sendRegistrationMail($user);
 
                 echo $this->getBoolStatus(true);
             });
@@ -82,6 +82,7 @@ class User
             });
 
             $app->post('/recover-password', function () {
+                $userService = new \Core\Service\UserService();
                 $p = getPost();
                 $users = ECP\UserQuery::create()
                     ->filterByEmail($p->email)
@@ -92,9 +93,8 @@ class User
                     $code = generateCode();
                     $user->setRecoverPasswordCode($code);
                     $user->save();
+                    $userService->sendRecoverPassword($user);
                 }
-
-                // le mail
 
                 echo $this->getBoolStatus(true);
             });

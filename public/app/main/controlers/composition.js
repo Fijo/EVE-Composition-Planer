@@ -152,10 +152,12 @@
 
 		$scope.init();
 
-
-		$scope.$watch('model.entity.ruleset.id', function(rulesetId)	{
+		$scope.reloadRuleset = function()	{
+			var rulesetId = $scope.model.entity.ruleset ? $scope.model.entity.ruleset.id : null;
 			$scope.model.ruleset = rulesetId != null ? $scope.pushRequest(Ruleset.validation({cid: rulesetId}, updateShips), 'init') : {};
-		});
+		};
+
+		$scope.$watch('model.entity.ruleset.id', $scope.reloadRuleset);
 
 		// preload
 		$scope.pushRequest(ItemConverter.then(), 'init');

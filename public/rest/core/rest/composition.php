@@ -8,8 +8,6 @@
 
 namespace Core\Rest;
 use Core\Service;
-use EVE;
-use ECP;
 
 class Composition
 {

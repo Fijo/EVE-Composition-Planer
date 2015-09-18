@@ -6,20 +6,31 @@
 //This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 
-if (PHP_SAPI != 'cli') die('This script should only be executed from the command line!');
+namespace Core\Service;
 
-require 'vendor/autoload.php';
+class CliTaskService extends VarService
+{
+	public function __construct()
+	{
+		$this->basedir = './var/task/';
+		$this->fileEnding = '';
+		parent::__construct();
+	}
 
-require 'config/database/config.php';
-require 'config/main.php';
+	public function ensureOneInstance($name)	{
+		$lastPid = $this->getPid($name);
+		if($lastPid != -1) kill_pid($lastPid);
+		$this->setPid($name, getmypid());
+	}
 
-$type = $argv[count($argv) -1];
+    private function getPid($name)  {
+    	$path = $this->getPath($name);
+    	return is_file($path) ? file_get_contents($path) : -1;
+    }
 
-$scriptPath = './core/job/'.$type.'.php';
-if(!is_file($scriptPath)) die('Invalid job type ´'.$type.'´');
+    private function setPid($name, $pid)  {
+    	return file_put_contents($this->getPath($name), $pid);
+    }
+}
 
-$cliTaskService = new \Core\Service\CliTaskService();
-$cliTaskService->ensureOneInstance($type);
-
-include $scriptPath;
 ?>

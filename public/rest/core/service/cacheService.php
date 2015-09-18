@@ -7,14 +7,14 @@
 //You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 
 namespace Core\Service;
-use ECP;
 
-class CacheService
+class CacheService extends VarService
 {
-	protected $basedir = './cache';
-
-	private function getPath($name)	{
-		return $this->basedir.'/'.$name.'.json';
+	public function __construct()
+	{
+		$this->basedir = './var/cache/';
+		$this->fileEnding = '.json';
+		parent::__construct();
 	}
 
 	public function has($name)	{

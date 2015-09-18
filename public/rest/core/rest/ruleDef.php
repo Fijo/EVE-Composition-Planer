@@ -8,8 +8,6 @@
 
 namespace Core\Rest;
 use Core\Service;
-use ECP;
-use Propel\Runtime\ActiveQuery;
 
 class RuleDef
 {

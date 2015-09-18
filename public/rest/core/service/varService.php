@@ -6,20 +6,25 @@
 //This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 
-if (PHP_SAPI != 'cli') die('This script should only be executed from the command line!');
+namespace Core\Service;
 
-require 'vendor/autoload.php';
+abstract class VarService
+{
+	protected $basedir;
+	protected $fileEnding;
 
-require 'config/database/config.php';
-require 'config/main.php';
+	public function __construct()
+	{
+		$this->ensureDirectoryExists();
+	}
 
-$type = $argv[count($argv) -1];
+	protected function getPath($name)	{
+		return $this->basedir.'/'.$name.$this->fileEnding;
+	}
 
-$scriptPath = './core/job/'.$type.'.php';
-if(!is_file($scriptPath)) die('Invalid job type ´'.$type.'´');
+	protected function ensureDirectoryExists()	{
+		if(!is_dir($this->basedir)) mkdir($this->basedir);
+	}
+}
 
-$cliTaskService = new \Core\Service\CliTaskService();
-$cliTaskService->ensureOneInstance($type);
-
-include $scriptPath;
 ?>

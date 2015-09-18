@@ -7,9 +7,7 @@
 //You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 
 namespace Core\Service;
-use EVE;
 use ECP;
-use Propel\Runtime\ActiveQuery;
 
 class CompositionService extends EntityService
 {

@@ -1,0 +1,1 @@
+ALTER TABLE  `itemfiltertype` ADD UNIQUE (`fittingRuleRowId`, `itemId`);

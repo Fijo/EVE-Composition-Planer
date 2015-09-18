@@ -7,9 +7,7 @@
 //You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 
 namespace Core\Service;
-use EVE;
 use ECP;
-use Propel\Runtime\ActiveQuery;
 
 class RulesetService extends EntityService
 {
@@ -62,7 +60,7 @@ class RulesetService extends EntityService
   public function getContextForValidation($entity) {
     $context = array();
     $context['fittingRuleEntityIds'] = $this->getFittingRuleEntityIds($entity);
-    $context['fittingRuleEntities'] = $this->fittingRuleService->getFittingRuleEntitiesForValidation($context['fittingRuleEntityIds']);
+    $context['fittingRuleEntityContext'] = $this->fittingRuleService->getFittingRuleEntityContextForValidation($context['fittingRuleEntityIds']);
     return $context;
   }
 
@@ -78,7 +76,7 @@ class RulesetService extends EntityService
   }
 
   public function getForValidation($id)  {
-    $entity = $this->getEntityForValidation($id); // should be optimized maybe
+    $entity = $this->getEntityForValidation($id);
     if($entity == null) return $this->getNotFound();
 
     $context = $this->getContextForValidation($entity);
@@ -91,7 +89,7 @@ class RulesetService extends EntityService
   }
 
   private function areFittingFilterTypesUptodate($context) {
-    foreach ($context['fittingRuleEntities'] as $fittingRuleEntity)
+    foreach ($context['fittingRuleEntityContext']['entities'] as $fittingRuleEntity)
       if(!$fittingRuleEntity->getIsFilterTypeUptodate()) return false;
 
     return true;
@@ -99,8 +97,9 @@ class RulesetService extends EntityService
 
   private function mapFittingsToModel($context, $entity) {
     $dataFittings = array();
-    foreach ($context['fittingRuleEntities'] as $fittingRuleEntity)
-      $dataFittings[] = $this->fittingRuleService->getForValidation($fittingRuleEntity);
+    $fittingRuleEntityContext = $context['fittingRuleEntityContext'];
+    foreach ($fittingRuleEntityContext['entities'] as $fittingRuleEntity)
+      $dataFittings[] = $this->fittingRuleService->getForValidation($fittingRuleEntity, $fittingRuleEntityContext);
 
     return $dataFittings;
   }

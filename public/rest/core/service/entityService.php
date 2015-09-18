@@ -7,7 +7,6 @@
 //You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 
 namespace Core\Service;
-use EVE;
 use ECP;
 use Propel\Runtime\ActiveQuery;
 
@@ -74,22 +73,23 @@ abstract class EntityService {
     $username = count($parts) > 1 ? $parts[0] : '';
     $name = count($parts) > 1 ? $parts[1] : $parts[0];
 
-    $user = $this->userService->getLoggedInUser();
-
     $query = $this->createQuery()
       ->joinWith($this->getEnityName().'.User')
       ->filterByName($name.'%');
 
-    if($username == '') $query = $query->filterByUserId($user->id);
+    if($username == '') {
+      $user = $this->userService->getLoggedInUser();
+      $query = $query->filterByUserId($user->id);
+    }
     else $query = $query->where(' User.username = ?', $username);
     return $query->find();
   }
 
   protected function getLocalyMappendModel($entity)  {
-    $user = $this->userService->getLoggedInUser();
+    $user = $this->userService->tryGetLoggedInUser();
     return $data = array('id' => $entity->getId(),
                   'name' => $entity->getName(),
-                  'isYours' => $entity->getUserId() == $user->id,
+                  'isYours' => $user != null && $entity->getUserId() == $user->id,
                   'isListed' => $entity->getIsListed() == 1);
   }
 
@@ -140,6 +140,11 @@ abstract class EntityService {
     foreach ($rows as $row)
       $dict[$row->getId()] = $row;
     return $dict;
+  }
+
+  protected function getArrayById($dict, $entity)  {
+    $id = $entity->getId();
+    return array_key_exists($id, $dict) ? $dict[$id] : array();
   }
 
   protected function getSuccess() {

@@ -8,7 +8,6 @@
 
 namespace Core\Service;
 use EVE;
-use ECP;
 
 class InvTypeService
 {
