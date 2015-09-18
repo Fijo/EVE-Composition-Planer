@@ -39,7 +39,7 @@ ALTER TABLE  `typecomparison` CHANGE comparisonId comparisonId TINYINT( 4 ) UNSI
 ALTER TABLE `fittingrulerow` ADD CONSTRAINT `fittingrulerow_fk_2c7fa1` FOREIGN KEY (`comparison`) REFERENCES `comparison` (`id`);
 ALTER TABLE `itemfilterrule` ADD CONSTRAINT `itemfilterrule_fk_2c7fa1` FOREIGN KEY (`comparison`) REFERENCES `comparison` (`id`);
 ALTER TABLE `rulesetfilterrule` ADD CONSTRAINT `rulesetfilterrule_fk_2c7fa1` FOREIGN KEY (`comparison`) REFERENCES `comparison` (`id`);
-ALTER TABLE `typecomparison` ADD CONSTRAINT `typecomparison_fk_0338dhttp://fijo-dev01/phpmyadmin/sql.php?server=1&db=ecp&table=itemfilterrule&pos=0&token=d4c5bd40acd6a57e9401d3b02ef839b23` FOREIGN KEY (`comparisonId`) REFERENCES `comparison` (`id`);
+ALTER TABLE `typecomparison` ADD CONSTRAINT `typecomparison_fk_0338d3` FOREIGN KEY (`comparisonId`) REFERENCES `comparison` (`id`);
 
 
 ALTER TABLE `itemfilterrule` DROP FOREIGN KEY `itemfilterrule_fk_c56a57`;
