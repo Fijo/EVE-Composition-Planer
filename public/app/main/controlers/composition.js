@@ -78,8 +78,13 @@
 		};
 
 		var initShip = function(ship)	{
-			if(ship.destroy == null)
-				ship.destroy = $scope.$on('fitUpdated-' + ship.$$hashKey, validateComposition);
+			if(ship.destroy == null)	{
+				var unlistenToUpdates = $scope.$on('fitUpdated-' + ship.$$hashKey, validateComposition)
+				ship.destroy = (function()	{
+					validateComposition();
+					unlistenToUpdates();
+				});
+			}
 		}
 
 		var updateShips = function()	{
