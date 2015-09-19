@@ -54,13 +54,13 @@ class UserService
     }
 
     public function sendRegistrationMail($entity)	{
-    	$this->mail($entity->getEmail(), 'Your registration at EVE Composition Planer', 'you or someone else have attempted to create an account for you on the EVE Composition Planer Website availible at '.$this->getIndexLink().'.
+    	$this->mail($entity, 'Your registration at EVE Composition Planer', 'you or someone else have attempted to create an account for you on the EVE Composition Planer Website available at '.$this->getIndexLink().'.
                     If you were indeed the person that tried to create an account you can confirm this by clicking the following link.
                     '.$this->getRegisterConfirmationLink($entity->getConfirmationCode()));
     }
 
     public function sendRecoverPassword($entity)	{
-    	$this->mail($entity->getEmail(), 'Your password recovery request at EVE Composition Planer', 'you told us you have forgotten your password.
+    	$this->mail($entity, 'Your password recovery request at EVE Composition Planer', 'you told us you have forgotten your password.
     				Well you may set a new one at
     				'.$this->getResetPasswordLink($entity->getRecoverPasswordCode()));
     }
