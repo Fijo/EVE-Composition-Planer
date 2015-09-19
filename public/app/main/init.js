@@ -8,5 +8,5 @@
 (function(angular, undefined)	{
 	'use strict';
 
-	angular.module('mainApp', ['ngRoute', 'ngResource', 'ngMessages', 'angular-cache', 'mgcrea.ngStrap.collapse', 'mgcrea.ngStrap.button', 'mgcrea.ngStrap.tooltip', 'mgcrea.ngStrap.popover', 'mgcrea.ngStrap.typeahead', 'ngSanitize', 'underscore']);
+	angular.module('mainApp', ['ngRoute', 'ngResource', 'ngMessages', 'ngAnimate', 'ngTouch', 'angular-cache', 'ui.bootstrap', 'ui.bootstrap.carousel', 'mgcrea.ngStrap.collapse', 'mgcrea.ngStrap.button', 'mgcrea.ngStrap.tooltip', 'mgcrea.ngStrap.popover', 'mgcrea.ngStrap.typeahead', 'ngSanitize', 'underscore']);
 })(angular);

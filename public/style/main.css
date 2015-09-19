@@ -130,3 +130,17 @@ ul.none {
     from { transform: scale(1) rotate(0deg);}
     to { transform: scale(1) rotate(360deg);}
 }
+
+.knowyet .carousel-control {
+	background-image: none;
+	width: 10%;
+	min-width: 64px;
+}
+
+.knowyet .carousel-indicators	{
+	display: none;
+}
+
+.knowyet h4, .knowyet p	{
+	text-align: left;
+}

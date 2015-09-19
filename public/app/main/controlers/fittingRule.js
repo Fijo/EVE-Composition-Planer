@@ -43,6 +43,35 @@
 
 		$scope.model = {};
 
+		$scope.slides = [
+			{
+				title: 'Ship tagging!',
+				content: [
+					'If a fitting rule for is fulfilled for a ship its gona get `tagged` with the name of that fitting rule.'
+				]
+			},
+			{
+				title: 'Is my fitting rule even used yet?',
+				content: [
+					'Fitting rules will only be used for validating a composition if you are using a ruleset that they are used in.'
+				]
+			},
+			{
+				title: 'Item type filter!',
+				content: [
+					'By specifying the rules in the white area of each of those box(es) you basicly filter the item types that gona be counted.',
+					'This area is alot like the item filters you have on the left bottom of each items windows in EVE Online. If you have ever created one of those you should be familiar with how these filters work.'
+
+				]
+			},
+			{
+				title: 'Not only fittings!',
+				content: [
+					'Not only items from the fittings but also booster, implants and the ship (-item) itself are being used itself to apply the fitting rules to.'
+				]
+			}
+		];
+
 		$scope.getNewSpecificEntity = function()	{
 			return {
 				rules: [_.dclone(shared.emptyRule)]

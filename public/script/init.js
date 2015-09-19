@@ -14,6 +14,8 @@
             underscore: 'bower_components/underscore/underscore',
             jquery: 'bower_components/jquery/dist/jquery',
             angular: 'bower_components/angular/angular',
+            'angular-touch': 'bower_components/angular-touch/angular-touch',
+            'angular-animate': 'bower_components/angular-animate/angular-animate',
             'angular-route': 'bower_components/angular-route/angular-route',
             'angular-resource': 'bower_components/angular-resource/angular-resource',
             'angular-messages': 'bower_components/angular-messages/angular-messages',
@@ -23,6 +25,8 @@
             'angular-underscore-module': 'bower_components/angular-underscore-module/angular-underscore-module',
             'angular-strap-src': 'bower_components/angular-strap/dist/angular-strap',
             'angular-strap': 'bower_components/angular-strap/dist/angular-strap.tpl',
+            'angular-bootstrap-src': 'bower_components/angular-bootstrap/ui-bootstrap',
+            'angular-bootstrap': 'bower_components/angular-bootstrap/ui-bootstrap-tpls',
             'underscore-ext': 'script/underscore_ext'
         },
         shim: {
@@ -31,6 +35,12 @@
             },
             angular: {
                 exports: 'angular'
+            },
+            'angular-touch': {
+                deps: ['angular']
+            },
+            'angular-animate': {
+                deps: ['angular']
             },
             'angular-route': {
                 deps: ['angular']
@@ -59,6 +69,12 @@
             'angular-strap-src': {
                 deps: ['bootstrap', 'angular']
             },
+            'angular-bootstrap': {
+                deps: ['bootstrap', 'angular', 'angular-animate', 'angular-touch', 'angular-strap-src']
+            },
+            'angular-bootstrap-src': {
+                deps: ['bootstrap', 'angular', 'angular-animate', 'angular-touch']
+            },
             'underscore-ext': {
                 deps: ['underscore']
             },
@@ -76,6 +92,7 @@
                 'angular-cache',
                 'bootstrap',
                 'angular-strap',
+                'angular-bootstrap',
                 'underscore-ext',
                 'angular-underscore-module'], function()    {
         requirejs(['app/main/module']);
