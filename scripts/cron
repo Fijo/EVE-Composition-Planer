@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+# m h dom mon dow user  command
+*  *   * * *   www-data cd /var/www/html/rest && php -f ./jobs.php calculateItemFilterType 2> /var/log/ecp/cron

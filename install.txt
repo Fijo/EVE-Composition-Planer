@@ -4,12 +4,14 @@ for devs:
 	- Node.js (and npm) *
 	- PHP *
 	- Composer *
+	- Chrome (for the testrunner - or some other browser you just have to change the configuration then)
 	* = you have to configure the right pathes for your environment in ./build/properties/local.build
 
 for deploying it to a server:
 	required tools:
 	- webserver (apache with mod rewite etc.) with php
 	- mysql
+	- cronjob support
 
 	setup guide:
 	1. execute setup.bat/ execute the content of it with mono
@@ -20,12 +22,19 @@ for deploying it to a server:
 
 
 setting up a server:
-// apache config change
+// apache config change (/etc/apache2/apache2.conf in ubuntu)
 -> make sure you have 'AllowOverride All' set for your www root
 -> make sure the files in the www root are owned by the apache user (usualy www-data in ubuntu)
 
 // mysql config change
 -> make sure lower_case_table_names is set to 1 (before(!) you start importing any sql scripts)
+
+-> it helps if you increase some of the mysql settings if you dont have ram issues (even if you only have like 500mb ram)
+-> table_open_cache        = 195
+-> table_definition_cache  = 256
+
+
+// you need to have php setup with mail support
 
 
 // you need to create 2 databases (ecp and eveonline)
@@ -41,10 +50,19 @@ mysql -u root -p eveonline < mysql56-galatea-1.114618.sql
 mysql -u root -p ecp < dbscripts/ECP/*.sql (sorted by name in alphabetical order)
 
 
-// please setup a cronjob that runs php -f jobs.php calculateItemFilterType from the directory ./public/rest every hour.
+// please setup a cronjob that runs php -f jobs.php calculateItemFilterType from the directory ./public/rest as the user your webserver is running under every hour.
+if you are using linux you can use the script in ./scripts/install-cron.sh to do so (asuming your webserver is running as the user www-data - which is standard in ubuntu 14.04 and your www root directory is /var/www/html/)
 
 
+you also might have to adjust the database password/ host in ./public/rest/config/propel.json
 
+to prepare your checked out git repository for a deployment you have to run (.sh or .bat depending on the system you are trying to run in on)
+setup
+update-propel
+
+to deploy the project you need to copy the content of the public folder into your www root directory.
+After doing that you need to fix the rights
+chown -R [webserver user] [www root directory]
 
 
 this is a early version/ guide/ tool might not work entirely yet.
