@@ -9,50 +9,45 @@ You should have received a copy of the GNU General Public License along with thi
 
 <form name="form">
 	<div ng-include="'app/main/view/partial/header/top.html'"></div>
+	<div ng-include="'app/main/view/partial/alert/fork.html'"></div>
+
+	<div class="alert alert-info" role="alert" ng-if="!requestManagement.hasError('init') && !requestManagement.isPending('init') && model.ruleset.fittingFiltersUptodate === false">
+		<div class="row">
+			<div class="col-xs-12 col-sm-10">
+			The used Ruleset hasn´t been fully processed yet. The validation messages might incorrect or out of date. Processing should be finished within the next minute though.
+			</div>
+
+			<div class="col-xs-3 col-sm-2 pull-right">
+				<button type="button" class="btn input-sm btn-default" ng-click="reloadRuleset()">
+					Reload
+				</button>
+			</div>
+		</div>
+	</div>
+	
+	<div class="alert alert-danger" role="alert" ng-repeat="violation in model.entity.violations">
+		<strong>Composition is violating a rule:</strong> {{violation}}
+	</div>
 
 	<div class="row">
 		<div class="col-xs-12 col-md-9 pull-right">
 	  		<div class="main-toolbar">
-
-	  			<div class="alert alert-info" role="alert" ng-if="!requestManagement.hasError('init') && !requestManagement.isPending('init') && model.ruleset.fittingFiltersUptodate === false">
-					<div class="row">
-						<div class="col-xs-12 col-sm-10">
-						The used Ruleset hasn´t been fully processed yet. The validation messages might incorrect or out of date. Processing should be finished within the next minute though.
-						</div>
-
-						<div class="col-xs-3 col-sm-2 pull-right">
-							<button type="button" class="btn input-sm btn-default" ng-click="reloadRuleset()">
-								Reload
-							</button>
-						</div>
-					</div>
+		  		<div class="input-group">
+					<div class="input-group-btn" ng-include="'app/main/view/partial/toolbar/actions.html'"></div>
+					<span ng-include="'app/main/view/partial/toolbar/name.html'"></span>
+					<span class="input-group-addon" id="ruleset-addon"> <span class="glyphicon glyphicon-check"></span></span>
+					<span ecp-validation-container>
+						<input class="form-control input-sm" name="ruleset" ng-model="model.entity.ruleset" type="text" placeholder="Ruleset" data-auto-select="true" data-animation="am-flip-x" aria-describedby="ruleset-addon"
+							ecp-tooltip="'Start typing the name of the ruleset you wana use and pick one of the sugestions.'" ng-change="updateRuleset()" ecp-validation-tooltip="form" required id-required
+							bs-options="ruleset as ruleset.name for ruleset in getRulesetsAutocomplete($viewValue) track by ruleset.id" bs-typeahead ng-model-options="{ allowInvalid: true }">
+					</span>
+					<div class="input-group-btn" ng-include="'app/main/view/partial/toolbar/actions-right.html'"></div>
 				</div>
-
-		  		<div ng-include="'app/main/view/partial/alert/fork.html'"></div>
-				<div class="row">
-					<div class="col-xs-4 col-md-3 col-lg-2">
-						<div ng-include="'app/main/view/partial/toolbar/actions.html'"></div>
-		  			</div>
-					<div class="col-xs-8 col-md-5 col-lg-6">
-						<div ng-include="'app/main/view/partial/toolbar/name.html'"></div>
-		  			</div>
-					<div class="col-xs-12 col-md-4">
-						<span ecp-validation-container>
-							<input class="form-control input-sm" name="ruleset" ng-model="model.entity.ruleset" type="text" placeholder="Ruleset" data-auto-select="true" data-animation="am-flip-x" ecp-tooltip="'Start typing the name of the ruleset you wana use and pick one of the sugestions.'"
-								bs-options="ruleset as ruleset.name for ruleset in getRulesetsAutocomplete($viewValue) track by ruleset.id" bs-typeahead ng-model-options="{ allowInvalid: true }" ng-change="updateRuleset()"
-								ecp-validation-tooltip="form" required id-required>
-						</span>
-		  			</div>
-		  		</div>
 		  	</div>
 
 			<div class="row">
 				<div class="col-xs-12 col-md-8">
 					<div ng-show="!requestManagement.hasError('init') && !requestManagement.isPending('init')">
-						<div class="alert alert-danger" role="alert" ng-repeat="violation in model.entity.violations">
-							<strong>Composition is violating a rule:</strong> {{violation}}
-						</div>
-
 						<table class="table">
 							<tr>
 								<th class="composition-ship-icon"></th>
@@ -60,7 +55,7 @@ You should have received a copy of the GNU General Public License along with thi
 								<th class="composition-ship-points">Points</th>
 								<th class="composition-ship-action"></th>
 							</tr>
-							<tr ng-repeat="ship in model.entity.content" class="{{ ship.viewDetails ? 'active' : '' }}">
+							<tr ng-repeat="ship in model.entity.content" ng-class="(ship.viewDetails ? 'active' : '') + ' ' + (ship.isAllowed ? '' : 'content-hidden')">
 								<td class="composition-ship-icon"><img class="img-rounded" src="http://image.eveonline.com/Type/{{::ship.shipId}}_32.png" width="32" height="32" alt="{{ ship.name }}"></td>
 								<td class="composition-ship-name">{{ ship.name }}</td>
 								<td class="composition-ship-points">{{ ship.points }}</td>

@@ -19,4 +19,8 @@
 			return toReturn;
 		}
 	};
+	_.capitalizeFirstLetter = function(text) {
+		if(text.length == 0) return text;
+		return text.charAt(0).toUpperCase() + (text.length == 1 ? '' : text.slice(1));
+	};
 })(_)

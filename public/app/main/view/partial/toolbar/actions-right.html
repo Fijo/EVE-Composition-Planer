@@ -7,12 +7,8 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 -->
 
-<ol ng-if="hierarchy != null" class="breadcrumb" ng-controller="breadcrumbCtrl">
-	<li ng-repeat="entry in hierarchy" ng-class="$last && !hierarchyHasName(model != null ? model : null) ? 'active' : ''">{{entry}}</li>
-
-	<li ng-if="hierarchyHasName(model != null ? model : null)" class="active">{{model.entity.name == '' ? 'Unnamed' : model.entity.name}}</li>
-</ol>
-
-<div ng-include="'app/main/view/partial/header/requests.html'"></div>
-<div ng-include="'app/main/view/partial/alert/not-logged-in.html'"></div>
-<div ng-include="'app/main/view/partial/header/knowyet.html'"></div>
+<div class="btn-group" role="group">
+	<button type="button" class="btn btn-default btn-sm" ecp-tooltip="::message.entityCap + ' is listed for the public'" ng-model="model.entity.isListed" ng-disabled="isReadonly()" bs-checkbox>
+		<span class="glyphicon glyphicon-globe"></span>
+	</button>
+</div>

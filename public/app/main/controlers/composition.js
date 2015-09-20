@@ -8,7 +8,7 @@
 (function(angular, undefined)	{
 	'use strict';
 	
-	angular.module('mainApp').controller('compositionCtrl', ['$scope', '$controller', '_', 'Ruleset', 'ShipGroup', 'FittingService', 'ItemConverter', 'CompositionValidationService', 'RulesetService', function ($scope, $controller, _, Ruleset, ShipGroup, FittingService, ItemConverter, CompositionValidationService, RulesetService) {
+	angular.module('mainApp').controller('compositionCtrl', ['$scope', '$controller', '_', 'Ruleset', 'ShipGroup', 'FittingService', 'ItemConverter', 'CompositionValidationService', 'RulesetService', 'KnowyetService', function ($scope, $controller, _, Ruleset, ShipGroup, FittingService, ItemConverter, CompositionValidationService, RulesetService, KnowyetService) {
 		$controller('entityCtrl', { $scope: $scope });
 		RulesetService($scope);
 
@@ -21,6 +21,55 @@
 		};
 
 		$scope.hierarchy = ['Composition'];
+
+		$scope.knowyet = [
+			{
+				title: 'So you wana start planing a composition for a tournerment...',
+				content: [
+					'Well you should start off with picking a ruleset for that particular tournerment.',
+					'You should either know the name of one if its has already been created or you can always browse through the public rulesets. [...]',
+					'By the way if you\'re having trouble selecting a ruleset there will be another hint like this one in two slides helping with that.'
+				]
+			},
+			{
+				title: 'So you wana start planing a composition for a tournerment... define your own rules',
+				content: [
+					'[...] Alternatively you could also start digging deeper into this tool by starting from scratch and start creating your own ruleset which actualy consists of multiple fitting rules that you should propobly create first. Anyhow it is not all that hard to create your own ruleset within this tool and you don\'t need any programming skills or anything like that. Its just simple logic so don\'t be afraid.'
+				]
+			},
+			KnowyetService.getAutocompleteTip('ruleset'),
+			{
+				title: 'Start adding ships!',
+				content: [
+					'You can expand the ship groups on the left side by clicking on their names.',
+					'Now you should see a list of ship you can add just click on one of their names to add one. The number on the right tells you how much points a ship needs.'
+				]
+			},
+			{
+				title: 'Detailed ship information like fittings!',
+				content: [
+					'After adding ships you can now click on the pen for a ship in the table in the center of your screen.',
+					'Now you can start adding a fitting for that ship or take notes on how to pilot it and even specify combat boosters or implants that the pilot should use.'
+
+				]
+			},
+			{
+				title: 'Detailed ship information: fitting tags',
+				content: [
+					'On the right side of your screen might start seing tags popup below ´Fitting rules (matching)´.',
+					'Those are basicly rules fitting that are matching you fit which then tag the coresponding ship configuration. The ship itself and the combat booster and implants are also being put into consideration for that.',
+					'Basicly those tags are the information that is used to decide if your fit matches the rules or not. So you might end up getting some messages when you have for example too many configurations with a particular tag. An example in the alliance torunerment for a tag like this would be ´flagship´.',
+					'Please note that those tags are not validation errors. They are just useful information to further understand the rule system this tool uses and to hopefully find mistakes quicker in certein scenarios.'
+				]
+			},
+			{
+				title: 'Points',
+				content: [
+					'You can also see the point amount check on the right side. It should be pretty self explanatory.',
+					'If the bar gets red you are running out of points and the numbers mean [used amount of points] / [min points] - [max points].'
+				]
+			}
+		];
 
 		var shared = (function(){
 			var self = {
@@ -96,6 +145,7 @@
 					ship.name = value;
 				});
 				ship.points = $scope.getShipPoints(ship.shipId);
+				ship.isAllowed = $scope.showShipByPoints(ship.points);
 			});
 
 			entity.content = _.sortBy(entity.content, function(ship)	{

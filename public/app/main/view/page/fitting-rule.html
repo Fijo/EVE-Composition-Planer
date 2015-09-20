@@ -9,18 +9,6 @@ You should have received a copy of the GNU General Public License along with thi
 
 <form name="form">
 	<div ng-include="'app/main/view/partial/header/default-entity.html'"></div>
-	<div>
-	    <carousel interval="20000" no-wrap="false" class="alert alert-success knowyet">
-	      <slide ng-repeat="slide in slides" active="slide.active" style="height:100px;">
-	      		<div class="col-xs-1"></div>
-	      		<div class="col-xs-10">
-	  				<h4><span class="glyphicon glyphicon-info-sign"></span> Did you know yet? {{slide.title}}</h4>
-		          	<span ng-repeat="text in slide.content">
-		          		<p>{{text}}</p>
-		          	</span>
-		          </div>
-	      </slide>
-	  </div>
 
 	<div ng-repeat="rule in model.entity.rules" class="row" ng-init="ruleKey = getRepeaterHash(rule)">
 		<div class="col-sm-2">

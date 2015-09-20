@@ -34,6 +34,7 @@
                 './factories/compositionValidationService',
                 './factories/rulesetService',
                 './factories/rootValidationService',
+                './factories/knowyetService',
                 './directives/integer',
                 './directives/entityName',
                 './directives/entityNameFormat',

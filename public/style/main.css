@@ -141,6 +141,19 @@ ul.none {
 	display: none;
 }
 
+.knowyet .slide	{
+	height: 100px;
+}
+
+.knowyet .close	{
+	z-index: 5;
+	position: relative;
+}
+
 .knowyet h4, .knowyet p	{
 	text-align: left;
+}
+
+.input-group-btn.no-btn	{
+	width: 0px;
 }

@@ -12,7 +12,7 @@ You should have received a copy of the GNU General Public License along with thi
 	<div class="row">
 		<div class="col-xs-12">
 			<ul class="nav nav-tabs nav-justified">
-				<li role="presentation" id="validation-general-info" ng-class="model.activeTab == 'GeneralInfo' ? 'active' : ''"><a href="" ng-click="model.activeTab='GeneralInfo'">General Information <span class="glyphicon glyphicon-warning-sign hidden"></span></a></li>
+				<li role="presentation" id="validation-general-info" ng-class="model.activeTab == 'GeneralInfo' ? 'active' : ''"><a href="" ng-click="model.activeTab='GeneralInfo'">General information <span class="glyphicon glyphicon-warning-sign hidden"></span></a></li>
 				<li role="presentation" id="validation-ship-points" ng-class="model.activeTab == 'Points' ? 'active' : ''"><a href="" ng-click="model.activeTab='Points'">Ship points <span class="glyphicon glyphicon-warning-sign hidden"></span></a></li>
 				<li role="presentation" id="validation-rules" ng-class="model.activeTab == 'Rules' ? 'active' : ''"><a href="" ng-click="model.activeTab='Rules'">Rules <span class="glyphicon glyphicon-warning-sign hidden"></span></a></li>
 			</ul>
@@ -98,11 +98,11 @@ You should have received a copy of the GNU General Public License along with thi
 												<div class="form-inline">
 													count of fits tagged with 
 													<span ecp-validation-container>
-														<input class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}tag" ng-model="fittingRule.tag" type="text" placeholder="Fitting Rule" data-auto-select="true" data-animation="am-flip-x"
+														<input class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}tag" ng-model="fittingRule.tag" type="text" placeholder="Fitting rule" data-auto-select="true" data-animation="am-flip-x"
     														bs-options="fittingRuleEntity as fittingRuleEntity.name for fittingRuleEntity in getFittingRulesAutocomplete($viewValue) track by fittingRuleEntity.id" bs-typeahead ng-model-options="{ allowInvalid: true }"
     														ecp-validation-tooltip="form" required id-required>
 													</span>
-													must
+													must be
 													<span ecp-validation-container>
 														<select class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}comparison" ng-model="fittingRule.comparison"
 															ng-options="reduceKey(filterComparison) as filterComparison.name for filterComparison in getIntComparison() track by filterComparison.id" ng-disabled="isReadonly()" ecp-validation-tooltip="form" required></select>

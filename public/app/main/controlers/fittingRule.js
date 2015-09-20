@@ -20,30 +20,7 @@
 
 		$scope.hierarchy = ['Rule', 'Fitting'];
 
-		$scope.filterDefs = {
-			comparison: $scope.pushRequest(RuleDef.getComparison(function(comparisons)	{
-				$scope.filterDefs.concatenations = comparisons.bool;
-			}), 'init'),
-			groups: $scope.pushRequest(RuleDef.getItemFilter(), 'init'),
-			concatenations: []
-		};
-
-		var shared = (function(){
-			var emptyItemFilterRule = {
-				content: []
-			};
-			var self = {
-				emptyItemFilterRule: emptyItemFilterRule,
-				emptyRule: {
-					itemFilterRules: [_.dclone(emptyItemFilterRule)]
-				},
-			};
-			return self;
-		})();
-
-		$scope.model = {};
-
-		$scope.slides = [
+		$scope.knowyet = [
 			{
 				title: 'Ship tagging!',
 				content: [
@@ -71,6 +48,29 @@
 				]
 			}
 		];
+
+		$scope.filterDefs = {
+			comparison: $scope.pushRequest(RuleDef.getComparison(function(comparisons)	{
+				$scope.filterDefs.concatenations = comparisons.bool;
+			}), 'init'),
+			groups: $scope.pushRequest(RuleDef.getItemFilter(), 'init'),
+			concatenations: []
+		};
+
+		var shared = (function(){
+			var emptyItemFilterRule = {
+				content: []
+			};
+			var self = {
+				emptyItemFilterRule: emptyItemFilterRule,
+				emptyRule: {
+					itemFilterRules: [_.dclone(emptyItemFilterRule)]
+				},
+			};
+			return self;
+		})();
+
+		$scope.model = {};
 
 		$scope.getNewSpecificEntity = function()	{
 			return {

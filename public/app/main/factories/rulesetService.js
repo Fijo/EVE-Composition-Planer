@@ -29,8 +29,12 @@
 				}, false);
 			};
 
+			self.showShipByPoints = function(points)	{
+				return points <= self.getMaxPoints();
+			};
+
 			self.showShip = function(ship)	{
-				return self.getShipPoints(ship.id) <= self.getMaxPoints();
+				return self.showShipByPoints(self.getShipPoints(ship.id));
 			};
 			return self;
 		}

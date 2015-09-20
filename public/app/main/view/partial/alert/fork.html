@@ -8,6 +8,7 @@ You should have received a copy of the GNU General Public License along with thi
 -->
 
 <div class="alert alert-info" role="alert" ng-if="!requestManagement.hasError('init') && !requestManagement.isPending('init') && isReadonly() && isLoggedIn">
+	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	You are looking at a {{::message.entity}} of someone else so have read only access. If you wana modify it consider forking it first to create a copy in your persornal {{::message.entityPlural}}.
 
 	<div class="input-group col-xs-6">
