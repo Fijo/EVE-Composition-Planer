@@ -56,7 +56,6 @@ class FittingRuleService extends EntityService
   public function getFittingRuleEntityContextForValidation($fittingRuleEntityIds) {
     $entities = ECP\FittingRuleEntityQuery::create()
                 ->joinWith('FittingRuleEntity.FittingRuleRow')
-                //->leftJoinWith('FittingRuleRow.ItemFilterType')
                 ->filterById($fittingRuleEntityIds)
                 ->orderBy('FittingRuleRow.ind3x')
                 ->find();
@@ -139,7 +138,14 @@ class FittingRuleService extends EntityService
       foreach($entityContext['entities'] as $entity) {
         foreach ($entity->getFittingRuleRows() as $fittingRuleRow) {
           $typeArray = $this->calculateItemFilterTypesFrom($comparisonDict, $typeContext, $fittingRuleRow);
-          $this->updateItemFilterTypes($typeArray, $fittingRuleRowsWithTypeDict[$fittingRuleRow->getId()]);
+
+          $fittingRuleRowId = $fittingRuleRow->getId();
+          if(!array_key_exists($fittingRuleRowId, $fittingRuleRowsWithTypeDict))  {
+            echo '... so this row has already been deleted between those two fetches ... interesting ... skiping it ...\n';
+            continue;
+          }
+
+          $this->updateItemFilterTypes($typeArray, $fittingRuleRowsWithTypeDict[$fittingRuleRowId]);
         }
         $this->setFittingRuleEntityUpToDate($entity);
       }
