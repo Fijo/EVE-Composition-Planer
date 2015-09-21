@@ -1,0 +1,2 @@
+ALTER TABLE `fittingrulerow` DROP INDEX `fittingRuleEntityId`, ADD INDEX `fittingRuleEntityId` (`fittingRuleEntityId`, `ind3x`)COMMENT '';
+ALTER TABLE `itemfilterrule` DROP INDEX `fittingRuleRowId`, ADD INDEX `fittingRuleRowId` (`fittingRuleRowId`, `ind3x`)COMMENT '';

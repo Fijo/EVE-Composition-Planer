@@ -75,55 +75,64 @@ class CompositionService extends EntityService
       $fitEntryType[$fitEntryType1->getName()] = $fitEntryType1->getId();
 
     $entity = $this->getLocalyMappedEntityToSave($data, $fork);
-    $entity->setRulesetEntityId($data->ruleset->id);
 
-    foreach ($data->content as $dataRow) {
-      $compositionRow = $this->getSubentity($entity, 'CompositionRow', $dataRow);
+    $connection = $this->getPropelConnection();
+    
+    try {
+      $connection->beginTransaction();
 
-      $compositionRow->setShipId($dataRow->shipId);
-      $compositionRow->setNotes(property_exists($dataRow, 'notes') ? $dataRow->notes : '');
+      $entity->setRulesetEntityId($data->ruleset->id);
 
-      $dataFitContent = $dataRow->fit->content;
-      $compositionRow->setFitName($dataFitContent->header->shipName);
+      foreach ($data->content as $dataRow) {
+        $compositionRow = $this->getSubentity($entity, 'CompositionRow', $dataRow);
+
+        $compositionRow->setShipId($dataRow->shipId);
+        $compositionRow->setNotes(property_exists($dataRow, 'notes') ? $dataRow->notes : '');
+
+        $dataFitContent = $dataRow->fit->content;
+        $compositionRow->setFitName($dataFitContent->header->shipName);
 
 
-      $fitEntries = $compositionRow->getFitEntries();
-      $fitEntryIndex = 0;
-      foreach ($dataFitContent->body as $dataFitEntry) {
-        $fitEntryExists = count($fitEntries) > $fitEntryIndex;
-        $fitEntry = null;
-        if($fitEntryExists) $fitEntry = $fitEntries[$fitEntryIndex];
-        else {
-          $fitEntry = new ECP\FitEntry();
-          $fitEntry->setInd3x($fitEntryIndex);
+        $fitEntries = $compositionRow->getFitEntries();
+        $fitEntryIndex = 0;
+        foreach ($dataFitContent->body as $dataFitEntry) {
+          $fitEntryExists = count($fitEntries) > $fitEntryIndex;
+          $fitEntry = null;
+          if($fitEntryExists) $fitEntry = $fitEntries[$fitEntryIndex];
+          else {
+            $fitEntry = new ECP\FitEntry();
+            $fitEntry->setInd3x($fitEntryIndex);
+          }
+
+          $fitEntry->setFitEntryTypeId($fitEntryType[ property_exists($dataFitEntry, 'type') ? $dataFitEntry->type : 'none' ]);
+          $fitEntry->setItemId( property_exists($dataFitEntry, 'item') ? $dataFitEntry->item : 0 );
+          $fitEntry->setAmmoId( property_exists($dataFitEntry, 'ammo') ? $dataFitEntry->ammo : 0 );
+          $fitEntry->setAmount( property_exists($dataFitEntry, 'amount') ? $dataFitEntry->amount : 0 );
+
+          $this->prepareSubentitySave2($connection, $compositionRow, 'FitEntry', $fitEntry, !$fitEntryExists);
+          $fitEntryIndex++;
         }
 
-        $fitEntry->setFitEntryTypeId($fitEntryType[ property_exists($dataFitEntry, 'type') ? $dataFitEntry->type : 'none' ]);
-        $fitEntry->setItemId( property_exists($dataFitEntry, 'item') ? $dataFitEntry->item : 0 );
-        $fitEntry->setAmmoId( property_exists($dataFitEntry, 'ammo') ? $dataFitEntry->ammo : 0 );
-        $fitEntry->setAmount( property_exists($dataFitEntry, 'amount') ? $dataFitEntry->amount : 0 );
+        for(; $fitEntryIndex < count($fitEntries); $fitEntryIndex++)
+          $compositionRow->removeFitEntry($fitEntries[$fitEntryIndex]);
+        
 
-        $this->prepareSubentitySave2($compositionRow, 'FitEntry', $fitEntry, !$fitEntryExists);
-        $fitEntryIndex++;
+        $this->prepareSubentitySave($connection, $entity, 'CompositionRow', $compositionRow, $dataRow);
       }
 
-      for(; $fitEntryIndex < count($fitEntries); $fitEntryIndex++)
-        $compositionRow->removeFitEntry($fitEntries[$fitEntryIndex]);
-      
+      $this->cleanupOldEnties($entity, 'CompositionRow', $data->content);
+      $entity->save($connection);
+      $connection->commit();
 
-      $this->prepareSubentitySave($entity, 'CompositionRow', $compositionRow, $dataRow);
+      return $this->createIdObj($entity->getId());
+    } catch (Exception $e) {
+      $connection->rollBack();
+      throw $e;
     }
-
-    $this->cleanupOldEnties($entity, 'CompositionRow', $data->content);
-    $entity->save();
-
-    return $this->createIdObj($entity->getId());
   }
 
   protected function removeRelatedEntityIds($data) {
-    foreach ($data->content as $dataRow) {
-      unset($dataRow->id);
-    }
+    foreach ($data->content as $dataRow) unset($dataRow->id);
   }
 }
 

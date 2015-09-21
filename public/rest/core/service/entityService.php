@@ -8,6 +8,7 @@
 
 namespace Core\Service;
 use ECP;
+use Propel\Runtime;
 use Propel\Runtime\ActiveQuery;
 
 abstract class EntityService {
@@ -116,6 +117,11 @@ abstract class EntityService {
   }
 
 
+  protected function getPropelConnection()  {
+    // I only need this for save and deletes and I only make those on the default database
+    return \Propel\Runtime\Propel::getServiceContainer()->getReadConnection('default');
+  }
+
   protected function getNewEntityByName($entityName)  {
       return (new \ReflectionClass('ECP\\'.$entityName))->newInstanceArgs();
   }
@@ -126,13 +132,13 @@ abstract class EntityService {
           : $this->getNewEntityByName($entityName);
   }
 
-  protected function prepareSubentitySave($dbParent, $relationName, $dbCurrent, $dataCurrent)  {
-    $this->prepareSubentitySave2($dbParent, $relationName, $dbCurrent, !property_exists($dataCurrent, 'id'));
+  protected function prepareSubentitySave($connection, $dbParent, $relationName, $dbCurrent, $dataCurrent)  {
+    $this->prepareSubentitySave2($connection, $dbParent, $relationName, $dbCurrent, !property_exists($dataCurrent, 'id'));
   }
 
-  protected function prepareSubentitySave2($dbParent, $relationName, $dbCurrent, $isNew)  {
+  protected function prepareSubentitySave2($connection, $dbParent, $relationName, $dbCurrent, $isNew)  {
     if($isNew) call_user_func_array(array($dbParent, 'add'.$relationName), array($dbCurrent));
-    else $dbCurrent->save();
+    else $dbCurrent->save($connection);
   }
 
   protected function getDictById($rows) {

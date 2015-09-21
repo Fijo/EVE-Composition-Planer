@@ -154,59 +154,68 @@ class RulesetService extends EntityService
     $entity->setMaxPilots($data->maxPilots);
     $entity->setMaxPoints($data->maxPoints);
 
+    $connection = $this->getPropelConnection();
 
-    $shipDict = array();
-    foreach ($entity->getRulesetShips() as $ship)
-      $shipDict[$ship->getShipId()] = $ship;
+    try {
+      $connection->beginTransaction();
 
-    $shipDict = (object) $shipDict;
-    foreach ($data->ships as $dataShipId => $dataShipPoints) {
-      $iShipId = intval($dataShipId);
+      $shipDict = array();
+      foreach ($entity->getRulesetShips() as $ship)
+        $shipDict[$ship->getShipId()] = $ship;
 
-      $shipExists = property_exists($shipDict, $iShipId);
-      $ship = null;
-      if($shipExists) $ship = $shipDict[$iShipId];
-      else {
-        $ship = new ECP\RulesetShip();
-        $ship->setShipId($iShipId);
+      $shipDict = $shipDict;
+      foreach ($data->ships as $dataShipId => $dataShipPoints) {
+        $iShipId = intval($dataShipId);
+
+        $shipExists = array_key_exists($iShipId, $shipDict);
+        $ship = null;
+        if($shipExists) $ship = $shipDict[$iShipId];
+        else {
+          $ship = new ECP\RulesetShip();
+          $ship->setShipId($iShipId);
+        }
+
+        $ship->setPoints($dataShipPoints);
+        $this->prepareSubentitySave2($connection, $entity, 'RulesetShip', $ship, !$shipExists);
       }
 
-      $ship->setPoints($dataShipPoints);
-      $this->prepareSubentitySave2($entity, 'RulesetShip', $ship, !$shipExists);
-    }
 
+      $ruleRowIndex = 0;
+      foreach ($data->rules as $dataRuleRow) {
+        $ruleRow = $this->getSubentity($entity, 'RulesetRuleRow', $dataRuleRow);
 
-    $ruleRowIndex = 0;
-    foreach ($data->rules as $dataRuleRow) {
-      $ruleRow = $this->getSubentity($entity, 'RulesetRuleRow', $dataRuleRow);
+        $ruleRow->setInd3x($ruleRowIndex++);
+        $ruleRow->setMessage($dataRuleRow->message);
 
-      $ruleRow->setInd3x($ruleRowIndex++);
-      $ruleRow->setMessage($dataRuleRow->message);
+        $filterRuleIndex = 0;
+        foreach ($dataRuleRow->fittingRules as $dataFilterRule) {
+          $filterRule = $this->getSubentity($ruleRow, 'RulesetFilterRule', $dataFilterRule);
 
-      $filterRuleIndex = 0;
-      foreach ($dataRuleRow->fittingRules as $dataFilterRule) {
-        $filterRule = $this->getSubentity($ruleRow, 'RulesetFilterRule', $dataFilterRule);
+          $filterRule->setInd3x($filterRuleIndex);
+          if($filterRuleIndex == 0) $filterRule->setConcatenation(0);
+          else if(property_exists($dataFilterRule, 'concatenation'))
+            $filterRule->setConcatenation($dataFilterRule->concatenation->id);
+          $filterRule->setFittingRuleEntityId($dataFilterRule->tag->id);
+          $filterRule->setComparison($dataFilterRule->comparison->id);
+          $filterRule->setValue($dataFilterRule->value);
 
-        $filterRule->setInd3x($filterRuleIndex);
-        if($filterRuleIndex == 0) $filterRule->setConcatenation(0);
-        else if(property_exists($dataFilterRule, 'concatenation'))
-          $filterRule->setConcatenation($dataFilterRule->concatenation->id);
-        $filterRule->setFittingRuleEntityId($dataFilterRule->tag->id);
-        $filterRule->setComparison($dataFilterRule->comparison->id);
-        $filterRule->setValue($dataFilterRule->value);
+          $this->prepareSubentitySave($connection, $ruleRow, 'RulesetFilterRule', $filterRule, $dataFilterRule);
+          $filterRuleIndex++;
+        }
 
-        $this->prepareSubentitySave($ruleRow, 'RulesetFilterRule', $filterRule, $dataFilterRule);
-        $filterRuleIndex++;
+        $this->cleanupOldEnties($ruleRow, 'RulesetFilterRule', $dataRuleRow->fittingRules);
+        $this->prepareSubentitySave($connection, $entity, 'RulesetRuleRow', $ruleRow, $dataRuleRow);
       }
 
-      $this->cleanupOldEnties($ruleRow, 'RulesetFilterRule', $dataRuleRow->fittingRules);
-      $this->prepareSubentitySave($entity, 'RulesetRuleRow', $ruleRow, $dataRuleRow);
+      $this->cleanupOldEnties($entity, 'RulesetRuleRow', $data->rules);
+      $entity->save($connection);
+      $connection->commit();
+
+      return $this->createIdObj($entity->getId());
+    } catch (Exception $e) {
+      $connection->rollBack();
+      throw $e;
     }
-
-    $this->cleanupOldEnties($entity, 'RulesetRuleRow', $data->rules);
-    $entity->save();
-
-    return $this->createIdObj($entity->getId());
   }
 
   protected function removeRelatedEntityIds($data) {

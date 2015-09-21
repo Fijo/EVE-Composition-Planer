@@ -135,33 +135,44 @@ class FittingRuleService extends EntityService
       $entityContext = $this->getFittingRuleEntityContextForItemFilterTypeCalculations();
       $fittingRuleRowsWithTypeDict = $entityContext['fittingRuleRowsWithTypes'];
 
-      foreach($entityContext['entities'] as $entity) {
-        foreach ($entity->getFittingRuleRows() as $fittingRuleRow) {
-          $typeArray = $this->calculateItemFilterTypesFrom($comparisonDict, $typeContext, $fittingRuleRow);
+      $connection = $this->getPropelConnection();
 
-          $fittingRuleRowId = $fittingRuleRow->getId();
-          if(!array_key_exists($fittingRuleRowId, $fittingRuleRowsWithTypeDict))  {
-            echo '... so this row has already been deleted between those two fetches ... interesting ... skiping it ...\n';
-            continue;
+      foreach($entityContext['entities'] as $entity)
+        try {
+          $connection->beginTransaction();
+
+          foreach ($entity->getFittingRuleRows() as $fittingRuleRow) {
+            $typeArray = $this->calculateItemFilterTypesFrom($comparisonDict, $typeContext, $fittingRuleRow);
+
+            $fittingRuleRowId = $fittingRuleRow->getId();
+            if(!array_key_exists($fittingRuleRowId, $fittingRuleRowsWithTypeDict))  {
+              echo '... so this row has already been deleted between those two fetches ... interesting ... skiping it ...\n';
+              continue;
+            }
+
+            $this->updateItemFilterTypes($connection, $typeArray, $fittingRuleRowsWithTypeDict[$fittingRuleRowId]);
           }
 
-          $this->updateItemFilterTypes($typeArray, $fittingRuleRowsWithTypeDict[$fittingRuleRowId]);
+          $this->setFittingRuleEntityUpToDate($connection, $entity);
+          $connection->commit();
+        } catch (Exception $e) {
+          $connection->rollBack();
+          throw $e;
         }
-        $this->setFittingRuleEntityUpToDate($entity);
-      }
+      
       sleep(30);
     }
   }
 
-  private function setFittingRuleEntityUpToDate($entity) {
+  private function setFittingRuleEntityUpToDate($connection, $entity) {
     $currentEntity = ECP\FittingRuleEntityQuery::create()->filterById($entity->getId())->findOne();
     if($currentEntity->getLastModified() == $entity->getLastModified()) {
       $currentEntity->setIsFilterTypeUptodate(1);
-      $currentEntity->save();
+      $currentEntity->save($connection);
     }
   }
 
-  private function updateItemFilterTypes($typeArray, $fittingRuleRow) {
+  private function updateItemFilterTypes($connection, $typeArray, $fittingRuleRow) {
     $itemFilterTypeDict = array();
     foreach ($fittingRuleRow->getItemFilterTypes() as $itemFilterType)
       $itemFilterTypeDict[$itemFilterType->getItemId()] = $itemFilterType;
@@ -175,13 +186,13 @@ class FittingRuleService extends EntityService
         $itemFilterType->setItemId($dataTypeId);
       }
 
-      $this->prepareSubentitySave2($fittingRuleRow, 'ItemFilterType', $itemFilterType, !$itemFilterTypeExists);
+      $this->prepareSubentitySave2($connection, $fittingRuleRow, 'ItemFilterType', $itemFilterType, !$itemFilterTypeExists);
     }
 
     foreach ($itemFilterTypeDict as $itemId => $itemFilterType)
       if(!in_array($itemId, $typeArray)) $fittingRuleRow->removeItemFilterType($itemFilterType);
 
-    $fittingRuleRow->save();
+    $fittingRuleRow->save($connection);
   }
 
   private function calculateItemFilterTypesFrom($comparisonDict, $typeContext, $fittingRuleRow)  {
@@ -280,54 +291,65 @@ class FittingRuleService extends EntityService
 
   protected function performSave($data, $fork)  { 
     $entity = $this->getLocalyMappedEntityToSave($data, $fork);
-    $entity->setIsFilterTypeUptodate(0);
 
-    $ruleRowIndex = 0;
-    foreach ($data->rules as $dataRuleRow) {
-      $fittingRuleRow = $this->getSubentity($entity, 'FittingRuleRow', $dataRuleRow);
+    $connection = $this->getPropelConnection();
+    try {
+      $connection->beginTransaction();
 
-      $fittingRuleRow->setInd3x($ruleRowIndex);
-      if($ruleRowIndex == 0) $fittingRuleRow->setConcatenation(0);
-      else if(property_exists($dataRuleRow, 'concatenation')) $fittingRuleRow->setConcatenation($dataRuleRow->concatenation->id);
+      $entity->setIsFilterTypeUptodate(0);
 
-      $fittingRuleRow->setComparison($dataRuleRow->comparison->id);
-      $fittingRuleRow->setValue($dataRuleRow->value);
+      $ruleRowIndex = 0;
+      foreach ($data->rules as $dataRuleRow) {
+        $fittingRuleRow = $this->getSubentity($entity, 'FittingRuleRow', $dataRuleRow);
 
-      $filterRuleIndex = 0;
-      foreach ($dataRuleRow->itemFilterRules as $dataFilterRule) {
-        $itemFilterRule = $this->getSubentity($fittingRuleRow, 'ItemFilterRule', $dataFilterRule);
+        $fittingRuleRow->setInd3x($ruleRowIndex);
+        if($ruleRowIndex == 0) $fittingRuleRow->setConcatenation(0);
+        else if(property_exists($dataRuleRow, 'concatenation')) $fittingRuleRow->setConcatenation($dataRuleRow->concatenation->id);
 
-        $itemFilterRule->setInd3x($filterRuleIndex);
-        if($filterRuleIndex == 0) $itemFilterRule->setConcatenation(0);
-        else if(property_exists($dataFilterRule, 'concatenation')) $itemFilterRule->setConcatenation($dataFilterRule->concatenation->id);
+        $fittingRuleRow->setComparison($dataRuleRow->comparison->id);
+        $fittingRuleRow->setValue($dataRuleRow->value);
 
-        $itemFilterRule->setItemFilterDefId($dataFilterRule->group->id);
-        $itemFilterRule->setComparison($dataFilterRule->comparison->id);
+        $filterRuleIndex = 0;
+        foreach ($dataRuleRow->itemFilterRules as $dataFilterRule) {
+          $itemFilterRule = $this->getSubentity($fittingRuleRow, 'ItemFilterRule', $dataFilterRule);
 
-        if(property_exists($dataFilterRule, 'value'))
-          $itemFilterRule->setValue($dataFilterRule->value);
+          $itemFilterRule->setInd3x($filterRuleIndex);
+          if($filterRuleIndex == 0) $itemFilterRule->setConcatenation(0);
+          else if(property_exists($dataFilterRule, 'concatenation')) $itemFilterRule->setConcatenation($dataFilterRule->concatenation->id);
 
-        if(property_exists($dataFilterRule, 'content')) {
-          $dataFilterRuleContent = $dataFilterRule->content;
-          if(count($dataFilterRuleContent) >= 1)
-            $itemFilterRule->setContent1($dataFilterRuleContent[0]->id);
-          if(count($dataFilterRuleContent) >= 2)
-            $itemFilterRule->setContent2($dataFilterRuleContent[1]->id);
+          $itemFilterRule->setItemFilterDefId($dataFilterRule->group->id);
+          $itemFilterRule->setComparison($dataFilterRule->comparison->id);
+
+          if(property_exists($dataFilterRule, 'value'))
+            $itemFilterRule->setValue($dataFilterRule->value);
+
+          if(property_exists($dataFilterRule, 'content')) {
+            $dataFilterRuleContent = $dataFilterRule->content;
+            if(count($dataFilterRuleContent) >= 1)
+              $itemFilterRule->setContent1($dataFilterRuleContent[0]->id);
+            if(count($dataFilterRuleContent) >= 2)
+              $itemFilterRule->setContent2($dataFilterRuleContent[1]->id);
+          }
+
+          $this->prepareSubentitySave($connection, $fittingRuleRow, 'ItemFilterRule', $itemFilterRule, $dataFilterRule);
+          $filterRuleIndex++;
         }
 
-        $this->prepareSubentitySave($fittingRuleRow, 'ItemFilterRule', $itemFilterRule, $dataFilterRule);
-        $filterRuleIndex++;
+        $this->cleanupOldEnties($fittingRuleRow, 'ItemFilterRule', $dataRuleRow->itemFilterRules);
+        $this->prepareSubentitySave($connection, $entity, 'FittingRuleRow', $fittingRuleRow, $dataRuleRow);
+        $ruleRowIndex++;
       }
 
-      $this->cleanupOldEnties($fittingRuleRow, 'ItemFilterRule', $dataRuleRow->itemFilterRules);
-      $this->prepareSubentitySave($entity, 'FittingRuleRow', $fittingRuleRow, $dataRuleRow);
-      $ruleRowIndex++;
+      $this->cleanupOldEnties($entity, 'FittingRuleRow', $data->rules);
+      $entity->save($connection);
+
+      $connection->commit();
+
+      return $this->createIdObj($entity->getId());
+    } catch (Exception $e) {
+      $connection->rollBack();
+      throw $e;
     }
-
-    $this->cleanupOldEnties($entity, 'FittingRuleRow', $data->rules);
-    $entity->save();
-
-    return $this->createIdObj($entity->getId());
   }
 
   protected function removeRelatedEntityIds($data) {
