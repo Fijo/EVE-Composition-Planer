@@ -16,8 +16,8 @@ class InvTypeService
 
   public function getTypeContext() {
     return (object) array(
-        'types' => $this->filterIssueGroups(EVE\InvTypesQuery::create()
-                ->joinWith('InvTypes.InvGroups'))
+        'types' => EVE\InvTypesQuery::create()
+                ->joinWith('InvTypes.InvGroups')
                 ->where('InvGroups.published = ?', 1)
                 ->filterByPublished(1)
                 ->find(),
@@ -90,17 +90,12 @@ class InvTypeService
   }
 
   public function getCategories() {
-    return $this->filterIssueGroups(EVE\InvCategoriesQuery::create()
-                                      ->filterByPublished(1)
-                                      ->leftJoinWith('InvCategories.InvGroups'))
-                                      ->orderByCategoryName()
-                                      ->orderBy('InvGroups.groupName')
-                                      ->find();
-  }
-
-  private function filterIssueGroups($query)  {
-    return $query->where('InvGroups.groupID != ?', 1395)
-                ->where('InvGroups.groupID != ?', 1396);
+    return EVE\InvCategoriesQuery::create()
+              ->filterByPublished(1)
+              ->leftJoinWith('InvCategories.InvGroups')
+              ->orderByCategoryName()
+              ->orderBy('InvGroups.groupName')
+              ->find();
   }
 
   //http://wiki.eve-id.net/CPU_and_Powergrid_requirements_for_modules
