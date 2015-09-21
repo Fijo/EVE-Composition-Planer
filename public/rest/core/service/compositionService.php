@@ -23,9 +23,9 @@ class CompositionService extends EntityService
     return $this->getSingleEntity($this->createQuery()
       ->filterById($id)
       ->joinWith('CompositionEntity.RulesetEntity')
-      ->joinWith('CompositionEntity.CompositionRow')
-      ->joinWith('CompositionRow.FitEntry')
-      ->joinWith('FitEntry.FitEntryType')
+      ->leftJoinWith('CompositionEntity.CompositionRow')
+      ->leftJoinWith('CompositionRow.FitEntry')
+      ->leftJoinWith('FitEntry.FitEntryType')
       ->orderBy('FitEntry.ind3x')
       ->find());
   }
