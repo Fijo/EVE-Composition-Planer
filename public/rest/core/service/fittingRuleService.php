@@ -38,6 +38,10 @@ class FittingRuleService extends EntityService
       ->find());
   }
 
+  protected function extendAutocompleteModel(&$model, $entity) {
+    $model['isGlobal'] = $entity->getIsGlobal() == 1;
+  }
+
   private function prefechSubentities($query) {
     return $this->prefechFittingRuleRowSubentities($query->joinWith('FittingRuleEntity.FittingRuleRow'));
   }
@@ -253,6 +257,7 @@ class FittingRuleService extends EntityService
     if($entity == null) return $this->getNotFound();
     
     $data = $this->getLocalyMappendModel($entity);
+    $data['isGlobal'] = $entity->getIsGlobal() == 1;
     $data['rules'] = $this->mapFittingRuleRowsToModel($entity);
     return $data;
   }
@@ -297,6 +302,8 @@ class FittingRuleService extends EntityService
       $connection->beginTransaction();
 
       $entity->setIsFilterTypeUptodate(0);
+
+      $entity->setIsGlobal($data->isGlobal ? 1 : 0);
 
       $ruleRowIndex = 0;
       foreach ($data->rules as $dataRuleRow) {

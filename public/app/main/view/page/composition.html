@@ -79,10 +79,18 @@ You should have received a copy of the GNU General Public License along with thi
 		  			<div ecp-progress-bar ecp-min="0" ecp-max="model.ruleset.maxPoints" ecp-value="model.entity.points"></div>
 		  			<b>Ship count</b>
 		  			<div ecp-progress-bar ecp-min="model.ruleset.minPilots" ecp-max="model.ruleset.maxPilots" ecp-value="model.entity.content.length"></div>
+
+					<b>Global fitting rules (matching)</b>
+					<ul class="none">
+						<li ng-repeat="tag in model.entity.tags">
+							<span class="label label-primary">{{tag}}</span>
+						</li>
+					</ul>
 	  			</div>
 		  	</div>
 
 		  	<div ng-repeat="ship in model.entity.content" ng-show="ship.viewDetails" class="validation-container-root" ecp-redirect-validation="#ship-validation-{{getRepeaterHash(ship)}}">
+				<h4>Details for the selected configuration</h4>
 				<div class="row">
 					<div class="col-xs-12 col-md-4 pull-right">
 						<b>Fitting rules (matching)</b>
@@ -93,7 +101,6 @@ You should have received a copy of the GNU General Public License along with thi
 						</ul>
 		  			</div>
 					<div class="col-xs-12 col-md-8">
-						<h4>Details for the selected configuration</h4>
 						<span ecp-validation-container>
 							<textarea class="form-control" name="{{::getRepeaterHash(ship)}}fit_eft" rows="24" ng-model="ship.fit.eft" placeholder="EFT Fit" ecp-validation-tooltip="form" required ng-model-options="{ allowInvalid: true }" ecp-ship-model="ship" ecp-fit-ship-type ecp-fit-invalid-item="0">
 							</textarea>

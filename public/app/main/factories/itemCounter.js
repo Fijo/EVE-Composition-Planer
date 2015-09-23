@@ -23,7 +23,9 @@
 				return self.items;
 			};
 			self.addItems = function(items)	{
-				_.each(items, self.addItem);
+				_.each(items, function(amount, type)	{
+					self.addItem(type, amount);
+				});
 			};
 			self.add = function(itemCounter)	{
 				self.addItems(itemCounter.getItems());

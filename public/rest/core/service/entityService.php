@@ -25,6 +25,7 @@ abstract class EntityService {
   abstract protected function getEntity($id);
   abstract protected function performSave($data, $fork);
   abstract protected function removeRelatedEntityIds($data);
+  abstract protected function extendAutocompleteModel(&$model, $entity);
 
   protected function getNewEntity() {
     return $this->getNewEntityByName($this->getEnityName());
@@ -196,7 +197,7 @@ abstract class EntityService {
         call_user_func_array(array($dbParent, 'remove'.$relationName), array($dbEntry));
   }
 
-  protected function cleanupDataForValidation($data) {
+  protected function cleanupDataForValidation(&$data) {
     unset($data['isYours']);
     unset($data['isListed']);
   }
@@ -219,10 +220,11 @@ abstract class EntityService {
     return $entity->getUser()->getUsername().'/'.$entity->getName();
   }
 
-  protected function getAutocompleteModel($entity)  {
-    return $this->createIdNameObj($entity->getId(), $this->getUniqueName($entity));
+  public function getAutocompleteModel($entity)  {
+    $model = $this->createIdNameObj($entity->getId(), $this->getUniqueName($entity));
+    $this->extendAutocompleteModel($model, $entity);
+    return $model;
   }
-
 
   public function getAutocomplete($needle)  {
     $list = $this->getEntityAutocompleteList($needle);
@@ -251,7 +253,7 @@ abstract class EntityService {
     $user = $this->userService->getLoggedInUser();
     if($entity->getUserId() != $user->id)
       return $this->getAccessDenied();
-    $entity->delete();
+    $entity->delete($connection);
     return $this->getSuccess();
   }
   

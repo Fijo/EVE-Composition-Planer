@@ -8,35 +8,29 @@
 (function(angular, undefined)	{
 	'use strict';
 
-	angular.module('mainApp').factory('CompositionValidationService', ['$q', '_', 'ComparisonService', 'ValidationService', function($q, _, ComparisonService, ValidationService) {
+	angular.module('mainApp').factory('GlobalFittingValidationService', ['$q', '_', 'ComparisonService', 'FittingValidationService', 'ItemCounter', function($q, _, ComparisonService, FittingValidationService, ItemCounter) {
 		return $q(function(resolve, reject)	{
 			ComparisonService.then(function(comparisonService)	{
-				var self = ValidationService(comparisonService);
+				var self = FittingValidationService(comparisonService);
 
-				self.includeMatchingRule = false;
+				self.getAffectedFittingRules =  function(fittings)	{
+					return fittings.global;
+				};
 
-				self.getMatchingAmount = function(ruleRow, compositionEntity)	{
-					var i = 0;
-					_.each(compositionEntity.content, function(ship)	{
-						if(ship.fit.tags.indexOf(ruleRow.tag.name) != -1) i++;
+				self.getItems = function(composition)	{
+					var compositionItems = new ItemCounter();
+					_.each(composition.content, function(ship)	{
+						var fit = ship.fit;
+						if(fit.items == null)	{
+							compositionItems.addItem(ship.shipId, 1);
+							return;
+						}
+						compositionItems.add(fit.items);
+						if(fit.items.getItemAmount(ship.shipId) == 0)
+							compositionItems.addItem(ship.shipId, 1);
 					});
-					if(compositionEntity.tags.indexOf(ruleRow.tag.name) != -1) i++;
-					return i;
+					return compositionItems;
 				};
-
-				self.getRuleRows = function(ruleEntity)	{
-					return ruleEntity.fittingRules;
-				};
-
-				self.getRuleEntities =  function(ruleset)	{
-					return ruleset.rules;
-				};
-
-				self.validateComposition = function(ruleset, compositionEntity)	{
-					return _.map(self.getMatchingRules(ruleset, compositionEntity), function(ruleEntity)	{
-						return ruleEntity.message;
-					});
-				}
 				resolve(self);
 			}, reject);
 		});

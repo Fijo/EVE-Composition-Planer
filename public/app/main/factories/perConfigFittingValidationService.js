@@ -8,35 +8,18 @@
 (function(angular, undefined)	{
 	'use strict';
 
-	angular.module('mainApp').factory('CompositionValidationService', ['$q', '_', 'ComparisonService', 'ValidationService', function($q, _, ComparisonService, ValidationService) {
+	angular.module('mainApp').factory('PerConfigFittingValidationService', ['$q', 'ComparisonService', 'FittingValidationService', function($q, ComparisonService, FittingValidationService) {
 		return $q(function(resolve, reject)	{
 			ComparisonService.then(function(comparisonService)	{
-				var self = ValidationService(comparisonService);
+				var self = FittingValidationService(comparisonService);
 
-				self.includeMatchingRule = false;
-
-				self.getMatchingAmount = function(ruleRow, compositionEntity)	{
-					var i = 0;
-					_.each(compositionEntity.content, function(ship)	{
-						if(ship.fit.tags.indexOf(ruleRow.tag.name) != -1) i++;
-					});
-					if(compositionEntity.tags.indexOf(ruleRow.tag.name) != -1) i++;
-					return i;
+				self.getAffectedFittingRules =  function(fittings)	{
+					return fittings.perConfig;
 				};
 
-				self.getRuleRows = function(ruleEntity)	{
-					return ruleEntity.fittingRules;
+				self.getItems = function(fit)	{
+					return fit.items;
 				};
-
-				self.getRuleEntities =  function(ruleset)	{
-					return ruleset.rules;
-				};
-
-				self.validateComposition = function(ruleset, compositionEntity)	{
-					return _.map(self.getMatchingRules(ruleset, compositionEntity), function(ruleEntity)	{
-						return ruleEntity.message;
-					});
-				}
 				resolve(self);
 			}, reject);
 		});

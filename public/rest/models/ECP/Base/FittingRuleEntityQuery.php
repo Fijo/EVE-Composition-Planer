@@ -23,6 +23,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildFittingRuleEntityQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildFittingRuleEntityQuery orderByName($order = Criteria::ASC) Order by the name column
  * @method     ChildFittingRuleEntityQuery orderByUserid($order = Criteria::ASC) Order by the userId column
+ * @method     ChildFittingRuleEntityQuery orderByIsglobal($order = Criteria::ASC) Order by the isGlobal column
  * @method     ChildFittingRuleEntityQuery orderByIslisted($order = Criteria::ASC) Order by the isListed column
  * @method     ChildFittingRuleEntityQuery orderByForkedid($order = Criteria::ASC) Order by the forkedId column
  * @method     ChildFittingRuleEntityQuery orderByIsfiltertypeuptodate($order = Criteria::ASC) Order by the isFilterTypeUptodate column
@@ -31,6 +32,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildFittingRuleEntityQuery groupById() Group by the id column
  * @method     ChildFittingRuleEntityQuery groupByName() Group by the name column
  * @method     ChildFittingRuleEntityQuery groupByUserid() Group by the userId column
+ * @method     ChildFittingRuleEntityQuery groupByIsglobal() Group by the isGlobal column
  * @method     ChildFittingRuleEntityQuery groupByIslisted() Group by the isListed column
  * @method     ChildFittingRuleEntityQuery groupByForkedid() Group by the forkedId column
  * @method     ChildFittingRuleEntityQuery groupByIsfiltertypeuptodate() Group by the isFilterTypeUptodate column
@@ -68,6 +70,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildFittingRuleEntity findOneById(int $id) Return the first ChildFittingRuleEntity filtered by the id column
  * @method     ChildFittingRuleEntity findOneByName(string $name) Return the first ChildFittingRuleEntity filtered by the name column
  * @method     ChildFittingRuleEntity findOneByUserid(int $userId) Return the first ChildFittingRuleEntity filtered by the userId column
+ * @method     ChildFittingRuleEntity findOneByIsglobal(int $isGlobal) Return the first ChildFittingRuleEntity filtered by the isGlobal column
  * @method     ChildFittingRuleEntity findOneByIslisted(int $isListed) Return the first ChildFittingRuleEntity filtered by the isListed column
  * @method     ChildFittingRuleEntity findOneByForkedid(int $forkedId) Return the first ChildFittingRuleEntity filtered by the forkedId column
  * @method     ChildFittingRuleEntity findOneByIsfiltertypeuptodate(int $isFilterTypeUptodate) Return the first ChildFittingRuleEntity filtered by the isFilterTypeUptodate column
@@ -79,6 +82,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildFittingRuleEntity requireOneById(int $id) Return the first ChildFittingRuleEntity filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildFittingRuleEntity requireOneByName(string $name) Return the first ChildFittingRuleEntity filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildFittingRuleEntity requireOneByUserid(int $userId) Return the first ChildFittingRuleEntity filtered by the userId column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildFittingRuleEntity requireOneByIsglobal(int $isGlobal) Return the first ChildFittingRuleEntity filtered by the isGlobal column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildFittingRuleEntity requireOneByIslisted(int $isListed) Return the first ChildFittingRuleEntity filtered by the isListed column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildFittingRuleEntity requireOneByForkedid(int $forkedId) Return the first ChildFittingRuleEntity filtered by the forkedId column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildFittingRuleEntity requireOneByIsfiltertypeuptodate(int $isFilterTypeUptodate) Return the first ChildFittingRuleEntity filtered by the isFilterTypeUptodate column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -88,6 +92,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildFittingRuleEntity[]|ObjectCollection findById(int $id) Return ChildFittingRuleEntity objects filtered by the id column
  * @method     ChildFittingRuleEntity[]|ObjectCollection findByName(string $name) Return ChildFittingRuleEntity objects filtered by the name column
  * @method     ChildFittingRuleEntity[]|ObjectCollection findByUserid(int $userId) Return ChildFittingRuleEntity objects filtered by the userId column
+ * @method     ChildFittingRuleEntity[]|ObjectCollection findByIsglobal(int $isGlobal) Return ChildFittingRuleEntity objects filtered by the isGlobal column
  * @method     ChildFittingRuleEntity[]|ObjectCollection findByIslisted(int $isListed) Return ChildFittingRuleEntity objects filtered by the isListed column
  * @method     ChildFittingRuleEntity[]|ObjectCollection findByForkedid(int $forkedId) Return ChildFittingRuleEntity objects filtered by the forkedId column
  * @method     ChildFittingRuleEntity[]|ObjectCollection findByIsfiltertypeuptodate(int $isFilterTypeUptodate) Return ChildFittingRuleEntity objects filtered by the isFilterTypeUptodate column
@@ -184,7 +189,7 @@ abstract class FittingRuleEntityQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, name, userId, isListed, forkedId, isFilterTypeUptodate, lastModified FROM fittingruleentity WHERE id = :p0';
+        $sql = 'SELECT id, name, userId, isGlobal, isListed, forkedId, isFilterTypeUptodate, lastModified FROM fittingruleentity WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);            
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -385,6 +390,47 @@ abstract class FittingRuleEntityQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(FittingRuleEntityTableMap::COL_USERID, $userid, $comparison);
+    }
+
+    /**
+     * Filter the query on the isGlobal column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByIsglobal(1234); // WHERE isGlobal = 1234
+     * $query->filterByIsglobal(array(12, 34)); // WHERE isGlobal IN (12, 34)
+     * $query->filterByIsglobal(array('min' => 12)); // WHERE isGlobal > 12
+     * </code>
+     *
+     * @param     mixed $isglobal The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildFittingRuleEntityQuery The current query, for fluid interface
+     */
+    public function filterByIsglobal($isglobal = null, $comparison = null)
+    {
+        if (is_array($isglobal)) {
+            $useMinMax = false;
+            if (isset($isglobal['min'])) {
+                $this->addUsingAlias(FittingRuleEntityTableMap::COL_ISGLOBAL, $isglobal['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($isglobal['max'])) {
+                $this->addUsingAlias(FittingRuleEntityTableMap::COL_ISGLOBAL, $isglobal['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(FittingRuleEntityTableMap::COL_ISGLOBAL, $isglobal, $comparison);
     }
 
     /**

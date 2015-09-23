@@ -30,6 +30,8 @@ class CompositionService extends EntityService
       ->find());
   }
 
+  protected function extendAutocompleteModel(&$model, $entity) {}
+
   public function get($id)  {
     $entity = $this->getEntity($id);
     if($entity == null) return $this->getNotFound();

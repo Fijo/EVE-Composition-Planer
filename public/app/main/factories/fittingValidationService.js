@@ -8,32 +8,38 @@
 (function(angular, undefined)	{
 	'use strict';
 
-	angular.module('mainApp').factory('FittingValidationService', ['$q', '_', 'ComparisonService', 'ValidationService', function($q, _, ComparisonService, ValidationService) {
-		return $q(function(resolve, reject)	{
-			ComparisonService.then(function(comparisonService)	{
-				var self = ValidationService(comparisonService);
+	angular.module('mainApp').factory('FittingValidationService', ['_', 'ValidationService', function(_, ValidationService) {
+		return function(comparisonService)	{
+			var self = ValidationService(comparisonService);
 
-				self.getMatchingAmount = function(ruleRow, usedItems)	{
-					return _.reduce(ruleRow.itemFilterRules, function(memo, itemFilterItem)	{
-						return memo + usedItems.getItemAmount(itemFilterItem);
-					}, 0);
-				};
+			self.getAffectedFittingRules =  function(fittings)	{
+				throw 'Not Implemented';
+			};
 
-				self.getRuleRows = function(ruleEntity)	{
-					return ruleEntity.rules;
-				};
+			self.getItems =  function(objToValidate)	{
+				throw 'Not Implemented';
+			};
 
-				self.getRuleEntities =  function(ruleset)	{
-					return ruleset.fittings;
-				};
+			self.getMatchingAmount = function(ruleRow, usedItems)	{
+				return _.reduce(ruleRow.itemFilterRules, function(memo, itemFilterItem)	{
+					return memo + usedItems.getItemAmount(itemFilterItem);
+				}, 0);
+			};
 
-				self.validateFitting = function(ruleset, items)	{
-					return _.map(self.getMatchingRules(ruleset, items), function(ruleEntity)	{
-						return ruleEntity.name;
-					});
-				}
-				resolve(self);
-			}, reject);
-		});
+			self.getRuleRows = function(ruleEntity)	{
+				return ruleEntity.rules;
+			};
+
+			self.getRuleEntities =  function(ruleset)	{
+				return self.getAffectedFittingRules(ruleset.fittings);
+			};
+
+			self.validateFitting = function(ruleset, objToValidate)	{
+				return _.map(self.getMatchingRules(ruleset, self.getItems(objToValidate)), function(ruleEntity)	{
+					return ruleEntity.name;
+				});
+			};
+			return self;
+		};
 	}]);
 })(angular)

@@ -38,13 +38,21 @@
 				content: [
 					'By specifying the rules in the white area of each of those box(es) you basicly filter the item types that gona be counted.',
 					'This area is alot like the item filters you have on the left bottom of each items windows in EVE Online. If you have ever created one of those you should be familiar with how these filters work.'
-
 				]
 			},
 			{
 				title: 'Not only fittings!',
 				content: [
 					'Not only items from the fittings but also booster, implants and the ship (-item) itself are being used itself to apply the fitting rules to.'
+				]
+			},
+			{
+				title: 'Global fitting rules!',
+				content: [
+					'By clicking the button on the right of the big textbox for the name of the fitting rule you can make toggle if the fitting rule should be global or not.',
+					'If a fitting rule is global its gona validate the combined item amount of all fittings in the composition.',
+					'As a result it will also tag the entire composition instead of an individual fit. That doesn´t change the way the tagging mechanic works its just fyi.',
+					'In some cases this can be very handy to make some checks on the entire composition without using multible fitting rules.'
 				]
 			}
 		];
@@ -74,6 +82,7 @@
 
 		$scope.getNewSpecificEntity = function()	{
 			return {
+				isGlobal: false,
 				rules: [_.dclone(shared.emptyRule)]
 			};
 		};

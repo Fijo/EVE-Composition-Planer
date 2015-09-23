@@ -33,11 +33,7 @@ class RulesetService extends EntityService
       ->find()));
   }
 
-  protected function getEntityForValidation($id) {
-    return $this->getSingleEntity($this->populateSubentities($this->addOrder($this->prefechSubentities($this->createQuery()
-      ->filterById($id)))
-      ->find()));
-  }
+  protected function extendAutocompleteModel(&$model, $entity) {}
 
   private function populateSubentities($rows) {
     $rows->populateRelation('RulesetShip');
@@ -59,8 +55,8 @@ class RulesetService extends EntityService
   
   public function getContextForValidation($entity) {
     $context = array();
-    $context['fittingRuleEntityIds'] = $this->getFittingRuleEntityIds($entity);
-    $context['fittingRuleEntityContext'] = $this->fittingRuleService->getFittingRuleEntityContextForValidation($context['fittingRuleEntityIds']);
+    $fittingRuleEntityIds = $this->getFittingRuleEntityIds($entity);
+    $context['fittingRuleEntityContext'] = $this->fittingRuleService->getFittingRuleEntityContextForValidation($fittingRuleEntityIds);
     return $context;
   }
 
@@ -76,16 +72,28 @@ class RulesetService extends EntityService
   }
 
   public function getForValidation($id)  {
-    $entity = $this->getEntityForValidation($id);
+    $entity = $this->getEntity($id);
     if($entity == null) return $this->getNotFound();
 
     $context = $this->getContextForValidation($entity);
     $data = $this->getMappedModel($entity);
-    $this->cleanupDataForValidation($data);
+    $this->cleanupDataForValidation2($data);
 
     $data['fittingFiltersUptodate'] = $this->areFittingFilterTypesUptodate($context);
     $data['fittings'] = $this->mapFittingsToModel($context, $entity);
     return $data;
+  }
+
+  private function cleanupDataForValidation2(&$data)  {
+    $this->cleanupDataForValidation($data);
+    $this->cleanupShipsDataForValidation($data);
+  }
+
+  private function cleanupShipsDataForValidation(&$data) {
+    $maxPoints = $data['maxPoints'];
+    $ships = &$data['ships'];
+    foreach ($ships as $shipId => $pointAmount)
+      if($pointAmount > $maxPoints) unset($ships[$shipId]);
   }
 
   private function areFittingFilterTypesUptodate($context) {
@@ -96,12 +104,17 @@ class RulesetService extends EntityService
   }
 
   private function mapFittingsToModel($context, $entity) {
-    $dataFittings = array();
+    $dataFittings = array('global' => array(),
+                          'perConfig' => array());
     $fittingRuleEntityContext = $context['fittingRuleEntityContext'];
     foreach ($fittingRuleEntityContext['entities'] as $fittingRuleEntity)
-      $dataFittings[] = $this->fittingRuleService->getForValidation($fittingRuleEntity, $fittingRuleEntityContext);
+      $dataFittings[$this->getFittingType($fittingRuleEntity)][] = $this->fittingRuleService->getForValidation($fittingRuleEntity, $fittingRuleEntityContext);
 
     return $dataFittings;
+  }
+
+  private function getFittingType($fittingRuleEntity)  {
+    return $fittingRuleEntity->getIsGlobal() ? 'global' : 'perConfig';
   }
 
   public function get($id)  {
@@ -141,7 +154,7 @@ class RulesetService extends EntityService
       foreach ($ruleRow->getRulesetFilterRules() as $filterRule)  {
         $dataFilterRules[] = array('id' => $filterRule->getId(),
                                 'concatenation' => $this->createIdObj($filterRule->getConcatenation()),
-                                'tag' => $this->getAutocompleteModel($filterRule->getFittingRuleEntity()),
+                                'tag' => $this->fittingRuleService->getAutocompleteModel($filterRule->getFittingRuleEntity()),
                                 'comparison' => $this->createIdObj($filterRule->getComparison()),
                                 'value' => $filterRule->getValue());
       }

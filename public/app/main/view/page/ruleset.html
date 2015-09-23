@@ -96,7 +96,7 @@ You should have received a copy of the GNU General Public License along with thi
 											</div>
 											<div class="col-xs-9">
 												<div class="form-inline">
-													count of fits tagged with 
+													count of {{ fittingRule.tag.isGlobal ? 'composition(s) tagged with' : 'fits tagged with' }}
 													<span ecp-validation-container>
 														<input class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}tag" ng-model="fittingRule.tag" type="text" placeholder="Fitting rule" data-auto-select="true" data-animation="am-flip-x"
     														bs-options="fittingRuleEntity as fittingRuleEntity.name for fittingRuleEntity in getFittingRulesAutocomplete($viewValue) track by fittingRuleEntity.id" bs-typeahead ng-model-options="{ allowInvalid: true }"

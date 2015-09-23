@@ -8,7 +8,7 @@
 (function(angular, undefined)	{
 	'use strict';
 	
-	angular.module('mainApp').factory('FittingService', ['_', 'FittingParser', 'FittingWriter', 'FittingConverter', 'ItemCounter', 'ItemConverter', 'FittingValidationService', function(_, FittingParser, FittingWriter, FittingConverter, ItemCounter, ItemConverter, FittingValidationService) {
+	angular.module('mainApp').factory('FittingService', ['_', 'FittingParser', 'FittingWriter', 'FittingConverter', 'ItemCounter', 'ItemConverter', 'PerConfigFittingValidationService', function(_, FittingParser, FittingWriter, FittingConverter, ItemCounter, ItemConverter, PerConfigFittingValidationService) {
 
 		var self = {};
 		self.setFit = function(model, fittingContent)	{
@@ -54,8 +54,8 @@
 							var content = fittingConverter.convertFit(FittingParser.parseFit(self.getFit(fit)), 'IdByName');
 							fit.content = content;
 							fit.items = self.getItems(itemConverter, content);
-							FittingValidationService.then(function(fittingValidationService)	{
-								fit.tags = fittingValidationService.validateFitting(ruleset, fit.items);
+							PerConfigFittingValidationService.then(function(perConfigFittingValidationService)	{
+								fit.tags = perConfigFittingValidationService.validateFitting(ruleset, fit);
 							});
 							$scope.$broadcast('fitUpdated-' + ship.$$hashKey, []);
 						});

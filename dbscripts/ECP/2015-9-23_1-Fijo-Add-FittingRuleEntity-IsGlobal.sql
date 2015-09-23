@@ -1,0 +1,1 @@
+ALTER TABLE  `fittingruleentity` ADD  `isGlobal` TINYINT UNSIGNED NOT NULL AFTER  `userId` ;

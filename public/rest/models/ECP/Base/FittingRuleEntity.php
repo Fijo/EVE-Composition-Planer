@@ -88,6 +88,12 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
     protected $userid;
 
     /**
+     * The value for the isglobal field.
+     * @var        int
+     */
+    protected $isglobal;
+
+    /**
      * The value for the islisted field.
      * @var        int
      */
@@ -413,6 +419,16 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
     }
 
     /**
+     * Get the [isglobal] column value.
+     * 
+     * @return int
+     */
+    public function getIsglobal()
+    {
+        return $this->isglobal;
+    }
+
+    /**
      * Get the [islisted] column value.
      * 
      * @return int
@@ -525,6 +541,26 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
 
         return $this;
     } // setUserid()
+
+    /**
+     * Set the value of [isglobal] column.
+     * 
+     * @param int $v new value
+     * @return $this|\ECP\FittingRuleEntity The current object (for fluent API support)
+     */
+    public function setIsglobal($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->isglobal !== $v) {
+            $this->isglobal = $v;
+            $this->modifiedColumns[FittingRuleEntityTableMap::COL_ISGLOBAL] = true;
+        }
+
+        return $this;
+    } // setIsglobal()
 
     /**
      * Set the value of [islisted] column.
@@ -655,16 +691,19 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : FittingRuleEntityTableMap::translateFieldName('Userid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->userid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : FittingRuleEntityTableMap::translateFieldName('Islisted', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : FittingRuleEntityTableMap::translateFieldName('Isglobal', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->isglobal = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : FittingRuleEntityTableMap::translateFieldName('Islisted', TableMap::TYPE_PHPNAME, $indexType)];
             $this->islisted = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : FittingRuleEntityTableMap::translateFieldName('Forkedid', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : FittingRuleEntityTableMap::translateFieldName('Forkedid', TableMap::TYPE_PHPNAME, $indexType)];
             $this->forkedid = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : FittingRuleEntityTableMap::translateFieldName('Isfiltertypeuptodate', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : FittingRuleEntityTableMap::translateFieldName('Isfiltertypeuptodate', TableMap::TYPE_PHPNAME, $indexType)];
             $this->isfiltertypeuptodate = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : FittingRuleEntityTableMap::translateFieldName('Lastmodified', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : FittingRuleEntityTableMap::translateFieldName('Lastmodified', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -677,7 +716,7 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 7; // 7 = FittingRuleEntityTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 8; // 8 = FittingRuleEntityTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\ECP\\FittingRuleEntity'), 0, $e);
@@ -968,6 +1007,9 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
         if ($this->isColumnModified(FittingRuleEntityTableMap::COL_USERID)) {
             $modifiedColumns[':p' . $index++]  = 'userId';
         }
+        if ($this->isColumnModified(FittingRuleEntityTableMap::COL_ISGLOBAL)) {
+            $modifiedColumns[':p' . $index++]  = 'isGlobal';
+        }
         if ($this->isColumnModified(FittingRuleEntityTableMap::COL_ISLISTED)) {
             $modifiedColumns[':p' . $index++]  = 'isListed';
         }
@@ -999,6 +1041,9 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
                         break;
                     case 'userId':                        
                         $stmt->bindValue($identifier, $this->userid, PDO::PARAM_INT);
+                        break;
+                    case 'isGlobal':                        
+                        $stmt->bindValue($identifier, $this->isglobal, PDO::PARAM_INT);
                         break;
                     case 'isListed':                        
                         $stmt->bindValue($identifier, $this->islisted, PDO::PARAM_INT);
@@ -1084,15 +1129,18 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
                 return $this->getUserid();
                 break;
             case 3:
-                return $this->getIslisted();
+                return $this->getIsglobal();
                 break;
             case 4:
-                return $this->getForkedid();
+                return $this->getIslisted();
                 break;
             case 5:
-                return $this->getIsfiltertypeuptodate();
+                return $this->getForkedid();
                 break;
             case 6:
+                return $this->getIsfiltertypeuptodate();
+                break;
+            case 7:
                 return $this->getLastmodified();
                 break;
             default:
@@ -1128,17 +1176,18 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getName(),
             $keys[2] => $this->getUserid(),
-            $keys[3] => $this->getIslisted(),
-            $keys[4] => $this->getForkedid(),
-            $keys[5] => $this->getIsfiltertypeuptodate(),
-            $keys[6] => $this->getLastmodified(),
+            $keys[3] => $this->getIsglobal(),
+            $keys[4] => $this->getIslisted(),
+            $keys[5] => $this->getForkedid(),
+            $keys[6] => $this->getIsfiltertypeuptodate(),
+            $keys[7] => $this->getLastmodified(),
         );
 
         $utc = new \DateTimeZone('utc');
-        if ($result[$keys[6]] instanceof \DateTime) {
+        if ($result[$keys[7]] instanceof \DateTime) {
             // When changing timezone we don't want to change existing instances
-            $dateTime = clone $result[$keys[6]];
-            $result[$keys[6]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+            $dateTime = clone $result[$keys[7]];
+            $result[$keys[7]] = $dateTime->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
         }
         
         $virtualColumns = $this->virtualColumns;
@@ -1266,15 +1315,18 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
                 $this->setUserid($value);
                 break;
             case 3:
-                $this->setIslisted($value);
+                $this->setIsglobal($value);
                 break;
             case 4:
-                $this->setForkedid($value);
+                $this->setIslisted($value);
                 break;
             case 5:
-                $this->setIsfiltertypeuptodate($value);
+                $this->setForkedid($value);
                 break;
             case 6:
+                $this->setIsfiltertypeuptodate($value);
+                break;
+            case 7:
                 $this->setLastmodified($value);
                 break;
         } // switch()
@@ -1313,16 +1365,19 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
             $this->setUserid($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setIslisted($arr[$keys[3]]);
+            $this->setIsglobal($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setForkedid($arr[$keys[4]]);
+            $this->setIslisted($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setIsfiltertypeuptodate($arr[$keys[5]]);
+            $this->setForkedid($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setLastmodified($arr[$keys[6]]);
+            $this->setIsfiltertypeuptodate($arr[$keys[6]]);
+        }
+        if (array_key_exists($keys[7], $arr)) {
+            $this->setLastmodified($arr[$keys[7]]);
         }
     }
 
@@ -1373,6 +1428,9 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
         }
         if ($this->isColumnModified(FittingRuleEntityTableMap::COL_USERID)) {
             $criteria->add(FittingRuleEntityTableMap::COL_USERID, $this->userid);
+        }
+        if ($this->isColumnModified(FittingRuleEntityTableMap::COL_ISGLOBAL)) {
+            $criteria->add(FittingRuleEntityTableMap::COL_ISGLOBAL, $this->isglobal);
         }
         if ($this->isColumnModified(FittingRuleEntityTableMap::COL_ISLISTED)) {
             $criteria->add(FittingRuleEntityTableMap::COL_ISLISTED, $this->islisted);
@@ -1474,6 +1532,7 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
     {
         $copyObj->setName($this->getName());
         $copyObj->setUserid($this->getUserid());
+        $copyObj->setIsglobal($this->getIsglobal());
         $copyObj->setIslisted($this->getIslisted());
         $copyObj->setForkedid($this->getForkedid());
         $copyObj->setIsfiltertypeuptodate($this->getIsfiltertypeuptodate());
@@ -2476,6 +2535,7 @@ abstract class FittingRuleEntity implements ActiveRecordInterface
         $this->id = null;
         $this->name = null;
         $this->userid = null;
+        $this->isglobal = null;
         $this->islisted = null;
         $this->forkedid = null;
         $this->isfiltertypeuptodate = null;

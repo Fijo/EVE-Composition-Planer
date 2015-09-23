@@ -7,8 +7,32 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 -->
 
+<div ng-include="'app/main/view/partial/header/top.html'"></div>
+<div ng-include="'app/main/view/partial/alert/fork.html'"></div>
+<div class="alert alert-info" role="alert" ng-if="!requestManagement.hasError('init') && !requestManagement.isPending('init') && model.entity.isGlobal">
+	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	<strong><span class="glyphicon glyphicon-th-list"></span> This is currently a global fitting rule.</strong><br/>
+	That means its gona validate the combined item amount of all fittings in the composition.<br/>
+	As a result it will also tag the entire composition instead of an individual fit. That doesn´t change the way the tagging mechanic works its just fyi.<br/>
+	In some cases this can be very handy to make some checks on the entire composition without using multible fitting rules.
+</div>
+
 <form name="form">
-	<div ng-include="'app/main/view/partial/header/default-entity.html'"></div>
+	<div class="main-toolbar">
+  		<div class="input-group">
+			<div class="input-group-btn" ng-include="'app/main/view/partial/toolbar/actions.html'"></div>
+			<span ng-include="'app/main/view/partial/toolbar/name.html'"></span>
+			<div class="input-group-btn">
+				<div class="btn-group" role="group">
+					<button type="button" class="btn btn-default btn-sm" ecp-tooltip="'Fitting rule is global'"
+						ng-model="model.entity.isGlobal" ng-disabled="isReadonly()" bs-checkbox>
+						<span class="glyphicon glyphicon-th-list"></span>
+					</button>
+				</div>
+			</div>
+			<div class="input-group-btn" ng-include="'app/main/view/partial/toolbar/actions-right.html'"></div>
+		</div>
+  	</div>
 
 	<div ng-repeat="rule in model.entity.rules" class="row" ng-init="ruleKey = getRepeaterHash(rule)">
 		<div class="col-sm-2">
@@ -21,7 +45,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					Count of items from fitting that match
+					Count of items from {{ model.entity.isGlobal ? 'fittings' : 'fitting' }} that match
 				</div>
 				<ul class="list-group">
 					<li ng-repeat="itemFilterRule in rule.itemFilterRules" class="list-group-item" ng-init="filterKey = getRepeaterHash(itemFilterRule)">

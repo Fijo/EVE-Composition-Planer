@@ -31,6 +31,8 @@
                 './factories/comparisonService',
                 './factories/validationService',
                 './factories/fittingValidationService',
+                './factories/globalFittingValidationService',
+                './factories/perConfigFittingValidationService',
                 './factories/compositionValidationService',
                 './factories/rulesetService',
                 './factories/rootValidationService',

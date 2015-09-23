@@ -8,7 +8,7 @@
 (function(angular, undefined)	{
 	'use strict';
 	
-	angular.module('mainApp').controller('compositionCtrl', ['$scope', '$controller', '_', 'Ruleset', 'ShipGroup', 'FittingService', 'ItemConverter', 'CompositionValidationService', 'RulesetService', 'KnowyetService', function ($scope, $controller, _, Ruleset, ShipGroup, FittingService, ItemConverter, CompositionValidationService, RulesetService, KnowyetService) {
+	angular.module('mainApp').controller('compositionCtrl', ['$scope', '$controller', '_', 'Ruleset', 'ShipGroup', 'FittingService', 'ItemConverter', 'CompositionValidationService', 'GlobalFittingValidationService', 'RulesetService', 'KnowyetService', function ($scope, $controller, _, Ruleset, ShipGroup, FittingService, ItemConverter, CompositionValidationService, GlobalFittingValidationService, RulesetService, KnowyetService) {
 		$controller('entityCtrl', { $scope: $scope });
 		RulesetService($scope);
 
@@ -103,7 +103,7 @@
 
 		$scope.getShipPoints = function(shipId)	{
 			var ruleset = $scope.model.ruleset;
-			return ruleset.ships != null ? ruleset.ships[shipId] : 0;
+			return ruleset.ships != null ? ruleset.ships[shipId] || 4294967295 : 0;
 		};
 
 		$scope.getMaxPoints = function()	{
@@ -121,8 +121,11 @@
 		};
 
 		var validateComposition = function()	{
-			CompositionValidationService.then(function(compositionValidationService)	{
-				$scope.model.entity.violations = compositionValidationService.validateComposition($scope.model.ruleset, $scope.model.entity);
+			GlobalFittingValidationService.then(function(globalFittingValidationService)	{
+				$scope.model.entity.tags = globalFittingValidationService.validateFitting($scope.model.ruleset, $scope.model.entity);
+				CompositionValidationService.then(function(compositionValidationService)	{
+					$scope.model.entity.violations = compositionValidationService.validateComposition($scope.model.ruleset, $scope.model.entity);
+				});
 			});
 		};
 
@@ -208,7 +211,8 @@
 		$scope.init();
 
 		$scope.reloadRuleset = function()	{
-			var rulesetId = $scope.model.entity.ruleset ? $scope.model.entity.ruleset.id : null;
+			var entity = $scope.model.entity;
+			var rulesetId = entity != null && entity.ruleset ? entity.ruleset.id : null;
 			$scope.model.ruleset = rulesetId != null ? $scope.pushRequest(Ruleset.validation({cid: rulesetId}, updateShips), 'init') : {};
 		};
 

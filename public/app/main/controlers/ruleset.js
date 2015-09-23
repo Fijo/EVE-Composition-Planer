@@ -159,7 +159,6 @@
 			return $scope.model.entity.maxPoints;
 		};
 
-
 		$scope.completeLoading = function()	{
 			$scope.updateGroupsOverviewsPoints();
 		};
