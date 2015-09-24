@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 		<echo message="For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life. John 3:16"/>
 		<copy file="../public/rest/config/propel/propel.json" tofile="../public/rest/vendor/propel/propel/propel.json" />
 		<copy file="../public/rest/config/propel/propel.json.dist" tofile="../public/rest/vendor/propel/propel/propel.json.dist" />
+		<delete file="../public/rest/vendor/propel/propel/generated-conf/config.php" />
 	    <exec program="${phpPath}" workingdir="../public/rest/vendor/propel/propel">
 	    	<arg line="-r &quot;include('${propelPath}');&quot; config:convert" />
 		</exec>
@@ -21,7 +22,7 @@ You should have received a copy of the GNU General Public License along with thi
 	    	<arg line="-r &quot;include('${propelPath}');&quot; model:build" />
 		</exec>
 		<exec program="${phpPath}" workingdir="../public/rest/vendor/propel/propel">
-	    	<arg line="-r &quot;include('${propelPath}');&quot; sql:build" />
+	    	<arg line="-r &quot;include('${propelPath}');&quot; sql:build --overwrite" />
 		</exec>
     </target>
 </project>
