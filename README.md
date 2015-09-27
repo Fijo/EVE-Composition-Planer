@@ -1,6 +1,11 @@
 # EVE-Composition-Planer
 A tool that makes theorycrafting compositions for tournaments within EVE Online easier
 
+dependencies:
+package.json [![Dependency Status](https://www.versioneye.com/user/projects/56087db55a262f001a0001a4/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56087db55a262f001a0001a4)
+public/bower.json [![Dependency Status](https://www.versioneye.com/user/projects/56086d745a262f001a000185/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56086d745a262f001a000185)
+public/rest/composer.lock [![Dependency Status](https://www.versioneye.com/user/projects/56086d825a262f001e00038c/badge.svg?style=flat)](https://www.versioneye.com/user/projects/56086d825a262f001e00038c)
+
 
 License
 -------
