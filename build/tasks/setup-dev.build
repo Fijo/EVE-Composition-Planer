@@ -10,7 +10,7 @@ You should have received a copy of the GNU General Public License along with thi
 <project name="ECP" default="setup-dev">
     <target name="setup-dev">
 	    <exec program="${npmPath}" workingdir="..">
-	    	<arg line="install karma karma-jasmine karma-chrome-launcher bower --save-dev" />
+	    	<arg line="install --dev" />
 		</exec>
 		<exec program="${nodejsPath}" workingdir="../public">
 		    <arg line="../node_modules/bower/bin/bower install" />
