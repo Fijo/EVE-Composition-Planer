@@ -11,7 +11,7 @@ before_install:
   - sudo npm config set spin=false
   - sudo npm update -g npm
   - sudo curl -sS https://getcomposer.org/installer| php
-  - sudo mv composer.phar /usr/local/bin/composer
+  - sudo mv composer.phar /usr/bin/composer
 
 install:
   - node -v
