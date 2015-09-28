@@ -3,12 +3,6 @@ php:
   - 5.5
 
 before_install:
-  - whereis php
-  - ls -Al /home/travis/.phpenv/versions/5.5/bin
-  - cd public/rest
-  - /home/travis/.phpenv/versions/5.5/bin/composer install
-  - cd ../..
-  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=travis update-propel
   - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
   - echo "deb http://download.mono-project.com/repo/debian wheezy-libtiff-compat main" | sudo tee -a /etc/apt/sources.list.d/mono-xamarin.list
   - sudo apt-get update -qq
@@ -26,14 +20,9 @@ install:
   - npm -v
   - whereis node
   - whereis npm
-  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev
-  - ls -Al public/rest
-  - ls -Al public/rest/vendor
-  - ls -Al public/rest/vendor/propel
-  - ls -Al public/rest/vendor/propel/propel/bin
+  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=travis setup-dev
   - chmod +x public/rest/vendor/propel/propel/bin/propel
-  - whereis php
-  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux update-propel
+  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=travis update-propel
 
 script:
-  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev start-testrunner
+  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=travis setup-dev start-testrunner
