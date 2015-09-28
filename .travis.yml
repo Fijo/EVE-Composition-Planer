@@ -13,7 +13,7 @@ before_install:
   - sudo apt-get install -y mono-complete
 
 install:
-  - sh mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev update-propel
+  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev update-propel
 
 script:
-  - sh mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev start-testrunner
+  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev start-testrunner
