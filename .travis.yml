@@ -14,10 +14,10 @@ before_install:
   - sudo apt-get install -y npm
 
 install:
-  - npm install --dev
-  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev update-propel
   - whereis npm
   - whereis composer
+  - npm install --dev
+  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev update-propel
 
 script:
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev start-testrunner
