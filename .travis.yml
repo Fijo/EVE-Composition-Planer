@@ -15,6 +15,8 @@ before_install:
 
 install:
   - whereis npm
+  - /usr/share/npm install
+  - /usr/bin/X11/npm install
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux update-propel
 
