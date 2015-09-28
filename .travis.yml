@@ -14,6 +14,7 @@ before_install:
   - sudo apt-get install -y npm
 
 install:
+  - whereis npm
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux update-propel
 
