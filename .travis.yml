@@ -15,6 +15,8 @@ before_install:
   - sudo npm config set spin=false
   - sudo npm update -g npm
   - whereis composer
+  - sudo curl -sS https://getcomposer.org/installer| php
+  - sudo mv composer.phar /usr/bin/composer
 
 install:
   - node -v
@@ -22,9 +24,8 @@ install:
   - whereis node
   - whereis npm
   - cd /public/rest
-  - whereis composer
-  - composer install
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev
+  ls -Al /public/rest/vendor/propel/propel 
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux update-propel
 
 script:
