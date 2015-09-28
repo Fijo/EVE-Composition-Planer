@@ -25,7 +25,7 @@ install:
   - whereis npm
   - cd /public/rest
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev
-  ls -Al /public/rest/vendor/propel/propel 
+  - ls -Al /public/rest/vendor/propel/propel 
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux update-propel
 
 script:
