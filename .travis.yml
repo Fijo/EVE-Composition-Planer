@@ -1,6 +1,6 @@
 language: php
 php:
-  - nightly
+  - latest
 
 before_install:
   - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
@@ -23,9 +23,8 @@ install:
   - npm -v
   - whereis node
   - whereis npm
-  - cd /public/rest
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev
-  - ls -Al /public/rest/vendor/propel/propel 
+  - ls -Al /public/rest/vendor/propel/propel
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux update-propel
 
 script:
