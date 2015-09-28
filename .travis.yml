@@ -29,6 +29,7 @@ install:
   - ls -Al public/rest/vendor/propel
   - ls -Al public/rest/vendor/propel/propel/bin
   - chmod +x public/rest/vendor/propel/propel/bin/propel
+  - whereis php
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux update-propel
 
 script:
