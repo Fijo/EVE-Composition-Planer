@@ -16,7 +16,7 @@ before_install:
 install:
   - whereis npm
   - whereis composer
-  - npm install --dev
+  - npm install
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev update-propel
 
 script:
