@@ -15,7 +15,7 @@ before_install:
   - sudo apt-get install -y npm
 
 install:
-  - nodejs --version
+  - node --version
   - whereis npm
   - sudo npm install -g graceful-fs
   - npm update
