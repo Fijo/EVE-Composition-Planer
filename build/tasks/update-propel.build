@@ -9,7 +9,7 @@ You should have received a copy of the GNU General Public License along with thi
 -->
 <project name="ECP" default="update-propel">
     <target name="update-propel">
-	<property name="propelPath" value="bin/propel"/>
+		<property name="propelPath" value="bin/propel"/>
 		<echo message="For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life. John 3:16"/>
 		<copy file="../public/rest/config/propel/propel.json" tofile="../public/rest/vendor/propel/propel/propel.json" />
 		<copy file="../public/rest/config/propel/propel.json.dist" tofile="../public/rest/vendor/propel/propel/propel.json.dist" />

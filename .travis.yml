@@ -5,7 +5,9 @@ php:
 before_install:
   - sudo curl -sS https://getcomposer.org/installer| php
   - sudo mv composer.phar /usr/bin/composer
-  - cd public/rest/vendor/propel/propel
+  - cd public/rest
+  - composer install
+  - cd vendor/propel/propel
   - php -r "include('bin/propel');" config:convert
   - php -r "phpinfo(-1);"
   - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
