@@ -12,8 +12,10 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y mono-complete
   - sudo apt-get install -y npm
+  - npm test
 
 install:
+  - npm install --dev
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev update-propel
 
 script:
