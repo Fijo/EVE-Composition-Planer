@@ -13,7 +13,7 @@ before_install:
   - sudo apt-get install -y mono-complete
   - sudo apt-get install -y nodejs
   - sudo apt-get install -y npm
-  - sudo ln -s /usr/bin/nodejs /usr/bin/node
+  - sudo ln -s /usr/bin/node /usr/bin/nodejs
 
 install:
   - node --version
