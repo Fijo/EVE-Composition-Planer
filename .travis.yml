@@ -12,7 +12,6 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y mono-complete
   - sudo apt-get install -y npm
-  - npm test
 
 install:
   - npm install --dev

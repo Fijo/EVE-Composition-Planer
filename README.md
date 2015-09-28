@@ -1,4 +1,4 @@
-# EVE-Composition-Planer
+# EVE-Composition-Planer [![Build Status](https://travis-ci.org/Fijo/EVE-Composition-Planer.svg?branch=master)](https://travis-ci.org/Fijo/EVE-Composition-Planer)
 A tool that makes theorycrafting compositions for tournaments within EVE Online easier
 
 dependencies:
