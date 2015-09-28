@@ -13,8 +13,7 @@ before_install:
   - sudo apt-get install mono-complete
 
 install:
-  - sh setup.sh
-  - sh update-propel.sh
+  - sh mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev update-propel
 
 script:
-  - sh start-testrunner.sh
+  - sh mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev start-testrunner
