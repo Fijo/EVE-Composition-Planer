@@ -13,4 +13,9 @@ You should have received a copy of the GNU General Public License along with thi
 	    	<arg line="./node_modules/karma/bin/karma start config/karma.conf.js" />
 		</exec>
     </target>
+    <target name="start-testrunner-once">
+	    <exec program="${nodejsPath}" workingdir=".." spawn="true">
+	    	<arg line="./node_modules/karma/bin/karma start --single-run config/karma.conf.js" />
+		</exec>
+    </target>
 </project>
