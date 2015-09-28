@@ -27,7 +27,7 @@ install:
   - ls -Al public/rest
   - ls -Al public/rest/vendor
   - ls -Al public/rest/vendor/propel
-  - ls -Al public/rest/vendor/propel/propel
+  - ls -Al public/rest/vendor/propel/propel/bin
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux update-propel
 
 script:
