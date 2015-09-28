@@ -10,13 +10,15 @@ before_install:
   - sudo apt-get install -y nodejs
   - sudo npm config set spin=false
   - sudo npm update -g npm
+  - npm install -g fsevents
+  - sudo curl -sS https://getcomposer.org/installer| php
+  - sudo mv composer.phar /usr/local/bin/composer
 
 install:
   - node -v
   - npm -v
   - whereis node
   - whereis npm
-  - npm install
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux setup-dev
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=linux update-propel
 
