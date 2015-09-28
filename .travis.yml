@@ -25,4 +25,4 @@ install:
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=travis update-propel
 
 script:
-  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=travis setup-dev start-testrunner
+  - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=travis start-testrunner
