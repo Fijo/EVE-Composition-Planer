@@ -27,5 +27,5 @@ install:
 script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - node_modules/.bin/karma start --browsers Firefox --single-run
+  - node_modules/.bin/karma start config/karma.conf.js --browsers Firefox --single-run
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=travis start-testrunner-once
