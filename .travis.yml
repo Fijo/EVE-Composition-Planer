@@ -1,6 +1,9 @@
 language: php
 php:
   - 5.5
+  - 5.6
+  - hhvm
+  - nightly
 
 before_install:
   - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
@@ -14,14 +17,11 @@ before_install:
   - sudo apt-get install -y nodejs
   - sudo npm config set spin=false
   - sudo npm update -g npm
-
-install:
   - node -v
   - npm -v
-  - whereis node
-  - whereis npm
+
+install:
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=travis setup-dev
-  - chmod +x public/rest/vendor/propel/propel/bin/propel
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=travis update-propel
 
 script:
@@ -29,5 +29,4 @@ script:
   - export FIREFOX_BIN=firefox
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - node_modules/.bin/karma start config/karma.conf.js --browsers Firefox --single-run
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=travis start-testrunner-once
