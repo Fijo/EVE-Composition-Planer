@@ -12,7 +12,7 @@ You should have received a copy of the GNU General Public License along with thi
 	<property name="npmPath" value="/usr/bin/npm"/>
 	<property name="composerPath" value="/home/travis/.phpenv/versions/5.5/bin/composer"/>
 	<property name="phpPath" value="/home/travis/.phpenv/versions/5.5/bin/php"/>
-	<property name="db.host" value="127.0.0.1"/>
+	<property name="db.host" value="localhost"/>
 	<property name="db.user" value="root"/>
 	<property name="db.pass" value=""/>
 </project>
