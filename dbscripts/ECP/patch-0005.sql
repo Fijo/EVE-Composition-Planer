@@ -1,7 +1,3 @@
--- 2015-9-17_5-Fijo-Add-Ind3x-Indexes
-
-START TRANSACTION;
-ALTER TABLE  `fittingrulerow` ADD UNIQUE  `fittingRuleEntityId` (  `fittingRuleEntityId` ,  `ind3x` ) COMMENT  '';
-
-ALTER TABLE `itemfilterrule` ADD UNIQUE  `fittingRuleRowId` (  `fittingRuleRowId` ,  `ind3x` ) COMMENT  '';
-COMMIT;
+-- 2015-9-17_4-Fijo-Add-ItemFilterTypeUpToDateField
+ALTER TABLE  `fittingruleentity` ADD  `isFilterTypeUptodate` TINYINT UNSIGNED NOT NULL AFTER  `forkedId` ,
+ADD INDEX (  `isFilterTypeUptodate` ) ;

@@ -1,2 +1,2 @@
--- 2015-9-23_1-Fijo-Add-FittingRuleEntity-IsGlobal
-ALTER TABLE  `fittingruleentity` ADD  `isGlobal` TINYINT UNSIGNED NOT NULL AFTER  `userId` ;
+-- 2015-9-18_1-Fijo-Add-ItemFilterType-UniqueKey
+ALTER TABLE  `itemfiltertype` ADD UNIQUE (`fittingRuleRowId`, `itemId`);
