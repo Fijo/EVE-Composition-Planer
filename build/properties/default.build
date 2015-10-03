@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
 Copyright (C) 2015 Jonas Fischer
@@ -8,11 +8,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 -->
 <project name="ECP">
-	<include buildfile="properties/default.build" />
-    <include buildfile="properties/${system}.build" />
-    <include buildfile="tasks/setup-dev.build" />
-    <include buildfile="tasks/patch-config.build" />
-    <include buildfile="tasks/update-db.build" />
-    <include buildfile="tasks/update-propel.build" />
-    <include buildfile="tasks/run-tests.build" />
+	<property name="db.charset" value="utf8"/>
+	<property name="db.name.ecp" value="ecp"/>
+	<property name="db.name.eveonline" value="eveonline"/>
 </project>

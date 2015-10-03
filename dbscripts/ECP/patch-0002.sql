@@ -1,3 +1,7 @@
+-- 2015-9-17_2-Fijo-Optimize-Types
+
+START TRANSACTION;
+
 ALTER TABLE  `comparison` CHANGE  `name`  `name` VARCHAR( 24 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
 ALTER TABLE  `type` CHANGE  `name`  `name` VARCHAR( 8 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
 ALTER TABLE  `fitentrytype` CHANGE  `name`  `name` VARCHAR( 12 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
@@ -62,3 +66,5 @@ ALTER TABLE `typecomparison` ADD CONSTRAINT `typecomparison_fk_af1a2f` FOREIGN K
 
 
 ALTER TABLE  `typecomparison` CHANGE  `id`  `id` TINYINT( 4 ) UNSIGNED NOT NULL AUTO_INCREMENT ;
+
+COMMIT;

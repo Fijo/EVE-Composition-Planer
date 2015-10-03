@@ -1,0 +1,26 @@
+{
+    "propel": {
+        "database": {
+            "connections": {
+                "default": {
+                    "adapter": "mysql",
+                    "dsn": "mysql:host=@db.host@;dbname=@db.name.ecp@",
+                    "user": "@db.user@",
+                    "password": "@db.pass@",
+                    "settings": {
+                        "charset": "@db.charset@"
+                    }
+                },
+                "eve": {
+                    "adapter": "mysql",
+                    "dsn": "mysql:host=@db.host@;dbname=@db.name.eveonline@",
+                    "user": "@db.user@",
+                    "password": "@db.pass@",
+                    "settings": {
+                        "charset": "@db.charset@"
+                    }
+                }
+            }
+        }
+    }
+}

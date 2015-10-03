@@ -11,5 +11,8 @@ You should have received a copy of the GNU General Public License along with thi
 	<property name="nodejsPath" value="C:\Program Files\nodejs\node.exe"/>
 	<property name="npmPath" value="C:\Program Files\nodejs\npm.cmd"/>
 	<property name="composerPath" value="C:\ProgramData\ComposerSetup\bin\composer.bat"/>
-	<property name="phpPath" value="C:\Projekte\Fijo\xampp-portable\xampp\php\php.exe"/>
+	<property name="phpPath" value="C:\Projekte\Fijo\xa\x\php\php.exe"/>
+	<property name="db.host" value="localhost"/>
+	<property name="db.user" value="root"/>
+	<property name="db.pass" value=""/>
 </project>

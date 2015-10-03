@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+<project name="ECP" default="patch-config">
+    <target name="patch-config">
+    	<property name="template.path" value="../config/templates/"/>
+		<copy file="${template.path}propel.json" tofile="../public/rest/config/propel/propel.json" overwrite="true">
+			<filterchain>
+				<replacetokens>
+					<token key="db.host" value="${db.host}" />
+					<token key="db.user" value="${db.user}" />
+					<token key="db.pass" value="${db.pass}" />
+					<token key="db.charset" value="${db.charset}" />
+					<token key="db.name.ecp" value="${db.name.ecp}" />
+					<token key="db.name.eveonline" value="${db.name.eveonline}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+		<copy file="${template.path}dbpatch.ini" tofile="../public/rest/config/database/dbpatch.ini" overwrite="true">
+			<filterchain>
+				<replacetokens>
+					<token key="db.host" value="${db.host}" />
+					<token key="db.user" value="${db.user}" />
+					<token key="db.pass" value="${db.pass}" />
+					<token key="db.charset" value="${db.charset}" />
+					<token key="db.name.ecp" value="${db.name.ecp}" />
+					<token key="db.name.eveonline" value="${db.name.eveonline}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+    </target>
+</project>

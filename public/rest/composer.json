@@ -1,7 +1,8 @@
 {
     "require": {
         "propel/propel": "~2.0@dev",
-        "slim/slim": "^2.6"
+        "slim/slim": "^2.6",
+        "dbpatch/dbpatch": "^1.3"
     },
 	"autoload": {
 		"classmap": ["models/", "core/"],

@@ -8,7 +8,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 -->
 <project name="ECP" default="update-propel">
-    <target name="update-propel">
+    <target name="update-propel" depends="patch-config">
 		<property name="propelPath" value="bin/propel"/>
 		<echo message="For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life. John 3:16"/>
 		<copy file="../public/rest/config/propel/propel.json" tofile="../public/rest/vendor/propel/propel/propel.json" />

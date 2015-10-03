@@ -7,12 +7,21 @@ This program is free software; you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 -->
-<project name="ECP">
-	<include buildfile="properties/default.build" />
-    <include buildfile="properties/${system}.build" />
-    <include buildfile="tasks/setup-dev.build" />
-    <include buildfile="tasks/patch-config.build" />
-    <include buildfile="tasks/update-db.build" />
-    <include buildfile="tasks/update-propel.build" />
-    <include buildfile="tasks/run-tests.build" />
+<project name="ECP" default="update-db">
+    <target name="prepare-update-db" depends="patch-config">
+    	<property name="dbpatchPath" value="../public/rest/vendor/dbpatch/dbpatch"/>
+    	<copy file="../public/rest/config/database/dbpatch.ini" tofile="${dbpatchPath}/dbpatch.ini" />
+    </target>
+
+    <target name="update-db" depends="prepare-update-db">
+	    <exec program="${phpPath}" workingdir="${dbpatchPath}">
+	    	<arg line="-r &quot;include('bin/dbpatch.php');&quot; update" />
+		</exec>
+    </target>
+
+    <target name="sync-db" depends="prepare-update-db">
+	    <exec program="${phpPath}" workingdir="${dbpatchPath}">
+	    	<arg line="-r &quot;include('bin/dbpatch.php');&quot; sync" />
+		</exec>
+    </target>
 </project>
