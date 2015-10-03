@@ -22,6 +22,7 @@ before_install:
   - sudo npm update -g npm
   - node -v
   - npm -v
+  - mysql -e 'create database ecp;'
 
 install:
   - mono "lib/nant/bin/NAnt.exe" -buildfile:build/build.build -D:system=travis setup-dev
