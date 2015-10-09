@@ -44,10 +44,11 @@
 		_.each([
 			{ ctrl: 'composition', name: 'composition'  },
 			{ ctrl: 'ruleset', name: 'ruleset' },
-			{ ctrl: 'fittingRule', name: 'fitting-rule' }
+			{ ctrl: 'fittingRule', name: 'fitting-rule' },
+			{ ctrl: 'group', name: 'group' }
 		], function(config)	{
 			$routeProvider.when('/' + config.name + '/', {
-				redirectTo: '/' + config.name + '/my/page/1'
+				redirectTo: '/' + config.name + '/friends/page/1'
 			})
 			.when('/' + config.name + '/:visibility/page/:page', {
 				templateUrl: 'app/main/view/page/list.html',

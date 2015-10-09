@@ -27,6 +27,12 @@
 				params: { action: 'status' },
 				cache: true
 			},
+			autocomplete: {
+				method: 'GET',
+				cache: false,
+				isArray: true,
+				params: { action: 'autocomplete' }	
+			},
 			check: {
 				method: 'GET',
 				params: { action: 'check' },

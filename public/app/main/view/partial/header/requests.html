@@ -9,6 +9,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 <div ng-repeat="error in requestManagement.getErrors()">
 	<div class="alert alert-danger" role="alert">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		<div ng-if="error.advanced">
 			<button type="button" class="btn btn-default btn-sm pull-right" aria-label="show details" ng-model="error.showDetails" bs-checkbox>
 				<span class="glyphicon glyphicon glyphicon-eye-open" aria-hidden="true"></span>
@@ -20,12 +21,25 @@ You should have received a copy of the GNU General Public License along with thi
 			</div>
 		</div>
 		<div ng-if="!error.advanced">
+			<strong ng-if="error.errorType != null"><span class="glyphicon glyphicon-exclamation-sign"></span> {{::error.errorType}}:</strong>
 			{{::error.message}}
+			<p ng-if="error.data != null && error.data.length != 0">
+				<br>
+				<p>The following entities caused this problem. You might wana take a look at them.</p>
+				<div class="row">
+					<div class="col-sm-6" ng-repeat="(entityType, entities) in error.data">
+						<i>{{::entityType}}</i>
+						<ul>
+							<li ng-repeat="entity in entities">{{::entity.name}}</li>
+						</ul>
+					</div>
+				</div>
+			</p>
 		</div>
 	</div>
 </div>
 <div ng-if="requestManagement.hasError('init')" class="alert alert-danger" role="alert">
-	There have been issues loading all data required to properly display this page.
+	<span class="glyphicon glyphicon-exclamation-sign"></span> There have been issues loading all data required to properly display this page.
 </div>
 <div ng-init="pendingRequests = requestManagement.getPendingRequests()" ng-show="pendingRequests.length != 0" class="alert alert-info" role="alert">
 	<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Waiting for {{ pendingRequests.length }} pending request{{ pendingRequests.length == 1 ? '' : 's' }}.

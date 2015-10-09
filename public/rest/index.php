@@ -28,9 +28,11 @@ new \Core\Rest\User($app);
 new \Core\Rest\ShipGroup($app);
 new \Core\Rest\RuleDef($app);
 new \Core\Rest\Item($app);
+new \Core\Rest\Def($app);
 new \Core\Rest\FittingRule($app);
 new \Core\Rest\Ruleset($app);
 new \Core\Rest\Composition($app);
+new \Core\Rest\Group($app);
 
 $app->run();
 

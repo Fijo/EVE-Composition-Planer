@@ -8,7 +8,7 @@
 (function(angular, undefined)	{
 	'use strict';
 	
-	_.each(['ruleset', 'fittingRule', 'composition'], function(prefix)	{
+	_.each(['ruleset', 'fittingRule', 'composition', 'group'], function(prefix)	{
 		angular.module('mainApp').controller(prefix + 'ListAppCtrl', ['$scope', '$controller', function($scope, $controller)	{
 			$controller(prefix + 'AppCtrl', { $scope: $scope });
 			$controller('listCtrl', { $scope: $scope });

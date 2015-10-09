@@ -11,7 +11,14 @@ use ECP;
 
 class CompositionService extends EntityService
 {
-  protected function getEnityName() {
+  public function __construct()
+  {
+    parent::__construct();
+    $this->addRelatedEntityService(new GroupService());
+    $this->addRelatedEntityService(new RulesetService());
+  }
+
+  public function getEntityName() {
     return 'CompositionEntity';
   }
 
@@ -19,8 +26,8 @@ class CompositionService extends EntityService
     return ECP\CompositionEntityQuery::create();
   }
 
-  protected function getEntity($id) {
-    return $this->getSingleEntity($this->createQuery()
+  protected function getEntity($id, $writePermissions = false) {
+    return $this->getSingleEntity($this->addPermissionCheckForSingle($id, $this->createQuery(), $writePermissions)
       ->filterById($id)
       ->joinWith('CompositionEntity.RulesetEntity')
       ->leftJoinWith('CompositionEntity.CompositionRow')
@@ -68,6 +75,10 @@ class CompositionService extends EntityService
         $dataFitBody[] = $dataFitEntry;
       }
       return $dataFitBody;
+  }
+
+  protected function getEntitySubEntities($entity) {
+    return array('RulesetEntity' => array($entity->getRulesetEntity()));
   }
 
   protected function performSave($data, $fork)  {
@@ -123,6 +134,9 @@ class CompositionService extends EntityService
       }
 
       $this->cleanupOldEnties($entity, 'CompositionRow', $data->content);
+
+      $this->saveGroupAccess($connection, $entity, $data);
+      
       $entity->save($connection);
       $connection->commit();
 

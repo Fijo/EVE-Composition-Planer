@@ -9,6 +9,8 @@ use ECP\CompositionEntity as ChildCompositionEntity;
 use ECP\CompositionEntityQuery as ChildCompositionEntityQuery;
 use ECP\FittingRuleEntity as ChildFittingRuleEntity;
 use ECP\FittingRuleEntityQuery as ChildFittingRuleEntityQuery;
+use ECP\GroupPerson as ChildGroupPerson;
+use ECP\GroupPersonQuery as ChildGroupPersonQuery;
 use ECP\RulesetEntity as ChildRulesetEntity;
 use ECP\RulesetEntityQuery as ChildRulesetEntityQuery;
 use ECP\User as ChildUser;
@@ -76,10 +78,10 @@ abstract class User implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the username field.
+     * The value for the name field.
      * @var        string
      */
-    protected $username;
+    protected $name;
 
     /**
      * The value for the password field.
@@ -112,6 +114,12 @@ abstract class User implements ActiveRecordInterface
     protected $recover_password_code;
 
     /**
+     * @var        ObjectCollection|ChildGroupPerson[] Collection to store aggregation of ChildGroupPerson objects.
+     */
+    protected $collGrouppeople;
+    protected $collGrouppeoplePartial;
+
+    /**
      * @var        ObjectCollection|ChildFittingRuleEntity[] Collection to store aggregation of ChildFittingRuleEntity objects.
      */
     protected $collFittingRuleEntities;
@@ -136,6 +144,12 @@ abstract class User implements ActiveRecordInterface
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildGroupPerson[]
+     */
+    protected $grouppeopleScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -383,13 +397,13 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
-     * Get the [username] column value.
+     * Get the [name] column value.
      * 
      * @return string
      */
-    public function getUsername()
+    public function getName()
     {
-        return $this->username;
+        return $this->name;
     }
 
     /**
@@ -473,24 +487,24 @@ abstract class User implements ActiveRecordInterface
     } // setId()
 
     /**
-     * Set the value of [username] column.
+     * Set the value of [name] column.
      * 
      * @param string $v new value
      * @return $this|\ECP\User The current object (for fluent API support)
      */
-    public function setUsername($v)
+    public function setName($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->username !== $v) {
-            $this->username = $v;
-            $this->modifiedColumns[UserTableMap::COL_USERNAME] = true;
+        if ($this->name !== $v) {
+            $this->name = $v;
+            $this->modifiedColumns[UserTableMap::COL_NAME] = true;
         }
 
         return $this;
-    } // setUsername()
+    } // setName()
 
     /**
      * Set the value of [password] column.
@@ -631,8 +645,8 @@ abstract class User implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : UserTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : UserTableMap::translateFieldName('Username', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->username = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : UserTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->name = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : UserTableMap::translateFieldName('Password', TableMap::TYPE_PHPNAME, $indexType)];
             $this->password = (null !== $col) ? (string) $col : null;
@@ -719,6 +733,8 @@ abstract class User implements ActiveRecordInterface
         $this->hydrate($row, 0, true, $dataFetcher->getIndexType()); // rehydrate
 
         if ($deep) {  // also de-associate any related objects?
+
+            $this->collGrouppeople = null;
 
             $this->collFittingRuleEntities = null;
 
@@ -836,6 +852,23 @@ abstract class User implements ActiveRecordInterface
                 $this->resetModified();
             }
 
+            if ($this->grouppeopleScheduledForDeletion !== null) {
+                if (!$this->grouppeopleScheduledForDeletion->isEmpty()) {
+                    \ECP\GroupPersonQuery::create()
+                        ->filterByPrimaryKeys($this->grouppeopleScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->grouppeopleScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collGrouppeople !== null) {
+                foreach ($this->collGrouppeople as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
             if ($this->fittingRuleEntitiesScheduledForDeletion !== null) {
                 if (!$this->fittingRuleEntitiesScheduledForDeletion->isEmpty()) {
                     \ECP\FittingRuleEntityQuery::create()
@@ -916,8 +949,8 @@ abstract class User implements ActiveRecordInterface
         if ($this->isColumnModified(UserTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(UserTableMap::COL_USERNAME)) {
-            $modifiedColumns[':p' . $index++]  = 'username';
+        if ($this->isColumnModified(UserTableMap::COL_NAME)) {
+            $modifiedColumns[':p' . $index++]  = 'name';
         }
         if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
             $modifiedColumns[':p' . $index++]  = 'password';
@@ -948,8 +981,8 @@ abstract class User implements ActiveRecordInterface
                     case 'id':                        
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'username':                        
-                        $stmt->bindValue($identifier, $this->username, PDO::PARAM_STR);
+                    case 'name':                        
+                        $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
                         break;
                     case 'password':                        
                         $stmt->bindValue($identifier, $this->password, PDO::PARAM_STR);
@@ -1032,7 +1065,7 @@ abstract class User implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getUsername();
+                return $this->getName();
                 break;
             case 2:
                 return $this->getPassword();
@@ -1080,7 +1113,7 @@ abstract class User implements ActiveRecordInterface
         $keys = UserTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getUsername(),
+            $keys[1] => $this->getName(),
             $keys[2] => $this->getPassword(),
             $keys[3] => $this->getEmail(),
             $keys[4] => $this->getCreated(),
@@ -1101,6 +1134,21 @@ abstract class User implements ActiveRecordInterface
         }
         
         if ($includeForeignObjects) {
+            if (null !== $this->collGrouppeople) {
+                
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'grouppeople';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'grouppeople';
+                        break;
+                    default:
+                        $key = 'Grouppeople';
+                }
+        
+                $result[$key] = $this->collGrouppeople->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
             if (null !== $this->collFittingRuleEntities) {
                 
                 switch ($keyType) {
@@ -1184,7 +1232,7 @@ abstract class User implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setUsername($value);
+                $this->setName($value);
                 break;
             case 2:
                 $this->setPassword($value);
@@ -1231,7 +1279,7 @@ abstract class User implements ActiveRecordInterface
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setUsername($arr[$keys[1]]);
+            $this->setName($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
             $this->setPassword($arr[$keys[2]]);
@@ -1292,8 +1340,8 @@ abstract class User implements ActiveRecordInterface
         if ($this->isColumnModified(UserTableMap::COL_ID)) {
             $criteria->add(UserTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(UserTableMap::COL_USERNAME)) {
-            $criteria->add(UserTableMap::COL_USERNAME, $this->username);
+        if ($this->isColumnModified(UserTableMap::COL_NAME)) {
+            $criteria->add(UserTableMap::COL_NAME, $this->name);
         }
         if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
             $criteria->add(UserTableMap::COL_PASSWORD, $this->password);
@@ -1396,7 +1444,7 @@ abstract class User implements ActiveRecordInterface
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setUsername($this->getUsername());
+        $copyObj->setName($this->getName());
         $copyObj->setPassword($this->getPassword());
         $copyObj->setEmail($this->getEmail());
         $copyObj->setCreated($this->getCreated());
@@ -1407,6 +1455,12 @@ abstract class User implements ActiveRecordInterface
             // important: temporarily setNew(false) because this affects the behavior of
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
+
+            foreach ($this->getGrouppeople() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addGroupPerson($relObj->copy($deepCopy));
+                }
+            }
 
             foreach ($this->getFittingRuleEntities() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
@@ -1467,6 +1521,9 @@ abstract class User implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
+        if ('GroupPerson' == $relationName) {
+            return $this->initGrouppeople();
+        }
         if ('FittingRuleEntity' == $relationName) {
             return $this->initFittingRuleEntities();
         }
@@ -1476,6 +1533,299 @@ abstract class User implements ActiveRecordInterface
         if ('CompositionEntity' == $relationName) {
             return $this->initCompositionEntities();
         }
+    }
+
+    /**
+     * Clears out the collGrouppeople collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addGrouppeople()
+     */
+    public function clearGrouppeople()
+    {
+        $this->collGrouppeople = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collGrouppeople collection loaded partially.
+     */
+    public function resetPartialGrouppeople($v = true)
+    {
+        $this->collGrouppeoplePartial = $v;
+    }
+
+    /**
+     * Initializes the collGrouppeople collection.
+     *
+     * By default this just sets the collGrouppeople collection to an empty array (like clearcollGrouppeople());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initGrouppeople($overrideExisting = true)
+    {
+        if (null !== $this->collGrouppeople && !$overrideExisting) {
+            return;
+        }
+        $this->collGrouppeople = new ObjectCollection();
+        $this->collGrouppeople->setModel('\ECP\GroupPerson');
+    }
+
+    /**
+     * Gets an array of ChildGroupPerson objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildGroupPerson[] List of ChildGroupPerson objects
+     * @throws PropelException
+     */
+    public function getGrouppeople(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collGrouppeoplePartial && !$this->isNew();
+        if (null === $this->collGrouppeople || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collGrouppeople) {
+                // return empty collection
+                $this->initGrouppeople();
+            } else {
+                $collGrouppeople = ChildGroupPersonQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collGrouppeoplePartial && count($collGrouppeople)) {
+                        $this->initGrouppeople(false);
+
+                        foreach ($collGrouppeople as $obj) {
+                            if (false == $this->collGrouppeople->contains($obj)) {
+                                $this->collGrouppeople->append($obj);
+                            }
+                        }
+
+                        $this->collGrouppeoplePartial = true;
+                    }
+
+                    return $collGrouppeople;
+                }
+
+                if ($partial && $this->collGrouppeople) {
+                    foreach ($this->collGrouppeople as $obj) {
+                        if ($obj->isNew()) {
+                            $collGrouppeople[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collGrouppeople = $collGrouppeople;
+                $this->collGrouppeoplePartial = false;
+            }
+        }
+
+        return $this->collGrouppeople;
+    }
+
+    /**
+     * Sets a collection of ChildGroupPerson objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $grouppeople A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setGrouppeople(Collection $grouppeople, ConnectionInterface $con = null)
+    {
+        /** @var ChildGroupPerson[] $grouppeopleToDelete */
+        $grouppeopleToDelete = $this->getGrouppeople(new Criteria(), $con)->diff($grouppeople);
+
+        
+        $this->grouppeopleScheduledForDeletion = $grouppeopleToDelete;
+
+        foreach ($grouppeopleToDelete as $groupPersonRemoved) {
+            $groupPersonRemoved->setUser(null);
+        }
+
+        $this->collGrouppeople = null;
+        foreach ($grouppeople as $groupPerson) {
+            $this->addGroupPerson($groupPerson);
+        }
+
+        $this->collGrouppeople = $grouppeople;
+        $this->collGrouppeoplePartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related GroupPerson objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related GroupPerson objects.
+     * @throws PropelException
+     */
+    public function countGrouppeople(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collGrouppeoplePartial && !$this->isNew();
+        if (null === $this->collGrouppeople || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collGrouppeople) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getGrouppeople());
+            }
+
+            $query = ChildGroupPersonQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collGrouppeople);
+    }
+
+    /**
+     * Method called to associate a ChildGroupPerson object to this object
+     * through the ChildGroupPerson foreign key attribute.
+     *
+     * @param  ChildGroupPerson $l ChildGroupPerson
+     * @return $this|\ECP\User The current object (for fluent API support)
+     */
+    public function addGroupPerson(ChildGroupPerson $l)
+    {
+        if ($this->collGrouppeople === null) {
+            $this->initGrouppeople();
+            $this->collGrouppeoplePartial = true;
+        }
+
+        if (!$this->collGrouppeople->contains($l)) {
+            $this->doAddGroupPerson($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildGroupPerson $groupPerson The ChildGroupPerson object to add.
+     */
+    protected function doAddGroupPerson(ChildGroupPerson $groupPerson)
+    {
+        $this->collGrouppeople[]= $groupPerson;
+        $groupPerson->setUser($this);
+    }
+
+    /**
+     * @param  ChildGroupPerson $groupPerson The ChildGroupPerson object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeGroupPerson(ChildGroupPerson $groupPerson)
+    {
+        if ($this->getGrouppeople()->contains($groupPerson)) {
+            $pos = $this->collGrouppeople->search($groupPerson);
+            $this->collGrouppeople->remove($pos);
+            if (null === $this->grouppeopleScheduledForDeletion) {
+                $this->grouppeopleScheduledForDeletion = clone $this->collGrouppeople;
+                $this->grouppeopleScheduledForDeletion->clear();
+            }
+            $this->grouppeopleScheduledForDeletion[]= clone $groupPerson;
+            $groupPerson->setUser(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Grouppeople from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildGroupPerson[] List of ChildGroupPerson objects
+     */
+    public function getGrouppeopleJoinGroup(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildGroupPersonQuery::create(null, $criteria);
+        $query->joinWith('Group', $joinBehavior);
+
+        return $this->getGrouppeople($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Grouppeople from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildGroupPerson[] List of ChildGroupPerson objects
+     */
+    public function getGrouppeopleJoinGroupPersonType(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildGroupPersonQuery::create(null, $criteria);
+        $query->joinWith('GroupPersonType', $joinBehavior);
+
+        return $this->getGrouppeople($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Grouppeople from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildGroupPerson[] List of ChildGroupPerson objects
+     */
+    public function getGrouppeopleJoinGroupEvePerson(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildGroupPersonQuery::create(null, $criteria);
+        $query->joinWith('GroupEvePerson', $joinBehavior);
+
+        return $this->getGrouppeople($query, $con);
     }
 
     /**
@@ -2240,7 +2590,7 @@ abstract class User implements ActiveRecordInterface
     public function clear()
     {
         $this->id = null;
-        $this->username = null;
+        $this->name = null;
         $this->password = null;
         $this->email = null;
         $this->created = null;
@@ -2264,6 +2614,11 @@ abstract class User implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collGrouppeople) {
+                foreach ($this->collGrouppeople as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collFittingRuleEntities) {
                 foreach ($this->collFittingRuleEntities as $o) {
                     $o->clearAllReferences($deep);
@@ -2281,6 +2636,7 @@ abstract class User implements ActiveRecordInterface
             }
         } // if ($deep)
 
+        $this->collGrouppeople = null;
         $this->collFittingRuleEntities = null;
         $this->collRulesetEntities = null;
         $this->collCompositionEntities = null;

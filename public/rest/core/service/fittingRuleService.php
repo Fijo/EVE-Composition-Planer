@@ -21,10 +21,11 @@ class FittingRuleService extends EntityService
     $this->comparsionService = new \Core\Service\ComparsionService();
     $this->itemFilterDefService = new \Core\Service\ItemFilterDefService();
     $this->invTypeService = new \Core\Service\InvTypeService();
+    $this->addRelatedEntityService(new GroupService());
   }
 
 
-  protected function getEnityName() {
+  public function getEntityName() {
     return 'FittingRuleEntity';
   }
 
@@ -32,8 +33,8 @@ class FittingRuleService extends EntityService
     return ECP\FittingRuleEntityQuery::create();
   }
 
-  protected function getEntity($id) {
-    return $this->getSingleEntity($this->addOrder($this->prefechSubentities($this->createQuery()
+  protected function getEntity($id, $writePermissions = false) {
+    return $this->getSingleEntity($this->addOrder($this->prefechSubentities($this->addPermissionCheckForSingle($id, $this->createQuery(), $writePermissions)
       ->filterById($id)))
       ->find());
   }
@@ -257,6 +258,7 @@ class FittingRuleService extends EntityService
     if($entity == null) return $this->getNotFound();
     
     $data = $this->getLocalyMappendModel($entity);
+
     $data['isGlobal'] = $entity->getIsGlobal() == 1;
     $data['rules'] = $this->mapFittingRuleRowsToModel($entity);
     return $data;
@@ -292,6 +294,10 @@ class FittingRuleService extends EntityService
                               'content' => array($this->createIdObj($filterRule->getContent1()), $this->createIdObj($filterRule->getContent2())));
     }
     return $dataFilterRules;
+  }
+
+  protected function getEntitySubEntities($entity) {
+    return array();
   }
 
   protected function performSave($data, $fork)  { 
@@ -348,6 +354,9 @@ class FittingRuleService extends EntityService
       }
 
       $this->cleanupOldEnties($entity, 'FittingRuleRow', $data->rules);
+
+      $this->saveGroupAccess($connection, $entity, $data);
+
       $entity->save($connection);
 
       $connection->commit();

@@ -68,13 +68,74 @@
 
     <table name="user" phpName="User">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
-        <column name="username" type="varchar" size="32" required="true" />
+        <column name="name" type="varchar" size="32" required="true" />
         <column name="password" type="varchar" size="40" required="true"/>
         <column name="email" type="varchar" size="1024" required="true"/>
         <column name="created" type="timestamp" required="true"/>
         <column name="confirmation_code" type="varchar" size="32" phpName="ConfirmationCode"/>
         <column name="recover_password_code" type="varchar" size="32" phpName="RecoverPasswordCode"/>
     </table>
+
+    <table name="gr0up" phpName="Group">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="32" required="true" />
+        <column name="lastComputed" type="timestamp"/>
+        <column name="lastModified" type="timestamp"/>
+    </table>
+    <table name="grouppersontype" phpName="GroupPersonType">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="8" required="true" />
+        <column name="title" type="varchar" size="8" required="true" />
+    </table>
+    <table name="groupeveperson" phpName="GroupEvePerson">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="groupId" type="integer" required="true"/>
+        <foreign-key foreignTable="gr0up" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="groupId" foreign="id"/>
+        </foreign-key>
+        <column name="groupPersonTypeId" type="integer" required="true"/>
+        <foreign-key foreignTable="grouppersontype">
+          <reference local="groupPersonTypeId" foreign="id"/>
+        </foreign-key>
+        <column name="name" type="varchar" size="32" required="true" />
+    </table>
+    <table name="groupperson" phpName="GroupPerson">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="groupId" type="integer" required="true"/>
+        <foreign-key foreignTable="gr0up" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="groupId" foreign="id"/>
+        </foreign-key>
+        <column name="groupPersonTypeId" type="integer" required="true"/>
+        <foreign-key foreignTable="grouppersontype">
+          <reference local="groupPersonTypeId" foreign="id"/>
+        </foreign-key>
+        <column name="groupEvePersonId" type="integer" required="true"/>
+        <foreign-key foreignTable="groupeveperson" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="groupEvePersonId" foreign="id"/>
+        </foreign-key>
+        <column name="userId" type="integer" required="true"/>
+        <foreign-key foreignTable="user">
+          <reference local="userId" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="entitytype" phpName="EntityType">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="24" required="true" />
+    </table>
+    <table name="groupaccess" phpName="GroupAccess">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="entityTypeId" type="integer" required="true"/>
+        <foreign-key foreignTable="entitytype">
+          <reference local="entityTypeId" foreign="id"/>
+        </foreign-key>
+        <column name="entityId" type="integer" required="true"/>
+        <column name="groupId" type="integer" required="true"/>
+        <foreign-key foreignTable="gr0up" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="groupId" foreign="id"/>
+        </foreign-key>
+    </table>
+
     <table name="comparison" phpName="Comparison">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="name" type="varchar" size="32" required="true" />

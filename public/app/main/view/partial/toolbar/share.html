@@ -1,0 +1,30 @@
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+
+<div class="row" ng-if="hasGroupAccessInModel">
+	<div class="col-md-2 col-sm-3 col-xs-4" ng-repeat="group in model.entity.groups">
+		<div class="input-group">
+			<span ecp-validation-container>
+				<input class="form-control input-sm" name="fgroups_{{getRepeaterHash(group)}}" ng-model="group.p" type="text" placeholder="Group name" data-auto-select="true" data-animation="am-flip-x" ecp-tooltip="'{{::message.entityCap}} is accessable by group members'"
+						bs-options="groupEntity as groupEntity.name for groupEntity in getGroupAutocomplete($viewValue) track by groupEntity.id" bs-typeahead ng-model-options="{ allowInvalid: true }" ng-disabled="isReadonly()"
+						ecp-validation-tooltip="form" required id-required>
+			</span>
+			<span class="input-group-btn">
+				<button type="button" class="btn btn-default btn-sm" aria-label="Remove" ng-click="groupService.remove($index)" ng-disabled="isReadonly()" ecp-tooltip="'Remove access for this group'">
+					<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+				</button>
+			</span>
+		</div>
+	</div>
+	<div class="col-xs-1 pull-right text-right">
+		<button type="button" class="btn btn-default btn-sm" aria-label="Add" ng-click="groupService.add()" ng-disabled="isReadonly()" ecp-tooltip="'Add access to this {{::message.entity}} for another group'">
+			<span class="glyphicon glyphicon-share" aria-hidden="true"></span>
+		</button>
+	</div>
+</div>

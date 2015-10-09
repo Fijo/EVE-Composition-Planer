@@ -19,46 +19,41 @@ class FittingRule
 
         $app->group('/fitting-rule', function() use ($app)   {
 
-            $app->get('/calculate', function () {
-                $fittingRuleService = new \Core\Service\FittingRuleService();
-                echo json_encode($fittingRuleService->calculateNewItemFilterTypes());
+            $restService = new \Core\Service\RestService($app);
+            $fittingRuleService = new \Core\Service\FittingRuleService();
+
+            $restService->get('/calculate', function () use ($fittingRuleService) {
+                return $fittingRuleService->calculateNewItemFilterTypes();
             });
 
-            $app->get('/check', function () {
-                $fittingRuleService = new \Core\Service\FittingRuleService();
-                echo json_encode($fittingRuleService->check($_GET['name'], isset($_GET['cid']) ? intval($_GET['cid']) : null));
+            $restService->get('/check', function () use ($fittingRuleService) {
+                return $fittingRuleService->check($_GET['name'], isset($_GET['cid']) ? intval($_GET['cid']) : null);
             });
 
-            $app->get('/autocomplete', function () {
-              $fittingRuleService = new \Core\Service\FittingRuleService();
-              echo json_encode($fittingRuleService->getAutocomplete($_GET['s']));
+            $restService->get('/autocomplete', function () use ($fittingRuleService) {
+              return $fittingRuleService->getAutocomplete($_GET['s']);
             });
 
-            $app->get('/list', function () {
-              $fittingRuleService = new \Core\Service\FittingRuleService();
-              echo json_encode($fittingRuleService->getList($_GET['type'], intval($_GET['page'])));
+            $restService->get('/list', function () use ($fittingRuleService) {
+              return $fittingRuleService->getList($_GET['type'], intval($_GET['page']));
             });
 
-            $app->get('/:id', function ($id) {
-              $fittingRuleService = new \Core\Service\FittingRuleService();
-              echo json_encode($fittingRuleService->get($id));
+            $restService->get('/:id', function ($id) use ($fittingRuleService) {
+              return $fittingRuleService->get($id);
             });
 
-            $app->post('/', function () {
+            $restService->post('/', function () use ($fittingRuleService) {
                 $data = getPost();
-                $fittingRuleService = new \Core\Service\FittingRuleService();
-                echo json_encode($fittingRuleService->save($data));
+                return $fittingRuleService->save($data);
             });
 
-            $app->delete('/:id', function ($id) {
-                $fittingRuleService = new \Core\Service\FittingRuleService();
-                echo json_encode($fittingRuleService->delete($id));
+            $restService->delete('/:id', function ($id) use ($fittingRuleService) {
+                return $fittingRuleService->delete($id);
             });
 
-            $app->post('/fork', function () {
+            $restService->post('/fork', function () use ($fittingRuleService) {
                 $data = getPost();
-                $fittingRuleService = new \Core\Service\FittingRuleService();
-                echo json_encode($fittingRuleService->fork($data));
+                return $fittingRuleService->fork($data);
             });
         });
     }

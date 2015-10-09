@@ -12,8 +12,9 @@ You should have received a copy of the GNU General Public License along with thi
 	<div class="row">
 		<div class="col-md-4 col-xs-12">
 			<ul class="nav nav-pills nav-stacked">
-				<li role="presentation" ng-class="listVisibility == 'my' ? 'active' : ''"><a href="" ng-click="changeListVisibility('my')"><span class="glyphicon glyphicon-user"></span> My {{::message.entityPlural}}</a></li>
-				<li role="presentation" ng-class="listVisibility == 'public' ? 'active' : ''"><a href="" ng-click="changeListVisibility('public')"><span class="glyphicon glyphicon-globe"></span> Public {{::message.entityPlural}}</a></li>
+				<li ng-if="hasUserField" role="presentation" ng-class="listVisibility == 'my' ? 'active' : ''"><a href="" ng-click="changeListVisibility('my')"><span class="glyphicon glyphicon-user"></span> My {{::message.entityPlural}}</a></li>
+				<li role="presentation" ng-class="listVisibility == 'friends' ? 'active' : ''"><a href="" ng-click="changeListVisibility('friends')"><span class="glyphicon glyphicon-eye-open"></span> My friends {{::message.entityPlural}}</a></li>
+				<li ng-if="canBeListed" role="presentation" ng-class="listVisibility == 'public' ? 'active' : ''"><a href="" ng-click="changeListVisibility('public')"><span class="glyphicon glyphicon-globe"></span> Public {{::message.entityPlural}}</a></li>
 			</ul>
 		</div>
 		<div class="col-md-8 col-xs-12">
@@ -34,10 +35,10 @@ You should have received a copy of the GNU General Public License along with thi
 							<h3>{{::entry.name}}</h3>
 						</a>
 						<div class="row">
-							<div class="col-sm-6">
+							<div class="col-sm-6" ng-if="hasUserField">
 								by {{::entry.user.name}}
 							</div>
-							<div class="col-sm-6 text-right">
+							<div class="col-sm-6 pull-right text-right">
 								{{::entry.lastModified}}
 							</div>
 						</div>						

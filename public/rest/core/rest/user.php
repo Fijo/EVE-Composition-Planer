@@ -20,9 +20,14 @@ class User
 
         $app->group('/user', function() use ($app)   {
 
+            $app->get('/autocomplete', function () {
+                $userService = new \Core\Service\UserService();
+                echo json_encode($userService->getAutocomplete($_GET['s']));
+            });
+
             $app->get('/check', function () {
                 $userAvailible = ECP\UserQuery::create()
-                    ->filterByUsername($_GET['name'])
+                    ->filterByName($_GET['name'])
                     ->count() == 0;
 
                 echo json_encode((object) array('isAvailible' => $userAvailible));
@@ -37,13 +42,13 @@ class User
 
                 $user = $userService->getLoggedInUser();
 
-                echo json_encode((object) array('isLoggedIn' => true, 'username' => $user->username));
+                echo json_encode((object) array('isLoggedIn' => true, 'id' => $user->id, 'username' => $user->username));
             });
 
             $app->post('/login', function () {
                 $p = getPost();
                 $user = ECP\UserQuery::create()
-                    ->filterByUsername($p->username)
+                    ->filterByName($p->username)
                     ->filterByPassword(sha1($p->password))
                     ->filterByConfirmationCode('')
                     ->findOne();
@@ -51,7 +56,7 @@ class User
                 if(!$user)
                     die(json_encode((object) array('status' => 'incorrect credentials')));
 
-                $_SESSION['ecp'] = (object) array('id' => $user->getId(), 'username' => $user->getUsername());
+                $_SESSION['ecp'] = (object) array('id' => $user->getId(), 'username' => $user->getName());
 
                 echo $this->getBoolStatus(true);
             });
@@ -64,7 +69,7 @@ class User
                 $code = generateCode();
 
                 $user = new ECP\User();
-                $user->setUsername($p->username);
+                $user->setName($p->username);
                 $user->setPassword(sha1($p->password));
                 $user->setEmail($p->email);
                 $user->setCreated(time());

@@ -14,6 +14,7 @@ You should have received a copy of the GNU General Public License along with thi
 	<div class="input-group">
 		<div class="input-group-btn" ng-include="'app/main/view/partial/toolbar/actions.html'"></div>
 		<span ng-include="'app/main/view/partial/toolbar/name.html'"></span>
-		<div class="input-group-btn" ng-include="'app/main/view/partial/toolbar/actions-right.html'"></div>
+		<div ng-if="canBeListed" class="input-group-btn" ng-include="'app/main/view/partial/toolbar/actions-right.html'"></div>
 	</div>
+	<span ng-include="'app/main/view/partial/toolbar/share.html'"></span>
 </div>

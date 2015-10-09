@@ -19,41 +19,37 @@ class Composition
 
         $app->group('/composition', function() use ($app)   {
 
-            $app->get('/check', function () {
-                $compositionService = new \Core\Service\CompositionService();
-                echo json_encode($compositionService->check($_GET['name'], isset($_GET['cid']) ? intval($_GET['cid']) : null));
+            $restService = new \Core\Service\RestService($app);
+            $compositionService = new \Core\Service\CompositionService();
+
+            $restService->get('/check', function () use($compositionService) {
+                return $compositionService->check($_GET['name'], isset($_GET['cid']) ? intval($_GET['cid']) : null);
             });
 
-            $app->get('/autocomplete', function () {
-              $compositionService = new \Core\Service\CompositionService();
-              echo json_encode($compositionService->getAutocomplete($_GET['s']));
+            $restService->get('/autocomplete', function () use($compositionService) {
+                return $compositionService->getAutocomplete($_GET['s']);
             });
 
-            $app->get('/list', function () {
-              $compositionService = new \Core\Service\CompositionService();
-              echo json_encode($compositionService->getList($_GET['type'], intval($_GET['page'])));
+            $restService->get('/list', function () use($compositionService) {
+                return $compositionService->getList($_GET['type'], intval($_GET['page']));
             });
 
-            $app->get('/:id', function ($id) {
-              $compositionService = new \Core\Service\CompositionService();
-              echo json_encode($compositionService->get($id));
+            $restService->get('/:id', function ($id) use($compositionService) {
+                return $compositionService->get($id);
             });
 
-            $app->post('/', function () {
+            $restService->post('/', function () use($compositionService) {
                 $data = getPost();
-                $compositionService = new \Core\Service\CompositionService();
-                echo json_encode($compositionService->save($data));
+                return $compositionService->save($data);
             });
 
-            $app->delete('/:id', function ($id) {
-                $compositionService = new \Core\Service\CompositionService();
-                echo json_encode($compositionService->delete($id));
+            $restService->delete('/:id', function ($id) use($compositionService) {
+                return $compositionService->delete($id);
             });
 
-            $app->post('/fork', function () {
+            $restService->post('/fork', function () use($compositionService) {
                 $data = getPost();
-                $compositionService = new \Core\Service\CompositionService();
-                echo json_encode($compositionService->fork($data));
+                return $compositionService->fork($data);
             });
         });
     }

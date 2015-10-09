@@ -19,46 +19,41 @@ class Ruleset
 
         $app->group('/ruleset', function() use ($app)   {
 
-            $app->get('/check', function () {
-                $rulesetService = new \Core\Service\RulesetService();
-                echo json_encode($rulesetService->check($_GET['name'], isset($_GET['cid']) ? intval($_GET['cid']) : null));
+            $restService = new \Core\Service\RestService($app);
+            $rulesetService = new \Core\Service\RulesetService();
+
+            $restService->get('/check', function () use ($rulesetService) {
+                return $rulesetService->check($_GET['name'], isset($_GET['cid']) ? intval($_GET['cid']) : null);
             });
 
-            $app->get('/validation', function () {
-                $rulesetService = new \Core\Service\RulesetService();
-                echo json_encode($rulesetService->getForValidation($_GET['cid']));
+            $restService->get('/validation', function () use ($rulesetService) {
+                return $rulesetService->getForValidation($_GET['cid']);
             });
 
-            $app->get('/autocomplete', function () {
-              $rulesetService = new \Core\Service\RulesetService();
-              echo json_encode($rulesetService->getAutocomplete($_GET['s']));
+            $restService->get('/autocomplete', function () use ($rulesetService) {
+              return $rulesetService->getAutocomplete($_GET['s']);
             });
 
-            $app->get('/list', function () {
-              $rulesetService = new \Core\Service\RulesetService();
-              echo json_encode($rulesetService->getList($_GET['type'], intval($_GET['page'])));
+            $restService->get('/list', function () use ($rulesetService) {
+              return $rulesetService->getList($_GET['type'], intval($_GET['page']));
             });
 
-            $app->get('/:id', function ($id) {
-              $rulesetService = new \Core\Service\RulesetService();
-              echo json_encode($rulesetService->get($id));
+            $restService->get('/:id', function ($id) use ($rulesetService) {
+              return $rulesetService->get($id);
             });
 
-            $app->post('/', function () {
+            $restService->post('/', function () use ($rulesetService) {
                 $data = getPost();
-                $rulesetService = new \Core\Service\RulesetService();
-                echo json_encode($rulesetService->save($data));
+                return $rulesetService->save($data);
             });
 
-            $app->delete('/:id', function ($id) {
-                $rulesetService = new \Core\Service\RulesetService();
-                echo json_encode($rulesetService->delete($id));
+            $restService->delete('/:id', function ($id) use ($rulesetService) {
+                return $rulesetService->delete($id);
             });
 
-            $app->post('/fork', function () {
+            $restService->post('/fork', function () use ($rulesetService) {
                 $data = getPost();
-                $rulesetService = new \Core\Service\RulesetService();
-                echo json_encode($rulesetService->fork($data));
+                return $rulesetService->fork($data);
             });
         });
     }

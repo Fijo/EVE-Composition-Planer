@@ -17,9 +17,11 @@ class RulesetService extends EntityService
   {
     parent::__construct();
     $this->fittingRuleService = new \Core\Service\FittingRuleService();
+    $this->addRelatedEntityService(new GroupService());
+    $this->addRelatedEntityService(new FittingRuleService());
   }
 
-  protected function getEnityName() {
+  public function getEntityName() {
     return 'RulesetEntity';
   }
   
@@ -27,8 +29,8 @@ class RulesetService extends EntityService
     return ECP\RulesetEntityQuery::create();
   }
 
-  protected function getEntity($id) {
-    return $this->getSingleEntity($this->populateSubentities($this->addOrder($this->prefechSubentities($this->createQuery()
+  protected function getEntity($id, $writePermissions = false) {
+    return $this->getSingleEntity($this->populateSubentities($this->addOrder($this->prefechSubentities($this->addPermissionCheckForSingle($id, $this->createQuery(), $writePermissions)
       ->filterById($id)))
       ->find()));
   }
@@ -161,6 +163,12 @@ class RulesetService extends EntityService
       return $dataFilterRules;
   }
 
+  protected function getEntitySubEntities($entity) {
+    $fittingRuleEntities = array();
+    foreach ($entity->getRulesetRuleRows() as $ruleRow) foreach ($ruleRow->getRulesetFilterRules() as $filterRule) $fittingRuleEntities[] = $filterRule->getFittingRuleEntity();
+    return array('FittingRuleEntity' => $fittingRuleEntities);
+  }
+
   protected function performSave($data, $fork)  {
     $entity = $this->getLocalyMappedEntityToSave($data, $fork);
     $entity->setMinPilots($data->minPilots);
@@ -221,6 +229,9 @@ class RulesetService extends EntityService
       }
 
       $this->cleanupOldEnties($entity, 'RulesetRuleRow', $data->rules);
+
+      $this->saveGroupAccess($connection, $entity, $data);
+      
       $entity->save($connection);
       $connection->commit();
 

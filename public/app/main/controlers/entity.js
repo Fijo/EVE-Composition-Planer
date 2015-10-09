@@ -8,19 +8,19 @@
 (function(angular, undefined)	{
 	'use strict';
 	
-	angular.module('mainApp').controller('entityCtrl', ['$scope', '$injector', '$routeParams', '$route', function ($scope, $injector, $routeParams, $route) {
+	angular.module('mainApp').controller('entityCtrl', ['$scope', '$injector', '$routeParams', '$route', 'Group', 'StoreServiceFactory', function ($scope, $injector, $routeParams, $route, Group, StoreServiceFactory) {
 		$scope.requireLogin = true;
 		$scope.isDetail = $routeParams.id != null;
+		$scope.hasUserField = true;
+		$scope.canBeListed = true;
+		$scope.canBeForked = true;
+		$scope.hasGroupAccessInModel = true;
 
 		$scope.ensureAccess = function()	{
 			if($scope.isReadonly()){
 				alert('Sorry, you don\'t have access to do that!');
 				throw 'No access!';
 			}
-		};
-
-		$scope.isReadonly = function()	{
-			return !$scope.isLoggedIn || !$scope.model.entity.isYours;
 		};
 
 		$scope.isNew = function()	{
@@ -37,12 +37,18 @@
 		$scope.init = function()	{
 			var entityService = $injector.get($scope.message.entityService);
 
+			$scope.isReadonly = function()	{
+				return !$scope.isLoggedIn || ($scope.hasUserField && !$scope.model.entity.isYours);
+			};
+
 			$scope.getNewEntity = function()	{
-				return _.extend({
-					id: 'new',
-					isYours: true,
-					isListed: false
-				}, $scope.getNewSpecificEntity());
+				var empty = {
+					id: 'new'
+				};
+				if($scope.hasUserField) empty.isYours = true;
+				if($scope.canBeListed) empty.isListed = false;
+				if($scope.hasGroupAccessInModel) empty.groups = [];
+				return _.extend(empty, $scope.getNewSpecificEntity());
 			};
 
 			$scope.save = function()	{
@@ -60,17 +66,33 @@
 				}));
 			};
 
-			$scope.fork = function()	{
-				$scope.pushRequest(entityService.fork({}, $scope.model.entity, function(o)	{
-					if(o.id != null)
-						$route.updateParams({id: o.id});
-				}));
-			};
+			if($scope.canBeForked)
+				$scope.fork = function()	{
+					$scope.pushRequest(entityService.fork({}, $scope.model.entity, function(o)	{
+						if(o.id != null)
+							$route.updateParams({id: o.id});
+					}));
+				};
 
 			if($scope.isDetail)
 				$scope.model.entity = $routeParams.id == 'new'
 					? $scope.getNewEntity()
 					: $scope.pushRequest(entityService.get({ id: $routeParams.id | 0 }, $scope.completeLoading), 'init');
+
+			if($scope.hasGroupAccessInModel)	{
+				$scope.getGroupAutocomplete = function(value)	{
+					return Group.autocomplete({s: value}).$promise;
+				};
+
+				$scope.groupService = StoreServiceFactory.create({
+					getList: function(entity)	{
+						return entity.groups;
+					},
+					emptyEntry: { p: {} },
+					scope: $scope,
+					container: $scope.model.entity
+				});
+			}
 		};
 	}]);
 })(angular)

@@ -77,9 +77,9 @@ class UserTableMap extends TableMap
     const COL_ID = 'user.id';
 
     /**
-     * the column name for the username field
+     * the column name for the name field
      */
-    const COL_USERNAME = 'user.username';
+    const COL_NAME = 'user.name';
 
     /**
      * the column name for the password field
@@ -118,10 +118,10 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Username', 'Password', 'Email', 'Created', 'ConfirmationCode', 'RecoverPasswordCode', ),
-        self::TYPE_CAMELNAME     => array('id', 'username', 'password', 'email', 'created', 'confirmationCode', 'recoverPasswordCode', ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_USERNAME, UserTableMap::COL_PASSWORD, UserTableMap::COL_EMAIL, UserTableMap::COL_CREATED, UserTableMap::COL_CONFIRMATION_CODE, UserTableMap::COL_RECOVER_PASSWORD_CODE, ),
-        self::TYPE_FIELDNAME     => array('id', 'username', 'password', 'email', 'created', 'confirmation_code', 'recover_password_code', ),
+        self::TYPE_PHPNAME       => array('Id', 'Name', 'Password', 'Email', 'Created', 'ConfirmationCode', 'RecoverPasswordCode', ),
+        self::TYPE_CAMELNAME     => array('id', 'name', 'password', 'email', 'created', 'confirmationCode', 'recoverPasswordCode', ),
+        self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_NAME, UserTableMap::COL_PASSWORD, UserTableMap::COL_EMAIL, UserTableMap::COL_CREATED, UserTableMap::COL_CONFIRMATION_CODE, UserTableMap::COL_RECOVER_PASSWORD_CODE, ),
+        self::TYPE_FIELDNAME     => array('id', 'name', 'password', 'email', 'created', 'confirmation_code', 'recover_password_code', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
@@ -132,10 +132,10 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Username' => 1, 'Password' => 2, 'Email' => 3, 'Created' => 4, 'ConfirmationCode' => 5, 'RecoverPasswordCode' => 6, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'email' => 3, 'created' => 4, 'confirmationCode' => 5, 'recoverPasswordCode' => 6, ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_USERNAME => 1, UserTableMap::COL_PASSWORD => 2, UserTableMap::COL_EMAIL => 3, UserTableMap::COL_CREATED => 4, UserTableMap::COL_CONFIRMATION_CODE => 5, UserTableMap::COL_RECOVER_PASSWORD_CODE => 6, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'username' => 1, 'password' => 2, 'email' => 3, 'created' => 4, 'confirmation_code' => 5, 'recover_password_code' => 6, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Password' => 2, 'Email' => 3, 'Created' => 4, 'ConfirmationCode' => 5, 'RecoverPasswordCode' => 6, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'password' => 2, 'email' => 3, 'created' => 4, 'confirmationCode' => 5, 'recoverPasswordCode' => 6, ),
+        self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_NAME => 1, UserTableMap::COL_PASSWORD => 2, UserTableMap::COL_EMAIL => 3, UserTableMap::COL_CREATED => 4, UserTableMap::COL_CONFIRMATION_CODE => 5, UserTableMap::COL_RECOVER_PASSWORD_CODE => 6, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'password' => 2, 'email' => 3, 'created' => 4, 'confirmation_code' => 5, 'recover_password_code' => 6, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
     );
 
@@ -157,7 +157,7 @@ class UserTableMap extends TableMap
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('username', 'Username', 'VARCHAR', true, 32, null);
+        $this->addColumn('name', 'Name', 'VARCHAR', true, 32, null);
         $this->addColumn('password', 'Password', 'VARCHAR', true, 40, null);
         $this->addColumn('email', 'Email', 'VARCHAR', true, 1024, null);
         $this->addColumn('created', 'Created', 'TIMESTAMP', true, null, null);
@@ -170,6 +170,13 @@ class UserTableMap extends TableMap
      */
     public function buildRelations()
     {
+        $this->addRelation('GroupPerson', '\\ECP\\GroupPerson', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':userId',
+    1 => ':id',
+  ),
+), null, null, 'Grouppeople', false);
         $this->addRelation('FittingRuleEntity', '\\ECP\\FittingRuleEntity', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -335,7 +342,7 @@ class UserTableMap extends TableMap
     {
         if (null === $alias) {
             $criteria->addSelectColumn(UserTableMap::COL_ID);
-            $criteria->addSelectColumn(UserTableMap::COL_USERNAME);
+            $criteria->addSelectColumn(UserTableMap::COL_NAME);
             $criteria->addSelectColumn(UserTableMap::COL_PASSWORD);
             $criteria->addSelectColumn(UserTableMap::COL_EMAIL);
             $criteria->addSelectColumn(UserTableMap::COL_CREATED);
@@ -343,7 +350,7 @@ class UserTableMap extends TableMap
             $criteria->addSelectColumn(UserTableMap::COL_RECOVER_PASSWORD_CODE);
         } else {
             $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.username');
+            $criteria->addSelectColumn($alias . '.name');
             $criteria->addSelectColumn($alias . '.password');
             $criteria->addSelectColumn($alias . '.email');
             $criteria->addSelectColumn($alias . '.created');

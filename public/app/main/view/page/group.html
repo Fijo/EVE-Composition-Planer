@@ -1,0 +1,78 @@
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+
+<form name="form">
+	<div ng-include="'app/main/view/partial/header/default-entity.html'"></div>
+
+	<tabset justified="true">
+		<tab ng-repeat="listType in model.lists">
+			<tab-heading id="validation-{{::listType.name}}">{{::listType.title}} <span class="glyphicon glyphicon-warning-sign hidden"></span></tab-heading>
+			<span class="validation-container-root" ecp-redirect-validation="#validation-{{::listType.name}}">
+				<h4>Authorized EVE Composition Planer users</h4>
+				<ul class="list-group">
+					<li ng-repeat="entry in model.entity[listType.name].persons" class="list-group-item">
+						<div class="row">
+							<div class="col-xs-11">
+								<span ecp-validation-container>
+									<input class="form-control input-sm" name="f{{::listType.name}}_persons_{{getRepeaterHash(entry)}}_user" ng-model="entry.user" type="text" placeholder="{{::listType.title}} username" data-auto-select="true" data-animation="am-flip-x"
+											bs-options="userEntity as userEntity.name for userEntity in getUserAutocomplete($viewValue) track by userEntity.id" bs-typeahead ng-model-options="{ allowInvalid: true }" ng-disabled="isReadonly()"
+											ecp-validation-tooltip="form" required id-required>
+								</span>
+							</div>
+							<div class="col-xs-1 pull-right">
+								<a type="button" class="btn btn-link btn-sm" aria-label="Remove" ng-click="personService.remove(model.entity[listType.name], $index)" ng-disabled="isReadonly()">
+									<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+								</a>
+							</div>
+						</div>
+					</li>
+					<li class="list-group-item">
+						<div class="row">
+							<div class="col-xs-11"></div>
+							<div class="col-xs-1 pull-right">
+								<a type="button" class="btn btn-link btn-sm" aria-label="Add" ng-click="personService.add(model.entity[listType.name])" ng-disabled="isReadonly()">
+									<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+								</a>
+							</div>
+						</div>
+					</li>
+				</ul>
+
+				<h4>Authorized Eve ingame entities</h4>
+				<ul class="list-group">
+					<li ng-repeat="entry in model.entity[listType.name].evePersons" class="list-group-item">
+						<div class="row">
+							<div class="col-xs-11">
+								<span ecp-validation-container>
+									<input class="form-control input-sm" name="f{{::listType.name}}_evePersons_{{getRepeaterHash(entry)}}_name" ng-model="entry.name" type="text" placeholder="{{::listType.title}} ingame corp/ alliance/ character name"
+											ng-disabled="isReadonly()" ecp-validation-tooltip="form" minlength="3" maxlength="32" required>
+								</span>
+							</div>
+							<div class="col-xs-1 pull-right">
+								<a type="button" class="btn btn-link btn-sm" aria-label="Remove" ng-click="evePersonService.remove(model.entity[listType.name], $index)" ng-disabled="isReadonly()">
+									<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+								</a>
+							</div>
+						</div>
+					</li>
+					<li class="list-group-item">
+						<div class="row">
+							<div class="col-xs-11"></div>
+							<div class="col-xs-1 pull-right">
+								<a type="button" class="btn btn-link btn-sm" aria-label="Add" ng-click="evePersonService.add(model.entity[listType.name])" ng-disabled="isReadonly()">
+									<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+								</a>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</span>
+		</tab>
+	</tabset>
+</form>

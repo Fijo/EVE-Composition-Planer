@@ -3,3 +3,7 @@
 /public/rest/var/cache/*.json
 /public/rest/var/task/*
 /public/rest/vendor/
+/public/rest/config/propel/propel.json
+/public/rest/config/database/config.php
+
+/public/rest/config/database/dbpatch.ini

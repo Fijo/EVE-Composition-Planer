@@ -21,7 +21,7 @@ use Propel\Runtime\Exception\PropelException;
  * 
  *
  * @method     ChildUserQuery orderById($order = Criteria::ASC) Order by the id column
- * @method     ChildUserQuery orderByUsername($order = Criteria::ASC) Order by the username column
+ * @method     ChildUserQuery orderByName($order = Criteria::ASC) Order by the name column
  * @method     ChildUserQuery orderByPassword($order = Criteria::ASC) Order by the password column
  * @method     ChildUserQuery orderByEmail($order = Criteria::ASC) Order by the email column
  * @method     ChildUserQuery orderByCreated($order = Criteria::ASC) Order by the created column
@@ -29,7 +29,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildUserQuery orderByRecoverPasswordCode($order = Criteria::ASC) Order by the recover_password_code column
  *
  * @method     ChildUserQuery groupById() Group by the id column
- * @method     ChildUserQuery groupByUsername() Group by the username column
+ * @method     ChildUserQuery groupByName() Group by the name column
  * @method     ChildUserQuery groupByPassword() Group by the password column
  * @method     ChildUserQuery groupByEmail() Group by the email column
  * @method     ChildUserQuery groupByCreated() Group by the created column
@@ -39,6 +39,10 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildUserQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildUserQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildUserQuery innerJoin($relation) Adds a INNER JOIN clause to the query
+ *
+ * @method     ChildUserQuery leftJoinGroupPerson($relationAlias = null) Adds a LEFT JOIN clause to the query using the GroupPerson relation
+ * @method     ChildUserQuery rightJoinGroupPerson($relationAlias = null) Adds a RIGHT JOIN clause to the query using the GroupPerson relation
+ * @method     ChildUserQuery innerJoinGroupPerson($relationAlias = null) Adds a INNER JOIN clause to the query using the GroupPerson relation
  *
  * @method     ChildUserQuery leftJoinFittingRuleEntity($relationAlias = null) Adds a LEFT JOIN clause to the query using the FittingRuleEntity relation
  * @method     ChildUserQuery rightJoinFittingRuleEntity($relationAlias = null) Adds a RIGHT JOIN clause to the query using the FittingRuleEntity relation
@@ -52,13 +56,13 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildUserQuery rightJoinCompositionEntity($relationAlias = null) Adds a RIGHT JOIN clause to the query using the CompositionEntity relation
  * @method     ChildUserQuery innerJoinCompositionEntity($relationAlias = null) Adds a INNER JOIN clause to the query using the CompositionEntity relation
  *
- * @method     \ECP\FittingRuleEntityQuery|\ECP\RulesetEntityQuery|\ECP\CompositionEntityQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \ECP\GroupPersonQuery|\ECP\FittingRuleEntityQuery|\ECP\RulesetEntityQuery|\ECP\CompositionEntityQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildUser findOne(ConnectionInterface $con = null) Return the first ChildUser matching the query
  * @method     ChildUser findOneOrCreate(ConnectionInterface $con = null) Return the first ChildUser matching the query, or a new ChildUser object populated from the query conditions when no match is found
  *
  * @method     ChildUser findOneById(int $id) Return the first ChildUser filtered by the id column
- * @method     ChildUser findOneByUsername(string $username) Return the first ChildUser filtered by the username column
+ * @method     ChildUser findOneByName(string $name) Return the first ChildUser filtered by the name column
  * @method     ChildUser findOneByPassword(string $password) Return the first ChildUser filtered by the password column
  * @method     ChildUser findOneByEmail(string $email) Return the first ChildUser filtered by the email column
  * @method     ChildUser findOneByCreated(string $created) Return the first ChildUser filtered by the created column
@@ -69,7 +73,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildUser requireOne(ConnectionInterface $con = null) Return the first ChildUser matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildUser requireOneById(int $id) Return the first ChildUser filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildUser requireOneByUsername(string $username) Return the first ChildUser filtered by the username column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildUser requireOneByName(string $name) Return the first ChildUser filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByPassword(string $password) Return the first ChildUser filtered by the password column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByEmail(string $email) Return the first ChildUser filtered by the email column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByCreated(string $created) Return the first ChildUser filtered by the created column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -78,7 +82,7 @@ use Propel\Runtime\Exception\PropelException;
  *
  * @method     ChildUser[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildUser objects based on current ModelCriteria
  * @method     ChildUser[]|ObjectCollection findById(int $id) Return ChildUser objects filtered by the id column
- * @method     ChildUser[]|ObjectCollection findByUsername(string $username) Return ChildUser objects filtered by the username column
+ * @method     ChildUser[]|ObjectCollection findByName(string $name) Return ChildUser objects filtered by the name column
  * @method     ChildUser[]|ObjectCollection findByPassword(string $password) Return ChildUser objects filtered by the password column
  * @method     ChildUser[]|ObjectCollection findByEmail(string $email) Return ChildUser objects filtered by the email column
  * @method     ChildUser[]|ObjectCollection findByCreated(string $created) Return ChildUser objects filtered by the created column
@@ -176,7 +180,7 @@ abstract class UserQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, username, password, email, created, confirmation_code, recover_password_code FROM user WHERE id = :p0';
+        $sql = 'SELECT id, name, password, email, created, confirmation_code, recover_password_code FROM user WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);            
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -308,32 +312,32 @@ abstract class UserQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the username column
+     * Filter the query on the name column
      *
      * Example usage:
      * <code>
-     * $query->filterByUsername('fooValue');   // WHERE username = 'fooValue'
-     * $query->filterByUsername('%fooValue%'); // WHERE username LIKE '%fooValue%'
+     * $query->filterByName('fooValue');   // WHERE name = 'fooValue'
+     * $query->filterByName('%fooValue%'); // WHERE name LIKE '%fooValue%'
      * </code>
      *
-     * @param     string $username The value to use as filter.
+     * @param     string $name The value to use as filter.
      *              Accepts wildcards (* and % trigger a LIKE)
      * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @return $this|ChildUserQuery The current query, for fluid interface
      */
-    public function filterByUsername($username = null, $comparison = null)
+    public function filterByName($name = null, $comparison = null)
     {
         if (null === $comparison) {
-            if (is_array($username)) {
+            if (is_array($name)) {
                 $comparison = Criteria::IN;
-            } elseif (preg_match('/[\%\*]/', $username)) {
-                $username = str_replace('*', '%', $username);
+            } elseif (preg_match('/[\%\*]/', $name)) {
+                $name = str_replace('*', '%', $name);
                 $comparison = Criteria::LIKE;
             }
         }
 
-        return $this->addUsingAlias(UserTableMap::COL_USERNAME, $username, $comparison);
+        return $this->addUsingAlias(UserTableMap::COL_NAME, $name, $comparison);
     }
 
     /**
@@ -493,6 +497,79 @@ abstract class UserQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(UserTableMap::COL_RECOVER_PASSWORD_CODE, $recoverPasswordCode, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \ECP\GroupPerson object
+     *
+     * @param \ECP\GroupPerson|ObjectCollection $groupPerson the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByGroupPerson($groupPerson, $comparison = null)
+    {
+        if ($groupPerson instanceof \ECP\GroupPerson) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $groupPerson->getUserid(), $comparison);
+        } elseif ($groupPerson instanceof ObjectCollection) {
+            return $this
+                ->useGroupPersonQuery()
+                ->filterByPrimaryKeys($groupPerson->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByGroupPerson() only accepts arguments of type \ECP\GroupPerson or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the GroupPerson relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinGroupPerson($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('GroupPerson');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'GroupPerson');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the GroupPerson relation GroupPerson object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \ECP\GroupPersonQuery A secondary query class using the current class as primary query
+     */
+    public function useGroupPersonQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinGroupPerson($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'GroupPerson', '\ECP\GroupPersonQuery');
     }
 
     /**

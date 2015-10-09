@@ -35,4 +35,17 @@ function include_dir($folder)   {
         include $filename;
 }
 
+function array_concat($array1, $array2)	{
+	$result = array();
+	foreach ($array1 as $v1) $result[] = $v1;
+	foreach ($array2 as $v2) $result[] = $v2;
+	return $result;
+}
+
+function get_real_class($obj) {
+    $classname = get_class($obj);
+    if(preg_match('@\\\\([\w]+)$@', $classname, $matches)) $classname = $matches[1];
+    return $classname;
+}
+
 ?>

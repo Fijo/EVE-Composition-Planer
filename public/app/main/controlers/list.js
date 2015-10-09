@@ -12,7 +12,7 @@
 		$scope.model.hasName = false;
 
 		$scope.listVisibility = $routeParams.visibility;
-		$scope.requireLogin = $scope.listVisibility == 'my';
+		$scope.requireLogin = $scope.listVisibility != 'public';
 		$scope.list = [];
 		$scope.pager = {};
 
