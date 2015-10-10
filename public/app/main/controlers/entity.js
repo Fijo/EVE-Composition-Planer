@@ -8,7 +8,7 @@
 (function(angular, undefined)	{
 	'use strict';
 	
-	angular.module('mainApp').controller('entityCtrl', ['$scope', '$injector', '$routeParams', '$route', 'Group', 'StoreServiceFactory', function ($scope, $injector, $routeParams, $route, Group, StoreServiceFactory) {
+	angular.module('mainApp').controller('entityCtrl', ['$scope', '$injector', '$routeParams', '$route', 'Group', 'StoreServiceFactory', 'AutocompleteFactory', 'KnowyetService', function ($scope, $injector, $routeParams, $route, Group, StoreServiceFactory, AutocompleteFactory, KnowyetService) {
 		$scope.requireLogin = true;
 		$scope.isDetail = $routeParams.id != null;
 		$scope.hasUserField = true;
@@ -24,7 +24,7 @@
 		};
 
 		$scope.isNew = function()	{
-			return $scope.model.entity.id == 'new';
+			return $routeParams.id == 'new';
 		};
 
 		$scope.d3lete = function()	{
@@ -80,9 +80,9 @@
 					: $scope.pushRequest(entityService.get({ id: $routeParams.id | 0 }, $scope.completeLoading), 'init');
 
 			if($scope.hasGroupAccessInModel)	{
-				$scope.getGroupAutocomplete = function(value)	{
-					return Group.autocomplete({s: value}).$promise;
-				};
+				$scope.knowyet = $scope.knowyet.concat(KnowyetService.getSharingTips($scope.message.entity));
+
+				$scope.getGroupAutocomplete = AutocompleteFactory(Group);
 
 				$scope.groupService = StoreServiceFactory.create({
 					getList: function(entity)	{

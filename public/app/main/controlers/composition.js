@@ -8,7 +8,7 @@
 (function(angular, undefined)	{
 	'use strict';
 	
-	angular.module('mainApp').controller('compositionCtrl', ['$scope', '$controller', '_', 'Ruleset', 'ShipGroup', 'FittingService', 'ItemConverter', 'CompositionValidationService', 'GlobalFittingValidationService', 'RulesetService', 'KnowyetService', function ($scope, $controller, _, Ruleset, ShipGroup, FittingService, ItemConverter, CompositionValidationService, GlobalFittingValidationService, RulesetService, KnowyetService) {
+	angular.module('mainApp').controller('compositionCtrl', ['$scope', '$controller', '_', 'Ruleset', 'ShipGroup', 'FittingService', 'ItemConverter', 'CompositionValidationService', 'GlobalFittingValidationService', 'RulesetService', 'KnowyetService', 'AutocompleteFactory', function ($scope, $controller, _, Ruleset, ShipGroup, FittingService, ItemConverter, CompositionValidationService, GlobalFittingValidationService, RulesetService, KnowyetService, AutocompleteFactory) {
 		$controller('entityCtrl', { $scope: $scope });
 		RulesetService($scope);
 
@@ -69,7 +69,7 @@
 					'If the bar gets red you are running out of points and the numbers mean [used amount of points] / [min points] - [max points].'
 				]
 			}
-		].concat(KnowyetService.getSharingTips($scope.message.entity));
+		];
 
 		var shared = (function(){
 			var self = {
@@ -97,9 +97,7 @@
 			};
 		};
 
-		$scope.getRulesetsAutocomplete = function(value)	{
-			return Ruleset.autocomplete({s: value}).$promise;
-		};
+		$scope.getRulesetsAutocomplete = AutocompleteFactory(Ruleset);
 
 		$scope.getShipPoints = function(shipId)	{
 			var ruleset = $scope.model.ruleset;

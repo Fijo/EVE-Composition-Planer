@@ -8,7 +8,7 @@
 (function(angular, undefined)	{
 	'use strict';
 	
-	angular.module('mainApp').controller('rulesetCtrl', ['$scope', '$controller', '$http', 'ShipGroup', 'RuleDef', 'FittingRule', 'StoreServiceFactory', 'RulesetService', 'KnowyetService', function ($scope, $controller, $http, ShipGroup, RuleDef, FittingRule, StoreServiceFactory, RulesetService, KnowyetService) {
+	angular.module('mainApp').controller('rulesetCtrl', ['$scope', '$controller', '$http', 'ShipGroup', 'RuleDef', 'FittingRule', 'StoreServiceFactory', 'RulesetService', 'KnowyetService', 'AutocompleteFactory', function ($scope, $controller, $http, ShipGroup, RuleDef, FittingRule, StoreServiceFactory, RulesetService, KnowyetService, AutocompleteFactory) {
 		$controller('entityCtrl', { $scope: $scope });
 		RulesetService($scope);
 
@@ -67,7 +67,7 @@
 					'Now you are basicly using those information in tag form to start validating the entire composition using your ruleset.'
 				]
 			}
-		].concat(KnowyetService.getSharingTips($scope.message.entity));
+		];
 
 		$scope.filterDefs = {
 			comparison: $scope.pushRequest(RuleDef.getComparison(function(comparsions)	{
@@ -120,9 +120,7 @@
 			return entity;
 		};
 
-		$scope.getFittingRulesAutocomplete = function(value)	{
-			return FittingRule.autocomplete({s: value}).$promise;
-		};
+		$scope.getFittingRulesAutocomplete = AutocompleteFactory(FittingRule);
 
 		$scope.updateGroupOverviewPoints = function(shipGroup)	{
 			shipGroup.points = $scope.getGroupPoints(shipGroup);

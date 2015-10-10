@@ -64,6 +64,23 @@
 						return result;
 					});
 
+
+			        fieldScope.$on('$destroy', function() {
+			        	var containerContexts = _.map(rootValidation.containers, function(container)	{
+			        		return containerRoots[getUniqueId(container.element)];
+			        	});
+			        	
+						_.each(containerContexts, function(containerContext)	{
+							containerContext.content = _.reject(containerContext.content, function(sc) { return sc.field == fieldScope.field; });
+						});
+
+						// revalidate closest container
+						var firstContainerContextWithOthers = _.find(containerContexts, function(containerContext)	{
+							return containerContext.content.length != 0;
+						});
+						if(firstContainerContextWithOthers != null) firstContainerContextWithOthers.content[0].$emit('fieldValidated', [element]);
+			        });
+
 					return rootValidation;
 				};
 				var scopeHasError = function(scope)	{
