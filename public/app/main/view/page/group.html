@@ -44,34 +44,36 @@ You should have received a copy of the GNU General Public License along with thi
 					</li>
 				</ul>
 
-				<h4>Authorized Eve ingame entities</h4>
-				<ul class="list-group">
-					<li ng-repeat="entry in model.entity[listType.name].evePersons" class="list-group-item">
-						<div class="row">
-							<div class="col-xs-11">
-								<span ecp-validation-container>
-									<input class="form-control input-sm" name="f{{::listType.name}}_evePersons_{{getRepeaterHash(entry)}}_name" ng-model="entry.name" type="text" placeholder="{{::listType.title}} ingame corp/ alliance/ character name"
-											ng-disabled="isReadonly()" ecp-validation-tooltip="form" minlength="3" maxlength="32" required>
-								</span>
+				<span ng-show="false">
+					<h4>Authorized Eve ingame entities</h4>
+					<ul class="list-group">
+						<li ng-repeat="entry in model.entity[listType.name].evePersons" class="list-group-item">
+							<div class="row">
+								<div class="col-xs-11">
+									<span ecp-validation-container>
+										<input class="form-control input-sm" name="f{{::listType.name}}_evePersons_{{getRepeaterHash(entry)}}_name" ng-model="entry.name" type="text" placeholder="{{::listType.title}} ingame corp/ alliance/ character name"
+												ng-disabled="isReadonly()" ecp-validation-tooltip="form" minlength="3" maxlength="32" required>
+									</span>
+								</div>
+								<div class="col-xs-1 pull-right">
+									<a type="button" class="btn btn-link btn-sm" aria-label="Remove" ng-click="evePersonService.remove(model.entity[listType.name], $index)" ng-disabled="isReadonly()">
+										<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+									</a>
+								</div>
 							</div>
-							<div class="col-xs-1 pull-right">
-								<a type="button" class="btn btn-link btn-sm" aria-label="Remove" ng-click="evePersonService.remove(model.entity[listType.name], $index)" ng-disabled="isReadonly()">
-									<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
-								</a>
+						</li>
+						<li class="list-group-item">
+							<div class="row">
+								<div class="col-xs-11"></div>
+								<div class="col-xs-1 pull-right">
+									<a type="button" class="btn btn-link btn-sm" aria-label="Add" ng-click="evePersonService.add(model.entity[listType.name])" ng-disabled="isReadonly()">
+										<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+									</a>
+								</div>
 							</div>
-						</div>
-					</li>
-					<li class="list-group-item">
-						<div class="row">
-							<div class="col-xs-11"></div>
-							<div class="col-xs-1 pull-right">
-								<a type="button" class="btn btn-link btn-sm" aria-label="Add" ng-click="evePersonService.add(model.entity[listType.name])" ng-disabled="isReadonly()">
-									<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-								</a>
-							</div>
-						</div>
-					</li>
-				</ul>
+						</li>
+					</ul>
+				</span>
 			</span>
 		</tab>
 	</tabset>

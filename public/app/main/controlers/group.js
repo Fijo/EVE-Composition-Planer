@@ -8,7 +8,7 @@
 (function(angular, undefined)	{
 	'use strict';
 	
-	angular.module('mainApp').controller('groupCtrl', ['$scope', '$controller', '_', 'StoreServiceFactory', 'Def', 'User', function ($scope, $controller, _, StoreServiceFactory, Def, User) {
+	angular.module('mainApp').controller('groupCtrl', ['$scope', '$controller', '_', 'StoreServiceFactory', 'Def', 'User', 'KnowyetService', 'AutocompleteFactory', function ($scope, $controller, _, StoreServiceFactory, Def, User, KnowyetService, AutocompleteFactory) {
 		$controller('entityCtrl', { $scope: $scope });
 
 		$scope.hasUserField = false;
@@ -28,9 +28,32 @@
 
 		$scope.knowyet = [
 			{
-				title: 'Tips for this entity are coming soon.',
+				title: 'What are groups useful for?',
 				content: [
-					'... watch out for the next version and update your instalation of ECP ;)'
+					'Groups are pretty much used to share entities (like Compositions) with your friends without making them public.',
+					'Once you created a group or once someone else added you to one you can start sharing entities with that group.',
+					'All groups you are part of are also gona be listed under the groups list.'
+				]
+			},
+			KnowyetService.getAutocompleteTip('username', true),
+			{
+				title: 'What can admins do more than members?',
+				content: [
+					'Every admin can change and save the group.',
+					'Members can only use the group view stuff that has been shared with it and look at it.'
+				]
+			},
+			{
+				title: 'Anything else I should be aware of when trying to create a group?',
+				content: [
+					'There\'s only one thing you cannot remove yourself from the admins. If you do so you wount be able to save the group.'
+				]
+			},
+			{
+				title: 'So this is kinda anoying now I have to add every single person in my alliance to the members list ...',
+				content: [
+					'Well I already started to implement a feature that allows you to add ingame entities as well but I haven\'t finished that yet.' ,
+					'So for now you cant just add like an alliance to the members list but that will be possible soon.'
 				]
 			}
 		];
@@ -92,8 +115,6 @@
 			}), 'init')
 		};
 
-		$scope.getUserAutocomplete = function(value)	{
-			return User.autocomplete({s: value}).$promise;
-		};
+		$scope.getUserAutocomplete = AutocompleteFactory(User);
 	}]);
 })(angular)

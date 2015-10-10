@@ -8,7 +8,7 @@
 (function(angular, undefined)	{
 	'use strict';
 	
-	angular.module('mainApp').controller('fittingRuleCtrl', ['$scope', '$controller', 'RuleDef', 'StoreServiceFactory', function ($scope, $controller, RuleDef, StoreServiceFactory) {
+	angular.module('mainApp').controller('fittingRuleCtrl', ['$scope', '$controller', 'RuleDef', 'StoreServiceFactory', 'KnowyetService', function ($scope, $controller, RuleDef, StoreServiceFactory, KnowyetService) {
 		$controller('entityCtrl', { $scope: $scope });
 		$scope.message = {
 			entityService: 'FittingRule',
@@ -55,7 +55,7 @@
 					'In some cases this can be very handy to make some checks on the entire composition without using multible fitting rules.'
 				]
 			}
-		];
+		].concat(KnowyetService.getSharingTips($scope.message.entity));
 
 		$scope.filterDefs = {
 			comparison: $scope.pushRequest(RuleDef.getComparison(function(comparisons)	{

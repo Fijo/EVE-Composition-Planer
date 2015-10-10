@@ -69,7 +69,7 @@
 					'If the bar gets red you are running out of points and the numbers mean [used amount of points] / [min points] - [max points].'
 				]
 			}
-		];
+		].concat(KnowyetService.getSharingTips($scope.message.entity));
 
 		var shared = (function(){
 			var self = {

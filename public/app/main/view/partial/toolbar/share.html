@@ -8,7 +8,12 @@ You should have received a copy of the GNU General Public License along with thi
 -->
 
 <div class="row" ng-if="hasGroupAccessInModel">
-	<div class="col-md-2 col-sm-3 col-xs-4" ng-repeat="group in model.entity.groups">
+	<div class="col-xs-1 pull-right text-right">
+		<button type="button" class="btn btn-default btn-sm" aria-label="Add" ng-click="groupService.add()" ng-disabled="isReadonly()" ecp-tooltip="'Add access to this {{::message.entity}} for another group'">
+			<span class="glyphicon glyphicon-share" aria-hidden="true"></span>
+		</button>
+	</div>
+	<div class="col-md-2 col-sm-3 col-xs-4 pull-right" ng-repeat="group in model.entity.groups">
 		<div class="input-group">
 			<span ecp-validation-container>
 				<input class="form-control input-sm" name="fgroups_{{getRepeaterHash(group)}}" ng-model="group.p" type="text" placeholder="Group name" data-auto-select="true" data-animation="am-flip-x" ecp-tooltip="'{{::message.entityCap}} is accessable by group members'"
@@ -21,10 +26,5 @@ You should have received a copy of the GNU General Public License along with thi
 				</button>
 			</span>
 		</div>
-	</div>
-	<div class="col-xs-1 pull-right text-right">
-		<button type="button" class="btn btn-default btn-sm" aria-label="Add" ng-click="groupService.add()" ng-disabled="isReadonly()" ecp-tooltip="'Add access to this {{::message.entity}} for another group'">
-			<span class="glyphicon glyphicon-share" aria-hidden="true"></span>
-		</button>
 	</div>
 </div>

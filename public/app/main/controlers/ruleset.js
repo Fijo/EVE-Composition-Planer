@@ -67,7 +67,7 @@
 					'Now you are basicly using those information in tag form to start validating the entire composition using your ruleset.'
 				]
 			}
-		];
+		].concat(KnowyetService.getSharingTips($scope.message.entity));
 
 		$scope.filterDefs = {
 			comparison: $scope.pushRequest(RuleDef.getComparison(function(comparsions)	{

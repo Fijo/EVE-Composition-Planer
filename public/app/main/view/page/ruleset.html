@@ -100,7 +100,7 @@ You should have received a copy of the GNU General Public License along with thi
 													<span ecp-validation-container>
 														<input class="form-control input-sm" name="f{{::ruleKey}}_{{::filterKey}}tag" ng-model="fittingRule.tag" type="text" placeholder="Fitting rule" data-auto-select="true" data-animation="am-flip-x"
     														bs-options="fittingRuleEntity as fittingRuleEntity.name for fittingRuleEntity in getFittingRulesAutocomplete($viewValue) track by fittingRuleEntity.id" bs-typeahead ng-model-options="{ allowInvalid: true }"
-    														ecp-validation-tooltip="form" required id-required>
+    														ng-disabled="isReadonly()" ecp-validation-tooltip="form" required id-required>
 													</span>
 													must be
 													<span ecp-validation-container>

@@ -11,6 +11,7 @@
     define('app/main/module', ['require', 'angular'], function(require, angular) {
         require(['./init'], function()  {
             require([
+                './factories/autocompleteFactory',
                 './factories/formValidatorFactory',
                 './factories/pagerFactory',
                 './factories/user',

@@ -25,7 +25,7 @@
 			status: {
 				method: 'GET',
 				params: { action: 'status' },
-				cache: true
+				cache: false
 			},
 			autocomplete: {
 				method: 'GET',
