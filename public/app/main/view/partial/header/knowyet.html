@@ -7,7 +7,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
 -->
 
-<div ng-if="knowyet != null && model.hasName != false">
+<div ng-if="knowyet != null && (isDetail || model.hasName != false)">
 	<carousel interval="20000" no-wrap="false" class="alert alert-success knowyet">
 		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		<slide ng-repeat="slide in knowyet" active="slide.active" class="slide">

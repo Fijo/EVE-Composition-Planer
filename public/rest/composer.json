@@ -2,10 +2,11 @@
     "require": {
         "propel/propel": "~2.0@dev",
         "slim/slim": "^2.6",
-        "dbpatch/dbpatch": "^1.3"
+        "dbpatch/dbpatch": "^1.3",
+        "3rdpartyeve/phealng": "~2.0"
     },
 	"autoload": {
 		"classmap": ["models/", "core/"],
-		"files": ["core/util.php"]
+		"files": ["core/util.php", "config/phealng/setup.php", "config/phealng/config.php"]
 	}
 }

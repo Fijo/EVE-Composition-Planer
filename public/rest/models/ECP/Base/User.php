@@ -7,6 +7,8 @@ use \Exception;
 use \PDO;
 use ECP\CompositionEntity as ChildCompositionEntity;
 use ECP\CompositionEntityQuery as ChildCompositionEntityQuery;
+use ECP\EveApi as ChildEveApi;
+use ECP\EveApiQuery as ChildEveApiQuery;
 use ECP\FittingRuleEntity as ChildFittingRuleEntity;
 use ECP\FittingRuleEntityQuery as ChildFittingRuleEntityQuery;
 use ECP\GroupPerson as ChildGroupPerson;
@@ -114,6 +116,12 @@ abstract class User implements ActiveRecordInterface
     protected $recover_password_code;
 
     /**
+     * @var        ObjectCollection|ChildEveApi[] Collection to store aggregation of ChildEveApi objects.
+     */
+    protected $collEveApis;
+    protected $collEveApisPartial;
+
+    /**
      * @var        ObjectCollection|ChildGroupPerson[] Collection to store aggregation of ChildGroupPerson objects.
      */
     protected $collGrouppeople;
@@ -144,6 +152,12 @@ abstract class User implements ActiveRecordInterface
      * @var boolean
      */
     protected $alreadyInSave = false;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildEveApi[]
+     */
+    protected $eveApisScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -734,6 +748,8 @@ abstract class User implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
+            $this->collEveApis = null;
+
             $this->collGrouppeople = null;
 
             $this->collFittingRuleEntities = null;
@@ -850,6 +866,23 @@ abstract class User implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
+            }
+
+            if ($this->eveApisScheduledForDeletion !== null) {
+                if (!$this->eveApisScheduledForDeletion->isEmpty()) {
+                    \ECP\EveApiQuery::create()
+                        ->filterByPrimaryKeys($this->eveApisScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->eveApisScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collEveApis !== null) {
+                foreach ($this->collEveApis as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             if ($this->grouppeopleScheduledForDeletion !== null) {
@@ -1134,6 +1167,21 @@ abstract class User implements ActiveRecordInterface
         }
         
         if ($includeForeignObjects) {
+            if (null !== $this->collEveApis) {
+                
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'eveApis';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'eveapis';
+                        break;
+                    default:
+                        $key = 'EveApis';
+                }
+        
+                $result[$key] = $this->collEveApis->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
             if (null !== $this->collGrouppeople) {
                 
                 switch ($keyType) {
@@ -1456,6 +1504,12 @@ abstract class User implements ActiveRecordInterface
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
+            foreach ($this->getEveApis() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addEveApi($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getGrouppeople() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addGroupPerson($relObj->copy($deepCopy));
@@ -1521,6 +1575,9 @@ abstract class User implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
+        if ('EveApi' == $relationName) {
+            return $this->initEveApis();
+        }
         if ('GroupPerson' == $relationName) {
             return $this->initGrouppeople();
         }
@@ -1533,6 +1590,224 @@ abstract class User implements ActiveRecordInterface
         if ('CompositionEntity' == $relationName) {
             return $this->initCompositionEntities();
         }
+    }
+
+    /**
+     * Clears out the collEveApis collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addEveApis()
+     */
+    public function clearEveApis()
+    {
+        $this->collEveApis = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collEveApis collection loaded partially.
+     */
+    public function resetPartialEveApis($v = true)
+    {
+        $this->collEveApisPartial = $v;
+    }
+
+    /**
+     * Initializes the collEveApis collection.
+     *
+     * By default this just sets the collEveApis collection to an empty array (like clearcollEveApis());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initEveApis($overrideExisting = true)
+    {
+        if (null !== $this->collEveApis && !$overrideExisting) {
+            return;
+        }
+        $this->collEveApis = new ObjectCollection();
+        $this->collEveApis->setModel('\ECP\EveApi');
+    }
+
+    /**
+     * Gets an array of ChildEveApi objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildUser is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildEveApi[] List of ChildEveApi objects
+     * @throws PropelException
+     */
+    public function getEveApis(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collEveApisPartial && !$this->isNew();
+        if (null === $this->collEveApis || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collEveApis) {
+                // return empty collection
+                $this->initEveApis();
+            } else {
+                $collEveApis = ChildEveApiQuery::create(null, $criteria)
+                    ->filterByUser($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collEveApisPartial && count($collEveApis)) {
+                        $this->initEveApis(false);
+
+                        foreach ($collEveApis as $obj) {
+                            if (false == $this->collEveApis->contains($obj)) {
+                                $this->collEveApis->append($obj);
+                            }
+                        }
+
+                        $this->collEveApisPartial = true;
+                    }
+
+                    return $collEveApis;
+                }
+
+                if ($partial && $this->collEveApis) {
+                    foreach ($this->collEveApis as $obj) {
+                        if ($obj->isNew()) {
+                            $collEveApis[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collEveApis = $collEveApis;
+                $this->collEveApisPartial = false;
+            }
+        }
+
+        return $this->collEveApis;
+    }
+
+    /**
+     * Sets a collection of ChildEveApi objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $eveApis A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function setEveApis(Collection $eveApis, ConnectionInterface $con = null)
+    {
+        /** @var ChildEveApi[] $eveApisToDelete */
+        $eveApisToDelete = $this->getEveApis(new Criteria(), $con)->diff($eveApis);
+
+        
+        $this->eveApisScheduledForDeletion = $eveApisToDelete;
+
+        foreach ($eveApisToDelete as $eveApiRemoved) {
+            $eveApiRemoved->setUser(null);
+        }
+
+        $this->collEveApis = null;
+        foreach ($eveApis as $eveApi) {
+            $this->addEveApi($eveApi);
+        }
+
+        $this->collEveApis = $eveApis;
+        $this->collEveApisPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related EveApi objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related EveApi objects.
+     * @throws PropelException
+     */
+    public function countEveApis(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collEveApisPartial && !$this->isNew();
+        if (null === $this->collEveApis || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collEveApis) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getEveApis());
+            }
+
+            $query = ChildEveApiQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByUser($this)
+                ->count($con);
+        }
+
+        return count($this->collEveApis);
+    }
+
+    /**
+     * Method called to associate a ChildEveApi object to this object
+     * through the ChildEveApi foreign key attribute.
+     *
+     * @param  ChildEveApi $l ChildEveApi
+     * @return $this|\ECP\User The current object (for fluent API support)
+     */
+    public function addEveApi(ChildEveApi $l)
+    {
+        if ($this->collEveApis === null) {
+            $this->initEveApis();
+            $this->collEveApisPartial = true;
+        }
+
+        if (!$this->collEveApis->contains($l)) {
+            $this->doAddEveApi($l);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildEveApi $eveApi The ChildEveApi object to add.
+     */
+    protected function doAddEveApi(ChildEveApi $eveApi)
+    {
+        $this->collEveApis[]= $eveApi;
+        $eveApi->setUser($this);
+    }
+
+    /**
+     * @param  ChildEveApi $eveApi The ChildEveApi object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
+     */
+    public function removeEveApi(ChildEveApi $eveApi)
+    {
+        if ($this->getEveApis()->contains($eveApi)) {
+            $pos = $this->collEveApis->search($eveApi);
+            $this->collEveApis->remove($pos);
+            if (null === $this->eveApisScheduledForDeletion) {
+                $this->eveApisScheduledForDeletion = clone $this->collEveApis;
+                $this->eveApisScheduledForDeletion->clear();
+            }
+            $this->eveApisScheduledForDeletion[]= clone $eveApi;
+            $eveApi->setUser(null);
+        }
+
+        return $this;
     }
 
     /**
@@ -2614,6 +2889,11 @@ abstract class User implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collEveApis) {
+                foreach ($this->collEveApis as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collGrouppeople) {
                 foreach ($this->collGrouppeople as $o) {
                     $o->clearAllReferences($deep);
@@ -2636,6 +2916,7 @@ abstract class User implements ActiveRecordInterface
             }
         } // if ($deep)
 
+        $this->collEveApis = null;
         $this->collGrouppeople = null;
         $this->collFittingRuleEntities = null;
         $this->collRulesetEntities = null;

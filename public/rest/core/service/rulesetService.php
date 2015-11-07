@@ -35,6 +35,10 @@ class RulesetService extends EntityService
       ->find()));
   }
 
+  protected function getSingleEntityId()  {
+    die('not supported');
+  }
+
   protected function extendAutocompleteModel(&$model, $entity) {}
 
   private function populateSubentities($rows) {

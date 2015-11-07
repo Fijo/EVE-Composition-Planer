@@ -44,6 +44,10 @@ class GroupService extends EntityService
     return $this->getSingleEntity($query);
   }
 
+  protected function getSingleEntityId()  {
+    die('not supported');
+  }
+
   protected function extendAutocompleteModel(&$model, $entity) {}
 
   public function get($id)  {
@@ -54,7 +58,7 @@ class GroupService extends EntityService
 
   private function getMappedModel($entity) {    
     $data = $this->getLocalyMappendModel($entity);
-    $data['lastComputed'] = $entity->getLastComputed()->diff(new \DateTime('today'))->format('%R%a days');
+    $data['lastComputed'] = $this->getLastComputed($entity);
     $data['canEdit'] = $this->isCurrentUserStillAdminInGroup($entity);
 
     $groupPersonTypesDict = $this->groupPersonTypeService->get();
@@ -84,7 +88,7 @@ class GroupService extends EntityService
     foreach ($entity->getGroupEvepeople() as $groupEvePerson) {
       if($groupEvePerson->getGroupPersonTypeId() != $groupPersonTypeId) continue;
       
-      $groupEvePersonId = $groupPersonEntity->getId();
+      $groupEvePersonId = $groupEvePerson->getId();
       $evePersons[] = array('id' => $groupEvePersonId,
                             'name' => $groupEvePerson->getName(),
                             'generatedPersons' => array_key_exists($groupEvePersonId, $generatedPersonDict) ? $generatedPersonDict[$groupEvePersonId] : array());
@@ -101,6 +105,100 @@ class GroupService extends EntityService
   protected function getEntitySubEntities($entity) {
       die('not implemented');
   }
+
+  public function processGroups() {
+    while(true) {
+      $groups = ECP\GroupQuery::create()
+                  ->where('Group.lastComputed < ?', time() - 24 * 60 * 60)
+                  ->find();
+
+      $groups->populateRelation('GroupEvePerson');
+      $groups->populateRelation('GroupPerson');
+
+      $evePersonNames = array();
+      foreach ($groups as $group)
+        foreach ($group->getGroupEvepeople() as $groupEvePerson)
+          $evePersonNames []= $groupEvePerson->getName();
+
+      if(count($evePersonNames) != 0) {
+        $eveCharacters = ECP\EveCharacterQuery::create()
+          ->filterByCharName($evePersonNames)
+          ->_or()
+          ->filterByCorpName($evePersonNames)
+          ->_or()
+          ->filterByAllyName($evePersonNames)
+          ->find();
+
+        $eveCharacters->populateRelation('EveApi');
+
+        $eveNameDict = array();
+        foreach ($eveCharacters as $eveCharacter) {
+          $eveApi = $eveCharacter->getEveApi();
+          $userId = $eveApi->getUserId();
+          $eveNameDict[$eveCharacter->getCharName()] = array($userId);
+          if($eveCharacter->getCorpId() != 0) $this->pushEveName($eveNameDict, $eveCharacter->getCorpName(), $userId);
+          if($eveCharacter->getAllyId() != 0) $this->pushEveName($eveNameDict, $eveCharacter->getAllyName(), $userId);
+        }
+
+        foreach ($eveNameDict as $key => $userIds) $eveNameDict[$key] = array_unique($userIds);
+
+        foreach ($groups as $group) {
+          $personDict = array();
+          foreach ($group->getGrouppeople() as $groupPerson) {
+            $personKey = $groupPerson->getGroupPersonTypeId().'-'.$groupPerson->getGroupEvePersonId();
+            if(!array_key_exists($personKey, $personDict)) $personDict[$personKey] = array($groupPerson);
+            else $personDict[$personKey][] = $groupPerson;
+          }
+
+          $group->setLastComputed(time());
+
+          $connection = $this->getPropelConnection();
+          try {
+            $connection->beginTransaction();
+
+            foreach ($group->getGroupEvepeople() as $groupEvePerson) {
+              $name = $groupEvePerson->getName();
+              $userIds = array_key_exists($name, $eveNameDict) ? $eveNameDict[$name] : array();
+
+              $personKey = $groupEvePerson->getGroupPersonTypeId().'-'.$groupEvePerson->getId();
+              $persons = array_key_exists($personKey, $personDict) ? $personDict[$personKey] : array();
+
+              $personByUserId = array();
+              foreach ($persons as $person) $personById[$person->getUserId()];
+
+              foreach ($userIds as $userId)
+                if(!array_key_exists($userId, $personByUserId))  {
+                  $groupPersonEntity = new ECP\GroupPerson();
+                  $groupPersonEntity->setGroup($group);
+                  $groupPersonEntity->setGroupPersonTypeId($groupEvePerson->getGroupPersonTypeId());
+                  $groupPersonEntity->setGroupEvePersonId($groupEvePerson->getId());
+                  $groupPersonEntity->setUserId($userId);
+                  $this->prepareSubentitySave2($connection, $group, 'GroupPerson', $groupPersonEntity, true);
+                }
+
+              foreach ($persons as $groupPersonEntity)
+                if(!in_array($groupPersonEntity->getUserId(), $userIds)) $group->removeGroupPerson($groupPersonEntity);
+            }
+
+            $group->save($connection);
+
+            $connection->commit();
+          } catch (Exception $e) {
+            $connection->rollBack();
+            throw $e;
+          }
+        }
+      }
+
+      sleep(30);
+    }
+  }
+
+  private function pushEveName(&$eveNameDict, $name, $userId)  {
+    if(!array_key_exists($name, $eveNameDict)) $eveNameDict[$name] = array($userId);
+    else $eveNameDict[$name][] = $userId;
+  }
+
 
   protected function performSave($data, $fork)  {
     $entity = $this->getLocalyMappedEntityToSave($data, $fork);

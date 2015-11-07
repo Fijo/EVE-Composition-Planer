@@ -9,7 +9,6 @@ You should have received a copy of the GNU General Public License along with thi
 
 <div ng-repeat="error in requestManagement.getErrors()">
 	<div class="alert alert-danger" role="alert">
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		<div ng-if="error.advanced">
 			<button type="button" class="btn btn-default btn-sm pull-right" aria-label="show details" ng-model="error.showDetails" bs-checkbox>
 				<span class="glyphicon glyphicon glyphicon-eye-open" aria-hidden="true"></span>
@@ -21,6 +20,7 @@ You should have received a copy of the GNU General Public License along with thi
 			</div>
 		</div>
 		<div ng-if="!error.advanced">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 			<strong ng-if="error.errorType != null"><span class="glyphicon glyphicon-exclamation-sign"></span> {{::error.errorType}}:</strong>
 			{{::error.message}}
 			<p ng-if="error.data != null && error.data.length != 0">

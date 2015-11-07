@@ -40,6 +40,10 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildUserQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
  * @method     ChildUserQuery innerJoin($relation) Adds a INNER JOIN clause to the query
  *
+ * @method     ChildUserQuery leftJoinEveApi($relationAlias = null) Adds a LEFT JOIN clause to the query using the EveApi relation
+ * @method     ChildUserQuery rightJoinEveApi($relationAlias = null) Adds a RIGHT JOIN clause to the query using the EveApi relation
+ * @method     ChildUserQuery innerJoinEveApi($relationAlias = null) Adds a INNER JOIN clause to the query using the EveApi relation
+ *
  * @method     ChildUserQuery leftJoinGroupPerson($relationAlias = null) Adds a LEFT JOIN clause to the query using the GroupPerson relation
  * @method     ChildUserQuery rightJoinGroupPerson($relationAlias = null) Adds a RIGHT JOIN clause to the query using the GroupPerson relation
  * @method     ChildUserQuery innerJoinGroupPerson($relationAlias = null) Adds a INNER JOIN clause to the query using the GroupPerson relation
@@ -56,7 +60,7 @@ use Propel\Runtime\Exception\PropelException;
  * @method     ChildUserQuery rightJoinCompositionEntity($relationAlias = null) Adds a RIGHT JOIN clause to the query using the CompositionEntity relation
  * @method     ChildUserQuery innerJoinCompositionEntity($relationAlias = null) Adds a INNER JOIN clause to the query using the CompositionEntity relation
  *
- * @method     \ECP\GroupPersonQuery|\ECP\FittingRuleEntityQuery|\ECP\RulesetEntityQuery|\ECP\CompositionEntityQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \ECP\EveApiQuery|\ECP\GroupPersonQuery|\ECP\FittingRuleEntityQuery|\ECP\RulesetEntityQuery|\ECP\CompositionEntityQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildUser findOne(ConnectionInterface $con = null) Return the first ChildUser matching the query
  * @method     ChildUser findOneOrCreate(ConnectionInterface $con = null) Return the first ChildUser matching the query, or a new ChildUser object populated from the query conditions when no match is found
@@ -497,6 +501,79 @@ abstract class UserQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(UserTableMap::COL_RECOVER_PASSWORD_CODE, $recoverPasswordCode, $comparison);
+    }
+
+    /**
+     * Filter the query by a related \ECP\EveApi object
+     *
+     * @param \ECP\EveApi|ObjectCollection $eveApi the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByEveApi($eveApi, $comparison = null)
+    {
+        if ($eveApi instanceof \ECP\EveApi) {
+            return $this
+                ->addUsingAlias(UserTableMap::COL_ID, $eveApi->getUserid(), $comparison);
+        } elseif ($eveApi instanceof ObjectCollection) {
+            return $this
+                ->useEveApiQuery()
+                ->filterByPrimaryKeys($eveApi->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByEveApi() only accepts arguments of type \ECP\EveApi or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the EveApi relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function joinEveApi($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('EveApi');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'EveApi');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the EveApi relation EveApi object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \ECP\EveApiQuery A secondary query class using the current class as primary query
+     */
+    public function useEveApiQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinEveApi($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'EveApi', '\ECP\EveApiQuery');
     }
 
     /**

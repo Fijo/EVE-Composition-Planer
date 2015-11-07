@@ -14,6 +14,10 @@ class UserAccessCheckService
 	public function getAccessableIds($writePermissions = false)	{
         return array();
 	}
+
+	public function hasAccess($entityId, $writePermissions = false)	{
+		return true;
+	}
 }
 
 ?>

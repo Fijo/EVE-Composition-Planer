@@ -46,6 +46,10 @@ class InternalUserService extends EntityService
         die('not implemented');
     }
 
+      protected function getSingleEntityId()  {
+        die('not supported');
+      }
+
     protected function extendAutocompleteModel(&$model, $entity) {}
 }
 

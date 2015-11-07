@@ -2,8 +2,8 @@
 
 namespace ECP\Map;
 
-use ECP\User;
-use ECP\UserQuery;
+use ECP\EveApi;
+use ECP\EveApiQuery;
 use Propel\Runtime\Propel;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\InstancePoolTrait;
@@ -16,7 +16,7 @@ use Propel\Runtime\Map\TableMapTrait;
 
 
 /**
- * This class defines the structure of the 'user' table.
+ * This class defines the structure of the 'eveapi' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use Propel\Runtime\Map\TableMapTrait;
  * (i.e. if it's a text column type).
  *
  */
-class UserTableMap extends TableMap
+class EveApiTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class UserTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'ECP.Map.UserTableMap';
+    const CLASS_NAME = 'ECP.Map.EveApiTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class UserTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'user';
+    const TABLE_NAME = 'eveapi';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\ECP\\User';
+    const OM_CLASS = '\\ECP\\EveApi';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'ECP.User';
+    const CLASS_DEFAULT = 'ECP.EveApi';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 7;
+    const NUM_COLUMNS = 6;
 
     /**
      * The number of lazy-loaded columns
@@ -69,42 +69,37 @@ class UserTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 7;
+    const NUM_HYDRATE_COLUMNS = 6;
 
     /**
      * the column name for the id field
      */
-    const COL_ID = 'user.id';
+    const COL_ID = 'eveapi.id';
 
     /**
-     * the column name for the name field
+     * the column name for the userId field
      */
-    const COL_NAME = 'user.name';
+    const COL_USERID = 'eveapi.userId';
 
     /**
-     * the column name for the password field
+     * the column name for the keyId field
      */
-    const COL_PASSWORD = 'user.password';
+    const COL_KEYID = 'eveapi.keyId';
 
     /**
-     * the column name for the email field
+     * the column name for the vCode field
      */
-    const COL_EMAIL = 'user.email';
+    const COL_VCODE = 'eveapi.vCode';
 
     /**
-     * the column name for the created field
+     * the column name for the status field
      */
-    const COL_CREATED = 'user.created';
+    const COL_STATUS = 'eveapi.status';
 
     /**
-     * the column name for the confirmation_code field
+     * the column name for the lastComputed field
      */
-    const COL_CONFIRMATION_CODE = 'user.confirmation_code';
-
-    /**
-     * the column name for the recover_password_code field
-     */
-    const COL_RECOVER_PASSWORD_CODE = 'user.recover_password_code';
+    const COL_LASTCOMPUTED = 'eveapi.lastComputed';
 
     /**
      * The default string format for model objects of the related table
@@ -118,11 +113,11 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Name', 'Password', 'Email', 'Created', 'ConfirmationCode', 'RecoverPasswordCode', ),
-        self::TYPE_CAMELNAME     => array('id', 'name', 'password', 'email', 'created', 'confirmationCode', 'recoverPasswordCode', ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_NAME, UserTableMap::COL_PASSWORD, UserTableMap::COL_EMAIL, UserTableMap::COL_CREATED, UserTableMap::COL_CONFIRMATION_CODE, UserTableMap::COL_RECOVER_PASSWORD_CODE, ),
-        self::TYPE_FIELDNAME     => array('id', 'name', 'password', 'email', 'created', 'confirmation_code', 'recover_password_code', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id', 'Userid', 'Keyid', 'Vcode', 'Status', 'Lastcomputed', ),
+        self::TYPE_CAMELNAME     => array('id', 'userid', 'keyid', 'vcode', 'status', 'lastcomputed', ),
+        self::TYPE_COLNAME       => array(EveApiTableMap::COL_ID, EveApiTableMap::COL_USERID, EveApiTableMap::COL_KEYID, EveApiTableMap::COL_VCODE, EveApiTableMap::COL_STATUS, EveApiTableMap::COL_LASTCOMPUTED, ),
+        self::TYPE_FIELDNAME     => array('id', 'userId', 'keyId', 'vCode', 'status', 'lastComputed', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -132,11 +127,11 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Password' => 2, 'Email' => 3, 'Created' => 4, 'ConfirmationCode' => 5, 'RecoverPasswordCode' => 6, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'password' => 2, 'email' => 3, 'created' => 4, 'confirmationCode' => 5, 'recoverPasswordCode' => 6, ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_NAME => 1, UserTableMap::COL_PASSWORD => 2, UserTableMap::COL_EMAIL => 3, UserTableMap::COL_CREATED => 4, UserTableMap::COL_CONFIRMATION_CODE => 5, UserTableMap::COL_RECOVER_PASSWORD_CODE => 6, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, 'password' => 2, 'email' => 3, 'created' => 4, 'confirmation_code' => 5, 'recover_password_code' => 6, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Userid' => 1, 'Keyid' => 2, 'Vcode' => 3, 'Status' => 4, 'Lastcomputed' => 5, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'userid' => 1, 'keyid' => 2, 'vcode' => 3, 'status' => 4, 'lastcomputed' => 5, ),
+        self::TYPE_COLNAME       => array(EveApiTableMap::COL_ID => 0, EveApiTableMap::COL_USERID => 1, EveApiTableMap::COL_KEYID => 2, EveApiTableMap::COL_VCODE => 3, EveApiTableMap::COL_STATUS => 4, EveApiTableMap::COL_LASTCOMPUTED => 5, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'userId' => 1, 'keyId' => 2, 'vCode' => 3, 'status' => 4, 'lastComputed' => 5, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -149,20 +144,19 @@ class UserTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('user');
-        $this->setPhpName('User');
+        $this->setName('eveapi');
+        $this->setPhpName('EveApi');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\ECP\\User');
+        $this->setClassName('\\ECP\\EveApi');
         $this->setPackage('ECP');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addColumn('name', 'Name', 'VARCHAR', true, 32, null);
-        $this->addColumn('password', 'Password', 'VARCHAR', true, 40, null);
-        $this->addColumn('email', 'Email', 'VARCHAR', true, 1024, null);
-        $this->addColumn('created', 'Created', 'TIMESTAMP', true, null, null);
-        $this->addColumn('confirmation_code', 'ConfirmationCode', 'VARCHAR', false, 32, null);
-        $this->addColumn('recover_password_code', 'RecoverPasswordCode', 'VARCHAR', false, 32, null);
+        $this->addForeignKey('userId', 'Userid', 'INTEGER', 'user', 'id', true, null, null);
+        $this->addColumn('keyId', 'Keyid', 'INTEGER', true, null, null);
+        $this->addColumn('vCode', 'Vcode', 'VARCHAR', true, 64, null);
+        $this->addColumn('status', 'Status', 'VARCHAR', true, 24, null);
+        $this->addColumn('lastComputed', 'Lastcomputed', 'TIMESTAMP', false, null, null);
     } // initialize()
 
     /**
@@ -170,42 +164,30 @@ class UserTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('EveApi', '\\ECP\\EveApi', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('User', '\\ECP\\User', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':userId',
     1 => ':id',
   ),
-), null, null, 'EveApis', false);
-        $this->addRelation('GroupPerson', '\\ECP\\GroupPerson', RelationMap::ONE_TO_MANY, array (
+), null, null, null, false);
+        $this->addRelation('EveCharacter', '\\ECP\\EveCharacter', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
-    0 => ':userId',
+    0 => ':eveApiId',
     1 => ':id',
   ),
-), null, null, 'Grouppeople', false);
-        $this->addRelation('FittingRuleEntity', '\\ECP\\FittingRuleEntity', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':userId',
-    1 => ':id',
-  ),
-), null, null, 'FittingRuleEntities', false);
-        $this->addRelation('RulesetEntity', '\\ECP\\RulesetEntity', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':userId',
-    1 => ':id',
-  ),
-), null, null, 'RulesetEntities', false);
-        $this->addRelation('CompositionEntity', '\\ECP\\CompositionEntity', RelationMap::ONE_TO_MANY, array (
-  0 =>
-  array (
-    0 => ':userId',
-    1 => ':id',
-  ),
-), null, null, 'CompositionEntities', false);
+), 'CASCADE', 'CASCADE', 'EveCharacters', false);
     } // buildRelations()
+    /**
+     * Method to invalidate the instance pool of all tables related to eveapi     * by a foreign key with ON DELETE CASCADE
+     */
+    public static function clearRelatedInstancePool()
+    {
+        // Invalidate objects in related instance pools,
+        // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+        EveCharacterTableMap::clearInstancePool();
+    }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -264,7 +246,7 @@ class UserTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? UserTableMap::CLASS_DEFAULT : UserTableMap::OM_CLASS;
+        return $withPrefix ? EveApiTableMap::CLASS_DEFAULT : EveApiTableMap::OM_CLASS;
     }
 
     /**
@@ -278,22 +260,22 @@ class UserTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (User object, last column rank)
+     * @return array           (EveApi object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = UserTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = UserTableMap::getInstanceFromPool($key))) {
+        $key = EveApiTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = EveApiTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + UserTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + EveApiTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = UserTableMap::OM_CLASS;
-            /** @var User $obj */
+            $cls = EveApiTableMap::OM_CLASS;
+            /** @var EveApi $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            UserTableMap::addInstanceToPool($obj, $key);
+            EveApiTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -316,18 +298,18 @@ class UserTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = UserTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = UserTableMap::getInstanceFromPool($key))) {
+            $key = EveApiTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = EveApiTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var User $obj */
+                /** @var EveApi $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                UserTableMap::addInstanceToPool($obj, $key);
+                EveApiTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -348,21 +330,19 @@ class UserTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(UserTableMap::COL_ID);
-            $criteria->addSelectColumn(UserTableMap::COL_NAME);
-            $criteria->addSelectColumn(UserTableMap::COL_PASSWORD);
-            $criteria->addSelectColumn(UserTableMap::COL_EMAIL);
-            $criteria->addSelectColumn(UserTableMap::COL_CREATED);
-            $criteria->addSelectColumn(UserTableMap::COL_CONFIRMATION_CODE);
-            $criteria->addSelectColumn(UserTableMap::COL_RECOVER_PASSWORD_CODE);
+            $criteria->addSelectColumn(EveApiTableMap::COL_ID);
+            $criteria->addSelectColumn(EveApiTableMap::COL_USERID);
+            $criteria->addSelectColumn(EveApiTableMap::COL_KEYID);
+            $criteria->addSelectColumn(EveApiTableMap::COL_VCODE);
+            $criteria->addSelectColumn(EveApiTableMap::COL_STATUS);
+            $criteria->addSelectColumn(EveApiTableMap::COL_LASTCOMPUTED);
         } else {
             $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.name');
-            $criteria->addSelectColumn($alias . '.password');
-            $criteria->addSelectColumn($alias . '.email');
-            $criteria->addSelectColumn($alias . '.created');
-            $criteria->addSelectColumn($alias . '.confirmation_code');
-            $criteria->addSelectColumn($alias . '.recover_password_code');
+            $criteria->addSelectColumn($alias . '.userId');
+            $criteria->addSelectColumn($alias . '.keyId');
+            $criteria->addSelectColumn($alias . '.vCode');
+            $criteria->addSelectColumn($alias . '.status');
+            $criteria->addSelectColumn($alias . '.lastComputed');
         }
     }
 
@@ -375,7 +355,7 @@ class UserTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(UserTableMap::DATABASE_NAME)->getTable(UserTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(EveApiTableMap::DATABASE_NAME)->getTable(EveApiTableMap::TABLE_NAME);
     }
 
     /**
@@ -383,16 +363,16 @@ class UserTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(UserTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(UserTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new UserTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(EveApiTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(EveApiTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new EveApiTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a User or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a EveApi or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or User object or primary key or array of primary keys
+     * @param mixed               $values Criteria or EveApi object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -403,27 +383,27 @@ class UserTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(EveApiTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \ECP\User) { // it's a model object
+        } elseif ($values instanceof \ECP\EveApi) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(UserTableMap::DATABASE_NAME);
-            $criteria->add(UserTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(EveApiTableMap::DATABASE_NAME);
+            $criteria->add(EveApiTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = UserQuery::create()->mergeWith($criteria);
+        $query = EveApiQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            UserTableMap::clearInstancePool();
+            EveApiTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                UserTableMap::removeInstanceFromPool($singleval);
+                EveApiTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -431,20 +411,20 @@ class UserTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the user table.
+     * Deletes all rows from the eveapi table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return UserQuery::create()->doDeleteAll($con);
+        return EveApiQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a User or Criteria object.
+     * Performs an INSERT on the database, given a EveApi or Criteria object.
      *
-     * @param mixed               $criteria Criteria or User object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or EveApi object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -453,22 +433,22 @@ class UserTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(EveApiTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from User object
+            $criteria = $criteria->buildCriteria(); // build Criteria from EveApi object
         }
 
-        if ($criteria->containsKey(UserTableMap::COL_ID) && $criteria->keyContainsValue(UserTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.UserTableMap::COL_ID.')');
+        if ($criteria->containsKey(EveApiTableMap::COL_ID) && $criteria->keyContainsValue(EveApiTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.EveApiTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = UserQuery::create()->mergeWith($criteria);
+        $query = EveApiQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -477,7 +457,7 @@ class UserTableMap extends TableMap
         });
     }
 
-} // UserTableMap
+} // EveApiTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-UserTableMap::buildTableMap();
+EveApiTableMap::buildTableMap();

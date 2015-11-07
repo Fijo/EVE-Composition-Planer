@@ -12,6 +12,7 @@
         require(['./init'], function()  {
             require([
                 './factories/autocompleteFactory',
+                './factories/accountSettings',
                 './factories/formValidatorFactory',
                 './factories/pagerFactory',
                 './factories/user',
@@ -57,6 +58,7 @@
                 './controlers/nav',
                 './controlers/breadcrumb',
                 './controlers/about',
+                './controlers/accountSettings',
                 './controlers/feedback',
                 './controlers/composition',
                 './controlers/fittingRule',

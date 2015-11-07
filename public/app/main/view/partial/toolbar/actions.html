@@ -12,7 +12,7 @@ You should have received a copy of the GNU General Public License along with thi
 		<span class="glyphicon glyphicon-floppy-disk"></span>
 	</button>
 </div>
-<div class="btn-group" role="group">
+<div ng-if="!isSingleEntity" class="btn-group" role="group">
 	<button type="button" class="btn btn-default btn-sm" ecp-tooltip="'Delete'" ng-click="d3lete()" ng-disabled="isReadonly() || isNew()">
 		<span class="glyphicon glyphicon glyphicon-remove"></span>
 	</button>

@@ -48,15 +48,21 @@ abstract class EntityService {
   protected $accessCheckService;
   protected $maxPerPage = 10;
   public $hasUserField = true;
+  public $hasNameField = true;
   public $hasIsListedField = true;
   protected $hasGroupAccessInModel = true;
   protected $relatedEntityServices = array();
   protected $groupCheck = true;
+  protected $isSingleEntity = false;
 
   public function __construct()
   {
       $this->userService = new \Core\Service\UserService();
       $this->accessCheckService = new AccessCheckService($this->getEntityName());
+  }
+
+  protected function isUserEntity() {
+    return $this->getEntityName() == 'User';
   }
 
   protected function addRelatedEntityService($service)  {
@@ -65,6 +71,7 @@ abstract class EntityService {
 
   abstract public function getEntityName();
   abstract protected function createQuery();
+  abstract protected function getSingleEntityId();
   abstract protected function getEntity($id, $writePermissions = false);
   abstract protected function performSave($data, $fork);
   abstract protected function removeRelatedEntityIds($data);
@@ -102,12 +109,24 @@ abstract class EntityService {
     return $query;
   }
 
+  protected function getUserIdField()  {
+    return $this->getEntityName().'.'.($this->isUserEntity() ? 'id' : 'userId');
+  }
+
+  protected function getUserId($entity)  {
+    return $this->isUserEntity() ? $entity->getId() : $entity->getUserId();
+  }
+
+  protected function filterByUserId($query, $id) {
+    return $this->isUserEntity() ? $query->filterById($id) : $query->filterByUserId($id);
+  }
+
   private function getPermissionCheckConditions($query) {
     $user = $this->userService->tryGetLoggedInUser();
 
     $conditions = array();
     if($this->hasUserField && $user != null)  {
-      $query = $query->condition('c_user', $this->getEntityName().'.userId = ?', $user->id);
+      $query = $query->condition('c_user', $this->getUserIdField().' = ?', $user->id);
       $conditions[] = 'c_user';
     }
 
@@ -134,7 +153,6 @@ abstract class EntityService {
   }
 
   protected function getEntityListPager($type, $page) {
-
     $query = $this->createQuery();
 
     switch ($type) {
@@ -150,7 +168,7 @@ abstract class EntityService {
       case 'my':
         if(!$this->hasUserField) die('type doesn´t have a user field');
         $user = $this->userService->getLoggedInUser();
-        $query = $query->filterByUserId($user->id);
+        $query = $this->filterByUserId($query, $user->id);
         break;
       
       default:
@@ -173,14 +191,14 @@ abstract class EntityService {
     $name = count($parts) > 1 ? $parts[1] : $parts[0];
 
     $query = $this->addPermissionCheck($this->createQuery());
-    if($this->hasUserField) $query = $query->joinWith($this->getEntityName().'.User');
+    if($this->hasUserField && !$this->isUserEntity()) $query = $query->joinWith($this->getEntityName().'.User');
 
     $query = $query->filterByName($name.'%');
 
     if($this->hasUserField)  {
       if($username == '') {
         $user = $this->userService->getLoggedInUser();
-        $query = $query->filterByUserId($user->id);
+        $query = $this->filterByUserId($query, $user->id);
       }
       else $query = $query->where(' User.name = ?', $username);
     }
@@ -188,13 +206,14 @@ abstract class EntityService {
   }
 
   protected function getLocalyMappendModel($entity)  {
-    $data = array('id' => $entity->getId(),
-                  'name' => $entity->getName());
+    $data = array();
 
+    if(!$this->isSingleEntity) $data['id'] = $entity->getId();
+    if($this->hasNameField) $data['name'] = $entity->getName();
     if($this->hasIsListedField) $data['isListed'] = $entity->getIsListed() == 1;
     if($this->hasUserField)  {
       $user = $this->userService->tryGetLoggedInUser();
-      $data['isYours'] = $user != null && $entity->getUserId() == $user->id;
+      $data['isYours'] = $user != null && $this->getUserId($entity) == $user->id;
     }
 
     if($this->hasGroupAccessInModel) $this->mapGroupAccessToModel($data, $entity);
@@ -205,19 +224,27 @@ abstract class EntityService {
   protected function getLocalyMappedEntityToSave($data, $fork)  {
     $user = $this->userService->getLoggedInUser();
 
+    if($this->isSingleEntity) $data->id = $this->getSingleEntityId();
+
     $entity = null;
     if($data->id != 'new')  {
       $entity = $this->getEntity($data->id, true);
-      if($this->hasUserField && $entity->getUserId() != $user->id)
+      if($this->hasUserField && $this->getUserId($entity) != $user->id)
         $this->dieAccessDenied();
     }
     else {
       $entity = $this->getNewEntity();
-      if($this->hasUserField) $entity->setUserId($user->id);
+      if($this->hasUserField) {
+        if($this->isUserEntity()) throw new Exception('not supported for the user entity');
+        $entity->setUserId($user->id);
+      }
     }
-    if(strpos($data->name, '/') !== false) die_err('Slashes are not allowed in names!');
 
-    $entity->setName($data->name);
+    if($this->hasNameField) {
+      if(strpos($data->name, '/') !== false) die_err('Slashes are not allowed in names!');
+      $entity->setName($data->name);
+    }
+
     if($this->hasIsListedField) $entity->setIsListed($data->isListed);
 
     if($fork != false)
@@ -313,10 +340,16 @@ abstract class EntityService {
       return (new \ReflectionClass('ECP\\'.$entityName))->newInstanceArgs();
   }
 
-  protected function getSubentity($dbParent, $entityName, $dataCurrent)  {
-      return property_exists($dataCurrent, 'id')
-          ? $this->getEntryById($dbParent, $entityName, $dataCurrent->id)
+  protected function getSubentity($dbParent, $entityName, $dataCurrent, $dataProperty = 'id', $entityField = 'Id')  {
+      return property_exists($dataCurrent, $dataProperty)
+          ? $this->getEntryBy($dbParent, $entityName, $dataCurrent->{$dataProperty}, $dataProperty, $entityField)
           : $this->getNewEntityByName($entityName);
+  }
+
+  protected function getSubentity2($dbParent, $entityName, $dataCurrent, $dataProperty = 'id', $entityField = 'Id')  {
+      $subEntity = $this->getEntryBy($dbParent, $entityName, $dataCurrent->{$dataProperty}, $dataProperty, $entityField);
+      if($subEntity == null) $subEntity = $this->getNewEntityByName($entityName);
+      return $subEntity;
   }
 
   protected function prepareSubentitySave($connection, $dbParent, $relationName, $dbCurrent, $dataCurrent)  {
@@ -326,6 +359,10 @@ abstract class EntityService {
   protected function prepareSubentitySave2($connection, $dbParent, $relationName, $dbCurrent, $isNew)  {
     if($isNew) call_user_func_array(array($dbParent, 'add'.$relationName), array($dbCurrent));
     else $dbCurrent->save($connection);
+  }
+
+  protected function prepareSubentitySave3($connection, $dbParent, $relationName, $dbCurrent)  {
+    $this->prepareSubentitySave2($connection, $dbParent, $relationName, $dbCurrent, $dbCurrent->isNew());
   }
 
   protected function getDictById($rows) {
@@ -338,6 +375,12 @@ abstract class EntityService {
   protected function getArrayById($dict, $entity)  {
     $id = $entity->getId();
     return array_key_exists($id, $dict) ? $dict[$id] : array();
+  }
+
+  protected function getLastComputed($entity)  {
+    $lastComputed = $entity->getLastComputed();
+    if($lastComputed == null) return null;
+    return $lastComputed->diff(new \DateTime('now'))->format('%a days, %h hours, %i minutes ago');
   }
 
   protected function getSuccess() {
@@ -376,23 +419,29 @@ abstract class EntityService {
     return str_replace('Persons', 'people', $relationName.'s');
   }
 
-  protected function getEntryById($dbParent, $relationName, $id) {
+  protected function getEntryBy($dbParent, $relationName, $key, $dataProperty = 'id', $entityField = 'Id') {
     $dbEntries = $this->getSubentities($dbParent, $relationName);
     foreach($dbEntries as $dbEntry)
-      if($dbEntry->getId() == $id)
+      if($this->getEntityField($dbEntry, $entityField) == $key)
         return $dbEntry;
   }
 
-  protected function cleanupOldEnties($dbParent, $relationName, $dataEnties) {
+  protected function cleanupOldEnties($dbParent, $relationName, $dataEnties, $dataProperty = 'id', $entityField = 'Id') {
     $dataIds = array();
     foreach($dataEnties as $dataEntry)
-      if(property_exists($dataEntry, 'id'))
-        $dataIds[] = $dataEntry->id;
+      if(property_exists($dataEntry, $dataProperty) || isset($dataEntry->{$dataProperty}))
+        $dataIds[] = $dataEntry->{$dataProperty};
 
     $dbEntries = $this->getSubentities($dbParent, $relationName);
-    foreach($dbEntries as $dbEntry)
-      if(!is_null($dbEntry->getId()) && !in_array($dbEntry->getId(), $dataIds))
+    foreach($dbEntries as $dbEntry) {
+      $key = $this->getEntityField($dbEntry, $entityField);
+      if(!is_null($key) && !in_array($key, $dataIds))
         call_user_func_array(array($dbParent, 'remove'.$relationName), array($dbEntry));
+    }
+  }
+
+  protected function getEntityField($entity, $entityField = 'Id') {
+    return call_user_func_array(array($entity, 'get'.$entityField), array());
   }
 
   protected function cleanupDataForValidation(&$data) {

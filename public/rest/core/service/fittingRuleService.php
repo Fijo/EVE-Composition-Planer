@@ -39,6 +39,10 @@ class FittingRuleService extends EntityService
       ->find());
   }
 
+  protected function getSingleEntityId()  {
+    die('not supported');
+  }
+
   protected function extendAutocompleteModel(&$model, $entity) {
     $model['isGlobal'] = $entity->getIsGlobal() == 1;
   }

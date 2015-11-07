@@ -7,8 +7,16 @@
 
 (function(angular, undefined)	{
 	'use strict';
-	
+
 	angular.module('mainApp').config(['$routeProvider', function($routeProvider) {
+		var getControllerName = function(name)	{
+			var dict = {
+				'fitting-rule': 'fittingRule',
+				'account-settings' : 'accountSettings'
+			};
+			return dict[name] != null ? dict[name] : name;
+		};
+
 		$routeProvider.when('/', {
 			templateUrl: 'app/main/view/page/home.html'
 		})
@@ -33,30 +41,28 @@
 		});
 
 		_.each([
-			'about', 'feedback', 'login'
+			'about', 'feedback', 'login', 'account-settings'
 		], function(name)	{
 			$routeProvider.when('/' + name, {
 				templateUrl: 'app/main/view/page/' + name + '.html',
-				controller: name + 'AppCtrl'
+				controller: getControllerName(name) + 'AppCtrl'
 			});
 		});
 
 		_.each([
-			{ ctrl: 'composition', name: 'composition'  },
-			{ ctrl: 'ruleset', name: 'ruleset' },
-			{ ctrl: 'fittingRule', name: 'fitting-rule' },
-			{ ctrl: 'group', name: 'group' }
-		], function(config)	{
-			$routeProvider.when('/' + config.name + '/', {
-				redirectTo: '/' + config.name + '/friends/page/1'
+			'composition', 'ruleset', 'fitting-rule', 'group'
+		], function(name)	{
+			var ctrl = getControllerName(name);
+			$routeProvider.when('/' + name + '/', {
+				redirectTo: '/' + name + '/friends/page/1'
 			})
-			.when('/' + config.name + '/:visibility/page/:page', {
+			.when('/' + name + '/:visibility/page/:page', {
 				templateUrl: 'app/main/view/page/list.html',
-				controller: config.ctrl + 'ListAppCtrl'
+				controller: ctrl + 'ListAppCtrl'
 			})
-			.when('/' + config.name + '/detail/:id', {
-				templateUrl: 'app/main/view/page/' + config.name + '.html',
-				controller: config.ctrl + 'AppCtrl'
+			.when('/' + name + '/detail/:id', {
+				templateUrl: 'app/main/view/page/' + name + '.html',
+				controller: ctrl + 'AppCtrl'
 			});
 		});
 	}]).config(['CacheFactoryProvider', function (CacheFactoryProvider) {

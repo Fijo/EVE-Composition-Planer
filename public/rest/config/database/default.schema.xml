@@ -75,6 +75,30 @@
         <column name="confirmation_code" type="varchar" size="32" phpName="ConfirmationCode"/>
         <column name="recover_password_code" type="varchar" size="32" phpName="RecoverPasswordCode"/>
     </table>
+    <table name="eveapi" phpName="EveApi">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="userId" type="integer" required="true"/>
+        <foreign-key foreignTable="user">
+          <reference local="userId" foreign="id"/>
+        </foreign-key>
+        <column name="keyId" type="integer" required="true"/>
+        <column name="vCode" type="varchar" size="64" required="true"/>
+        <column name="status" type="varchar" size="64" required="true"/>
+        <column name="lastComputed" type="timestamp"/>
+    </table>
+    <table name="evecharacter" phpName="EveCharacter">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="eveApiId" type="integer" required="true"/>
+        <foreign-key foreignTable="eveapi" onDelete="CASCADE" onUpdate="CASCADE">
+          <reference local="eveApiId" foreign="id"/>
+        </foreign-key>
+        <column name="charName" type="varchar" size="32" required="true"/>
+        <column name="charId" type="integer" required="true"/>
+        <column name="corpName" type="varchar" size="32" required="true"/>
+        <column name="corpId" type="integer" required="true"/>
+        <column name="allyName" type="varchar" size="32" required="true"/>
+        <column name="allyId" type="integer" required="true"/>
+    </table>
 
     <table name="gr0up" phpName="Group">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>

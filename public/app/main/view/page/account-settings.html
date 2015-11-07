@@ -1,0 +1,87 @@
+<!--
+EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
+Copyright (C) 2015 Jonas Fischer
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA
+-->
+
+<form name="form">
+	<div ng-include="'app/main/view/partial/header/default-entity.html'"></div>
+
+	<h4>My EVE Online API Keys</h4>
+	<ul class="list-group">
+		<li ng-repeat="apiKey in model.entity.apiKeys" class="list-group-item">
+			<div class="row">
+				<div class="col-xs-11">
+					<div class="row">
+						<div class="col-xs-12 col-md-6">Key Id</div>
+						<div class="col-xs-12 col-md-6">
+							<span ecp-validation-container>
+								<input class="form-control input-sm" name="fapiKey_{{getRepeaterHash(apiKey)}}_keyId" ng-model="apiKey.keyId" type="number" placeholder="Key Id" ng-disabled="isReadonly()" ecp-validation-tooltip="form" integer min="1" required />
+							</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12 col-md-6">Verification Code</div>
+						<div class="col-xs-12 col-md-6">
+							<span ecp-validation-container>
+								<input class="form-control input-sm" name="fapiKey_{{getRepeaterHash(apiKey)}}_vCode" ng-model="apiKey.vCode" type="text" placeholder="Verification Code" ng-disabled="isReadonly()" ecp-validation-tooltip="form" minlength="64" maxlength="64" required />
+							</span>
+						</div>
+					</div>
+					<div class="row" ng-if="apiKey.status != null">
+						<div class="col-xs-12 col-md-6">Status</div>
+						<div class="col-xs-12 col-md-6">
+							<strong>{{apiKey.status}}</strong>
+						</div>
+					</div>
+					<div class="row" ng-if="apiKey.lastComputed != null">
+						<div class="col-xs-12 col-md-6">Last computed</div>
+						<div class="col-xs-12 col-md-6">
+							<strong>{{apiKey.lastComputed}}</strong>
+						</div>
+					</div>
+
+					<div ng-if="apiKey.characters != null && apiKey.characters.length != 0">
+						<strong>Characters</strong>
+						<div class="row">
+							<div class="col-lg-4 col-sm-6 col-xs-12 characterSheet" ng-repeat="character in apiKey.characters">
+								<div class="row">
+									<div class="col-xs-5"><img src="https://image.eveonline.com/Character/{{character.char.id}}_128.jpg" alt="{{character.char.name}}"></div>
+									<div class="col-xs-7">
+										<strong>{{character.char.name}}</strong>
+										<div class="row" ng-if="character.corp.id != 0">
+											<div class="col-xs-3"><img src="https://image.eveonline.com/Corporation/{{character.corp.id}}_50.png" alt="{{character.corp.name}}"></div>
+											<div class="col-xs-7 corpAllyText">Member of<br>{{character.corp.name}}</div>
+										</div>									
+										<div class="row" ng-if="character.ally.id != 0">
+											<div class="col-xs-3"><img src="https://image.eveonline.com/Alliance/{{character.ally.id}}_50.png" alt="{{character.ally.name}}"></div>
+											<div class="col-xs-7 corpAllyText">Member of<br>{{character.ally.name}}</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-1 pull-right">
+					<a type="button" class="btn btn-link btn-sm" aria-label="Remove" ng-click="apiKeyService.remove($index)" ng-disabled="isReadonly()">
+						<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+					</a>
+				</div>
+			</div>
+		</li>
+		<li class="list-group-item">
+			<div class="row">
+				<div class="col-xs-11"></div>
+				<div class="col-xs-1 pull-right">
+					<a type="button" class="btn btn-link btn-sm" aria-label="Add" ng-click="apiKeyService.add()" ng-disabled="isReadonly()">
+						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+					</a>
+				</div>
+			</div>
+		</li>
+	</ul>
+</form>

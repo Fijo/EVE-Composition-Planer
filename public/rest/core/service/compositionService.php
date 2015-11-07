@@ -37,6 +37,10 @@ class CompositionService extends EntityService
       ->find());
   }
 
+  protected function getSingleEntityId()  {
+    die('not supported');
+  }
+
   protected function extendAutocompleteModel(&$model, $entity) {}
 
   public function get($id)  {

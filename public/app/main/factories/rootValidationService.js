@@ -44,7 +44,7 @@
 					if(id != null) return id;
 					var newId = 'validation-root-' + currentElementId++;
 					element.attr('id', newId);
-					return id;
+					return newId;
 				};
 
 				var getRootValidation = function(fieldScope, element)	{
