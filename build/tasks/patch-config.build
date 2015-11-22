@@ -10,6 +10,18 @@ You should have received a copy of the GNU General Public License along with thi
 <project name="ECP" default="patch-config">
     <target name="patch-config">
     	<property name="template.path" value="../config/templates/"/>
+		<copy file="${template.path}phealngConfig.php" tofile="../public/rest/config/phealng/config.php" overwrite="true">
+			<filterchain>
+				<replacetokens>
+					<token key="db.host" value="${db.host}" />
+					<token key="db.user" value="${db.user}" />
+					<token key="db.pass" value="${db.pass}" />
+					<token key="db.charset" value="${db.charset}" />
+					<token key="db.name.ecp" value="${db.name.ecp}" />
+					<token key="db.name.eveonline" value="${db.name.eveonline}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
 		<copy file="${template.path}propel.json" tofile="../public/rest/config/propel/propel.json" overwrite="true">
 			<filterchain>
 				<replacetokens>
