@@ -41,9 +41,10 @@ class AccountSettingsService extends EntityService
 
   protected function getEntity($id, $writePermissions = false) {
     $query = $this->addPermissionCheckForSingle($id, $this->createQuery(), $writePermissions)
-      ->joinWith('User.EveApi')
       ->filterById($id)
       ->find();
+
+    $query->populateRelation('EveApi');
 
     return $this->getSingleEntity($query);
   }
