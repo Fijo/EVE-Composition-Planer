@@ -18,11 +18,11 @@ You should have received a copy of the GNU General Public License along with thi
 		<copy todir="../public/bower_components/bootstrap/dist/css/fonts">
 		  <fileset basedir="../public/bower_components/bootstrap/dist/fonts"/>
 		</copy>
+		<call target="patch-config" />
 		<exec program="${composerPath}" workingdir="../public/rest">
 		    <arg line="install" />
 		</exec>
 		<copy file="../public/rest/config/.htaccess" tofile="../public/rest/vendor/.htaccess" />
-		<call target="patch-config" />
 		<exec program="${composerPath}" workingdir="../public/rest">
 		    <arg line="dumpautoload" />
 		</exec>
