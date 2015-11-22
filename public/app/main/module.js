@@ -41,6 +41,7 @@
                 './factories/rulesetService',
                 './factories/rootValidationService',
                 './factories/knowyetService',
+                './factories/noCacheInterceptor',
                 './directives/integer',
                 './directives/entityName',
                 './directives/entityNameFormat',

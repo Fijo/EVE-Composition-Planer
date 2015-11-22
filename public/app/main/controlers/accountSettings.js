@@ -30,9 +30,25 @@
 
 		$scope.knowyet = [
 			{
-				title: 'coming soon!',
+				title: 'Link your account with your EVE Characters!',
 				content: [
-					'coming soon!'
+					'Here you can link your account with your ingame characters.',
+					'This can be useful if for example your ingame corperation has a group in this app that automaticly allows all corp members of that corperation to access their compositions, rulesets or more.'
+				]
+			},
+			{
+				title: 'What permissions do the app require?',
+				content: [
+					'We only need a zero permission api key because we only need to fetch your general character information (that are always available).',
+					'You can use the folowing link to create a api key with the required permissions.',
+					'https://community.eveonline.com/support/api-key/CreatePredefined?accessMask=0'
+				]
+			},
+			{
+				title: 'How long does it take to gain group access?',
+				content: [
+					'If there is a group that allows access to you based on your character/ corperation/ alliance it may currently take up to a little more than one day for you to actualy gain access to the group.',
+					'If your API key expires access should be refused to you within the a little more than a day as well.'
 				]
 			}
 		];

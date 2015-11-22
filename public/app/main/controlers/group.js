@@ -52,8 +52,9 @@
 			{
 				title: 'So this is kinda anoying now I have to add every single person in my alliance to the members list ...',
 				content: [
-					'Well I already started to implement a feature that allows you to add ingame entities as well but I haven\'t finished that yet.' ,
-					'So for now you cant just add like an alliance to the members list but that will be possible soon.'
+					'Thats why you can also add member or admin access for ingame entities like a character a corperation or an alliance.' ,
+					'If you do so the corresponding users will have to add a valid API Key under ´Account settings´.',
+					'Also it might take about half a minute for your group to get processed by the server in the background so access for the corresponding users might not be immediate.'
 				]
 			}
 		];

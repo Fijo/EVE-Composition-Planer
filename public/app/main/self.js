@@ -67,5 +67,7 @@
 		});
 	}]).config(['CacheFactoryProvider', function (CacheFactoryProvider) {
 		angular.extend(CacheFactoryProvider.defaults, { maxAge: 15 * 60 * 1000, storageMode: 'localStorage' });
-	}]);
+	}]).config(['$httpProvider', function($httpProvider) {
+		$httpProvider.interceptors.push('NoCacheInterceptor');
+	}])
 })(angular)
