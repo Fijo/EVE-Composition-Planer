@@ -21,7 +21,7 @@
 					},
 					remove: function(container, index)	{
 						options.scope.ensureAccess();
-						options.getList(container).splice(index, 1);
+						if(self.canRemove(container)) options.getList(container).splice(index, 1);
 					}
 				};
 				return self;

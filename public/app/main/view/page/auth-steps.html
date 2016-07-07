@@ -22,7 +22,8 @@ You should have received a copy of the GNU General Public License along with thi
 				<form name="form">
 					<div ng-if="isSectionActive('recover-password')">
 						<div ng-show="res.status == 'success'" class="alert alert-success" role="alert">
-							A reset password mail has been send.
+							A reset password mail has been send.<br/>
+							Please also take a look in your spam folder.
 						</div>
 						<span ecp-validation-container>
 							<input class="form-control" ng-model="model.entity.email" name="email" type="email" placeholder="E-Mail" ecp-validation-tooltip="form" maxlength="1024" required/>
