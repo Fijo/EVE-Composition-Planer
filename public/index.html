@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
-Copyright (C) 2015 Jonas Fischer
+Copyright (C) 2015 - 2016 Jonas Fischer
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -16,10 +16,6 @@ You should have received a copy of the GNU General Public License along with thi
 	<link rel="stylesheet" href="style/main.css"/>
 	<link rel="stylesheet" href="style/angular-bootstrap.css"/>
 
-	<!-- todo get to work with bower and change underscore usage in controllers etc. -->
-	<!--<script src="http://raw.githubusercontent.com/andresesfm/angular-underscore-module/master/angular-underscore-module.js"></script>-->
-
-	<script data-main="script/init" src="bower_components/requirejs/require.js"></script>
 	<title>EVE Composition Planer</title>
 </head>
 <body ng-controller="navAppCtrl">
@@ -81,8 +77,12 @@ You should have received a copy of the GNU General Public License along with thi
 
 	<div class="container main-content">
 		<div ng-view></div>
-		<div class="copyright">Copyright (c) fi-jo.de 2015</div>
+		<div class="copyright">Copyright (c) fi-jo.de/ evecomp.tk/ Jonas Fischer 2015 - 2016</div>
 	</div>
 
+	<!-- todo get to work with bower and change underscore usage in controllers etc. -->
+	<!--<script src="http://raw.githubusercontent.com/andresesfm/angular-underscore-module/master/angular-underscore-module.js"></script>-->
+
+	<script data-main="script/init" src="bower_components/requirejs/require.js"></script>
 </body>
 </html>

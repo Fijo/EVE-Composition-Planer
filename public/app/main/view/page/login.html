@@ -1,6 +1,6 @@
 <!--
 EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
-Copyright (C) 2015 Jonas Fischer
+Copyright (C) 2015 - 2016 Jonas Fischer
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -18,7 +18,10 @@ You should have received a copy of the GNU General Public License along with thi
 			</ul>
 			<div class="panel-body">
 				<div class="alert alert-danger" role="alert" ng-show="res.status == 'incorrect credentials'">
-					Either the Login name or the password are incrorrect.
+					Either the Login name or the password are incrorrect.<br>
+					<br>
+					Please remember you have to verify your account after registering by clicking the link in the mail before you can actualy use the account.<br>
+					That mail could also be in your spam folder in case you can't find it.
 				</div>
 				<div class="alert alert-danger" role="alert" ng-show="res.status == 'error'">
 					{{res.message}}

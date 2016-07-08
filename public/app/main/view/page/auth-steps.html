@@ -1,6 +1,6 @@
 <!--
 EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
-Copyright (C) 2015 Jonas Fischer
+Copyright (C) 2015 - 2016 Jonas Fischer
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -22,7 +22,7 @@ You should have received a copy of the GNU General Public License along with thi
 				<form name="form">
 					<div ng-if="isSectionActive('recover-password')">
 						<div ng-show="res.status == 'success'" class="alert alert-success" role="alert">
-							A reset password mail has been send.<br/>
+							A reset password mail has been send.<br>
 							Please also take a look in your spam folder.
 						</div>
 						<span ecp-validation-container>
@@ -36,7 +36,7 @@ You should have received a copy of the GNU General Public License along with thi
 					</div>
 					<div ng-if="isSectionActive('reset-password')">
 						<div ng-if="callres.status == 'failure'" class="alert alert-danger" role="alert">
-							Your reset password code could not be used to reset the password for any user.<br/>
+							Your reset password code could not be used to reset the password for any user.<br>
 							It may either have exired or be wrong.
 						</div>
 						<div ng-if="callres.status == 'success'">
@@ -64,11 +64,11 @@ You should have received a copy of the GNU General Public License along with thi
 					</div>
 					<div ng-if="isSectionActive('confirm-register')">
 						<div ng-show="callres.status == 'failure'" class="alert alert-danger" role="alert">
-							Your registration confirmation code could not be used to confirm any registration.<br/>
+							Your registration confirmation code could not be used to confirm any registration.<br>
 							It may either have exired or be wrong.
 						</div>
 						<div ng-show="callres.status == 'success'" class="alert alert-success" role="alert">
-							Thanks for registering to EVE Composition Planer.<br/>
+							Thanks for registering to EVE Composition Planer.<br>
 							I hope you enjoy using this tool.
 						</div>
 					</div>
