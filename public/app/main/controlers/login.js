@@ -9,6 +9,9 @@
 	'use strict';
 	
 	angular.module('mainApp').controller('loginCtrl', ['$scope', '$location', 'User', function ($scope, $location, User) {
+		if (window.location.host.indexOf('evecomp.tk') != -1 && window.location.protocol != 'https:')
+			window.location = 'https://' + window.location.hostname + window.location.pathname + window.location.hash;
+
 		var section = $location.$$url.substring(1);
 		$scope.hierarchy = [section == 'login' ? 'Login' : 'Register'];
 		$scope.model = {
