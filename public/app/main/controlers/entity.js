@@ -93,6 +93,7 @@
 				$scope.getGroupAutocomplete = AutocompleteFactory(Group);
 
 				$scope.groupService = StoreServiceFactory.create({
+					minEntryCount: 0,
 					getList: function(entity)	{
 						return entity.groups;
 					},

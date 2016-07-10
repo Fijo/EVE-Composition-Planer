@@ -98,6 +98,7 @@
 					}
 
 					$scope.personService = StoreServiceFactory.create({
+						minEntryCount: 0,
 						getList: function(section)	{
 							return section.persons;
 						},
@@ -106,6 +107,7 @@
 					});
 
 					$scope.evePersonService = StoreServiceFactory.create({
+						minEntryCount: 0,
 						getList: function(section)	{
 							return section.evePersons;
 						},

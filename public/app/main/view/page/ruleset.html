@@ -63,7 +63,7 @@ You should have received a copy of the GNU General Public License along with thi
 								<div class="panel-body ship-points-detail">
 									<div class="row" ng-repeat="ship in shipGroup.content" ng-class="showShip(ship) ? '' : 'content-hidden'">
 										<div class="col-md-10 col-xs-8 nobr">
-											<img class="img-rounded" src="http://image.eveonline.com/Type/{{::ship.id}}_32.png" width="24" height="24" alt="{{::ship.name}}">
+											<img class="img-rounded" ng-src="http://image.eveonline.com/Type/{{::ship.id}}_32.png" width="24" height="24" alt="{{::ship.name}}">
 											{{::ship.name}}
 										</div>
 										<div class="col-md-2 col-xs-4">

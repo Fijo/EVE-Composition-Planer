@@ -12,8 +12,9 @@
 		var createWithDynamicContainer = function(options)	{
 			return (function()	{
 				var self = {
+					minEntryCount: options.minEntryCount != null ? options.minEntryCount : 1,
 					canRemove: function(container)	{
-						return options.getList(container).length > 1;
+						return options.getList(container).length > self.minEntryCount;
 					},
 					add: function(container)	{
 						options.scope.ensureAccess();

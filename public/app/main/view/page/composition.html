@@ -1,6 +1,6 @@
 <!--
 EVE Composition Planer - a little helper for theorycrafting compositions in EVE Online
-Copyright (C) 2015 Jonas Fischer
+Copyright (C) 2015 - 2016 Jonas Fischer
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -14,7 +14,8 @@ You should have received a copy of the GNU General Public License along with thi
 	<div class="alert alert-info" role="alert" ng-if="!requestManagement.hasError('init') && !requestManagement.isPending('init') && model.ruleset.fittingFiltersUptodate === false">
 		<div class="row">
 			<div class="col-xs-12 col-sm-10">
-			The used Ruleset hasn´t been fully processed yet. The validation messages might incorrect or out of date. Processing should be finished within the next minute though.
+			The used Ruleset hasn´t been fully processed yet. The validation messages might incorrect or out of date. Processing should be finished within the next minute though.<br/>
+			Depending on the load of the server and the amount of pending items for processing it can sometimes take a little longer too.
 			</div>
 
 			<div class="col-xs-3 col-sm-2 pull-right">
@@ -26,7 +27,8 @@ You should have received a copy of the GNU General Public License along with thi
 	</div>
 	
 	<div class="alert alert-danger" role="alert" ng-repeat="violation in model.entity.violations">
-		<strong>Composition is violating a rule:</strong> {{violation}}
+		<strong>Composition is violating a rule:</strong><br/>
+		<pre>{{violation}}</pre>
 	</div>
 
 	<div class="row">
@@ -57,7 +59,7 @@ You should have received a copy of the GNU General Public License along with thi
 								<th class="composition-ship-action"></th>
 							</tr>
 							<tr ng-repeat="ship in model.entity.content" ng-class="(ship.viewDetails ? 'active' : '') + ' ' + (ship.isAllowed ? '' : 'content-hidden')">
-								<td class="composition-ship-icon"><img class="img-rounded" src="http://image.eveonline.com/Type/{{::ship.shipId}}_32.png" width="32" height="32" alt="{{ ship.name }}"></td>
+								<td class="composition-ship-icon"><img class="img-rounded" ng-src="http://image.eveonline.com/Type/{{::ship.shipId}}_32.png" width="32" height="32" alt="{{ ship.name }}"></td>
 								<td class="composition-ship-name">{{ ship.name }}</td>
 								<td class="composition-ship-points">{{ ship.points }}</td>
 								<td class="composition-ship-action" id="ship-validation-{{::getRepeaterHash(ship)}}">
@@ -150,7 +152,7 @@ You should have received a copy of the GNU General Public License along with thi
 						<div class="panel-body selectShip">
 							<div class="row" ng-repeat="ship in shipGroup.content" ng-show="showShip(ship)">
 								<div class="col-md-8 col-xs-7 nobr">
-									<img class="img-rounded" src="http://image.eveonline.com/Type/{{::ship.id}}_32.png" width="16" height="16" alt="{{::ship.name}}">
+									<img class="img-rounded" ng-src="http://image.eveonline.com/Type/{{::ship.id}}_32.png" width="16" height="16" alt="{{::ship.name}}">
 									<a ng-click="addShip(ship)">{{::ship.name}}</a>
 								</div>
 								<div class="col-md-4 col-xs-5 text-right">{{ getShipPoints(ship.id) }}</div>
