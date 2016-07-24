@@ -1,0 +1,38 @@
+-- MySQL dump 10.13  Distrib 5.5.44, for debian-linux-gnu (x86_64)
+--
+-- Host: localhost    Database: ECP
+-- ------------------------------------------------------
+-- Server version	5.5.44-0ubuntu0.14.04.1-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Dumping data for table `fittingruleentity`
+--
+-- WHERE:  id in (38,41,42,43,44,46,49,50,51,52,56,58,61,62,63,66,67) limit 10000
+
+LOCK TABLES `fittingruleentity` WRITE;
+/*!40000 ALTER TABLE `fittingruleentity` DISABLE KEYS */;
+INSERT INTO `fittingruleentity` VALUES (38,'Faction',31,0,1,0,0,'2016-07-24 14:31:57'),(41,'Unallowed Remote Reps (AT XIII)',31,0,1,0,1,'2016-07-09 14:28:56'),(42,'Too much Remote Cap Transfer',31,0,1,0,1,'2015-09-20 20:45:21'),(43,'Too many ASBs',31,0,1,0,1,'2016-07-09 15:55:34'),(44,'Not allowed modules (AT XIII)',31,0,1,0,1,'2016-07-07 21:58:29'),(46,'Flagship (AT XIII)',31,0,1,45,1,'2016-07-09 17:09:53'),(49,'Shiny modules (AT XIII)',31,0,1,0,1,'2016-07-09 16:49:48'),(50,'Logi Cruiser (AT XIII)',31,0,1,0,1,'2016-07-09 15:40:50'),(51,'Logi Frigate (AT XIII)',31,0,1,0,1,'2016-07-09 15:44:55'),(52,'no more than 2 ships per type',31,1,1,0,1,'2016-07-10 14:51:26'),(56,'Unallowed Remote Reps (AT XIV)',31,0,1,55,1,'2016-07-09 15:01:37'),(58,'Not allowed items (AT XIV)',31,0,1,57,1,'2016-07-09 17:04:10'),(61,'Logi Cruiser (AT XIV)',31,0,1,59,1,'2016-07-09 16:01:00'),(62,'Logi Frigate (AT XIV)',31,0,1,60,1,'2016-07-09 15:45:44'),(63,'too many of that item (AT XIV)',31,0,1,0,1,'2016-07-09 15:53:17'),(66,'Flagship (AT XIV)',31,0,1,65,1,'2016-07-10 13:21:14'),(67,'Shiny modules (AT XIV)',31,0,1,64,1,'2016-07-09 17:10:26');
+/*!40000 ALTER TABLE `fittingruleentity` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2016-07-24 16:53:02
