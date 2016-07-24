@@ -9,7 +9,7 @@ public/rest/composer.lock [![Dependency Status](https://www.versioneye.com/user/
 
 License
 -------
-Copyright (C) 2015 Jonas Fischer
+Copyright (C) 2015 - 2016 Jonas Fischer
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2 of the License.
 
