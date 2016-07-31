@@ -27,7 +27,14 @@ setting up a server:
 -> make sure the files in the www root are owned by the apache user (usualy www-data in ubuntu)
 
 // mysql config change
--> make sure lower_case_table_names is set to 1 (before(!) you start importing any sql scripts)
+
+(do all those adjustments before(!) you start importing any sql scripts)
+-> make sure lower_case_table_names is set to 1
+-> make sure sql_mode is set to none (search for "sql_mode" if you find a line with that put a # in from of it coment out the line.)
+-> make sure innodb_strict_mode is set to 0 (turned off)
+	Under the [mysqld] section look for innodb_strict_mode.
+	If you find a line where its set change it so it matches the folowing line if you dont just add this one.
+	innodb_strict_mode = 0
 
 -> it helps if you increase some of the mysql settings if you dont have ram issues (even if you only have like 500mb ram)
 -> table_open_cache        = 195
