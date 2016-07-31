@@ -17,22 +17,22 @@ INSERT INTO `fittingruleentity`
 (`id`, `name`, `userId`, `isGlobal`, `isListed`, `forkedId`, `isFilterTypeUptodate`, `lastModified`)
 VALUES
 (38,'Faction',31,0,1,0,0,'2016-07-24 14:31:57'),
-(41,'Unallowed Remote Reps (AT XIII)',31,0,1,0,1,'2016-07-09 14:28:56'),
-(42,'Too much Remote Cap Transfer',31,0,1,0,1,'2015-09-20 20:45:21'),
-(43,'Too many ASBs',31,0,1,0,1,'2016-07-09 15:55:34'),
-(44,'Not allowed modules (AT XIII)',31,0,1,0,1,'2016-07-07 21:58:29'),
-(46,'Flagship (AT XIII)',31,0,1,45,1,'2016-07-09 17:09:53'),
-(49,'Shiny modules (AT XIII)',31,0,1,0,1,'2016-07-09 16:49:48'),
-(50,'Logi Cruiser (AT XIII)',31,0,1,0,1,'2016-07-09 15:40:50'),
-(51,'Logi Frigate (AT XIII)',31,0,1,0,1,'2016-07-09 15:44:55'),
-(52,'no more than 2 ships per type',31,1,1,0,1,'2016-07-10 14:51:26'),
-(56,'Unallowed Remote Reps (AT XIV)',31,0,1,55,1,'2016-07-09 15:01:37'),
-(58,'Not allowed items (AT XIV)',31,0,1,57,1,'2016-07-09 17:04:10'),
-(61,'Logi Cruiser (AT XIV)',31,0,1,59,1,'2016-07-09 16:01:00'),
-(62,'Logi Frigate (AT XIV)',31,0,1,60,1,'2016-07-09 15:45:44'),
-(63,'too many of that item (AT XIV)',31,0,1,0,1,'2016-07-09 15:53:17'),
-(66,'Flagship (AT XIV)',31,0,1,65,1,'2016-07-10 13:21:14'),
-(67,'Shiny modules (AT XIV)',31,0,1,64,1,'2016-07-09 17:10:26');
+(41,'Unallowed Remote Reps (AT XIII)',31,0,1,0,0,'2016-07-09 14:28:56'),
+(42,'Too much Remote Cap Transfer',31,0,1,0,0,'2015-09-20 20:45:21'),
+(43,'Too many ASBs',31,0,1,0,0,'2016-07-09 15:55:34'),
+(44,'Not allowed modules (AT XIII)',31,0,1,0,0,'2016-07-07 21:58:29'),
+(46,'Flagship (AT XIII)',31,0,1,45,0,'2016-07-09 17:09:53'),
+(49,'Shiny modules (AT XIII)',31,0,1,0,0,'2016-07-09 16:49:48'),
+(50,'Logi Cruiser (AT XIII)',31,0,1,0,0,'2016-07-09 15:40:50'),
+(51,'Logi Frigate (AT XIII)',31,0,1,0,0,'2016-07-09 15:44:55'),
+(52,'no more than 2 ships per type',31,1,1,0,0,'2016-07-10 14:51:26'),
+(56,'Unallowed Remote Reps (AT XIV)',31,0,1,55,0,'2016-07-09 15:01:37'),
+(58,'Not allowed items (AT XIV)',31,0,1,57,0,'2016-07-09 17:04:10'),
+(61,'Logi Cruiser (AT XIV)',31,0,1,59,0,'2016-07-09 16:01:00'),
+(62,'Logi Frigate (AT XIV)',31,0,1,60,0,'2016-07-09 15:45:44'),
+(63,'too many of that item (AT XIV)',31,0,1,0,0,'2016-07-09 15:53:17'),
+(66,'Flagship (AT XIV)',31,0,1,65,0,'2016-07-10 13:21:14'),
+(67,'Shiny modules (AT XIV)',31,0,1,64,0,'2016-07-09 17:10:26');
 
 INSERT INTO `fittingrulerow`
 (`id`, `fittingRuleEntityId`, `ind3x`, `concatenation`, `comparison`, `value`)
